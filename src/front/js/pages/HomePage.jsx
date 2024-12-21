@@ -41,7 +41,7 @@ const HomePage = () => {
                 </div>
 
                 <div className="carousel-item">
-                <img src="https://picsum.photos/2000/800" className="img-fluid" alt="..."/>
+                <img src="https://cdn.pixabay.com/photo/2020/05/11/18/43/brain-5159706_960_720.png" className="img-fluid" alt="..."/>
                     <div className="container">
                         <div className="carousel-caption text-end">
                             <h1>One more for good measure.</h1>
@@ -61,9 +61,42 @@ const HomePage = () => {
                 <span className="visually-hidden">Next</span>
             </button>
         </div>
-        This the home page
+        <br/> 
+        <div>
+            <h1>Our Goal at Scholars.ai</h1>
+            <p>Bringing together teachers and students aspiring to further their intellectual development. </p>
+        </div>
+        <br/>
         <div className="row">
-            <div className="card mb-3 style={max-width=540px}">
+            <div className="card col-4 mb-3 style={max-width=540px}">
+                <div className="row g-0">
+                    <div className="col-md-4">
+                    <img src="..." className="img-fluid rounded-start" alt="..."/>
+                    </div>
+                    <div className="col-md-8">
+                        <div className="card-body">
+                            <h5 className="card-title">Card title</h5>
+                            <p className="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            <p className="card-text"><small className="text-muted">Last updated 3 mins ago</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="card col-4 mb-3 style={max-width=540px}">
+                <div className="row g-0">
+                    <div className="col-md-4">
+                    <img src="..." className="img-fluid rounded-start" alt="..."/>
+                    </div>
+                    <div className="col-md-8">
+                        <div className="card-body">
+                            <h5 className="card-title">Card title</h5>
+                            <p className="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                            <p className="card-text"><small className="text-muted">Last updated 3 mins ago</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="card col-4 mb-3 style={max-width=540px}">
                 <div className="row g-0">
                     <div className="col-md-4">
                     <img src="..." className="img-fluid rounded-start" alt="..."/>
