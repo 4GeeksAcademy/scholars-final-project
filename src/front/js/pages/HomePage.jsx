@@ -1,4 +1,5 @@
 import React from "react";
+import "../../styles/HomePage.css";
 
 const HomePage = () => {
 
@@ -13,40 +14,36 @@ const HomePage = () => {
             </div>
             <div className="carousel-inner">
                 <div className="carousel-item active">
-                <div className="card mb-3 style={max-width=540px}">
-                <div className="row g-0">
-                    <div className="col-md-4">
-                    <img src="https://fastly.picsum.photos/id/20/3670/2462.jpg?hmac=CmQ0ln-k5ZqkdtLvVO23LjVAEabZQx2wOaT4pyeG10I" className="img-fluid rounded-start" alt="..."/>
-                    </div>
-                    <div className="col-md-8">
-                        <div className="card-body">
-                            <h5 className="card-title"><strong>Welcome to Scholars.ai!</strong></h5>
-                            <p className="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                            <p className="card-text"><small className="text-muted">Last updated 3 mins ago</small></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                </div>
-
-                <div className="carousel-item">
-                    <img src="https://cdn.pixabay.com/photo/2020/10/26/19/44/e-learning-5688627_960_720.png" className="img-fluid" alt="..."/>
-                    <div className="container">
-                        <div className="carousel-caption">
-                            <h1><strong>Get Started Today!</strong></h1>
-                            <p>Some representative placeholder content for the second slide of the carousel.</p>
-                            <p><a className="btn btn-lg btn-primary" href="#">Sign Up</a></p>
+                    <div className="welcome-card mb-3 style={max-width=540px}">
+                        <div className="row g-0">
+                            <div className="col-md-4 welcome-image">
+                            <img src="https://fastly.picsum.photos/id/20/3670/2462.jpg?hmac=CmQ0ln-k5ZqkdtLvVO23LjVAEabZQx2wOaT4pyeG10I" className="img-fluid rounded-start" alt="..."/>
+                            </div>
+                            <div className="welcome-body col-md-8">
+                                <div className="card-body-welcome row col d-flex justify-content-center align-center mx-2">
+                                    <h1 className="card-title row col d-flex justify-content-center align-center mt-5"><strong>Welcome to Scholars.ai!</strong></h1>
+                                    <p className="card-text row mb-5">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                                    <p><a className="btn btn-lg btn-primary mx-3 row mt-4" href="#">Sign Up</a></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                
+
                 <div className="carousel-item">
-                <img src="https://cdn.pixabay.com/photo/2020/05/11/18/43/brain-5159706_960_720.png" className="img-fluid" alt="..."/>
-                    <div className="container">
-                        <div className="carousel-caption text-end">
-                            <h1>One more for good measure.</h1>
-                            <p>Some representative placeholder content for the third slide of this carousel.</p>
-                            <p><a className="btn btn-lg btn-primary" href="#">Browse Courses</a></p>
+                    <div className="card mb-3 style={max-width=540px}">
+                        <div className="row g-0">
+                            <div className="learn-more col-md-4">
+                            <img src="https://cdn.pixabay.com/photo/2020/05/11/18/43/brain-5159706_960_720.png" className="img-fluid rounded-start" alt="..."/>
+                            </div>
+                            <div className="learn-more-body col-md-8">
+                                <div className="card-body-learn-more mt-5 mx-2">
+                                    <h1 className="card-title mt-5"><strong>Learn more about our Program!</strong></h1>
+                                    <p className="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -61,14 +58,16 @@ const HomePage = () => {
                 <span className="visually-hidden">Next</span>
             </button>
         </div>
+
         <br/> 
         <div>
             <h1>Our Goal at Scholars.ai</h1>
             <p>Bringing together teachers and students aspiring to further their intellectual development. </p>
         </div>
         <br/>
-        <div className="row">
-            <div className="card col-4 mb-3 style={max-width=540px}">
+
+        <div className="row col-12 d-flex justify-content-center">
+            <div className="card col-3 mb-3 me-3 style={max-width=540px}">
                 <div className="row g-0">
                     <div className="col-md-4">
                     <img src="..." className="img-fluid rounded-start" alt="..."/>
@@ -82,7 +81,7 @@ const HomePage = () => {
                     </div>
                 </div>
             </div>
-            <div className="card col-4 mb-3 style={max-width=540px}">
+            <div className="card col-3 mb-3 mx-3 style={max-width=540px}">
                 <div className="row g-0">
                     <div className="col-md-4">
                     <img src="..." className="img-fluid rounded-start" alt="..."/>
@@ -96,7 +95,7 @@ const HomePage = () => {
                     </div>
                 </div>
             </div>
-            <div className="card col-4 mb-3 style={max-width=540px}">
+            <div className="card col-3 mb-3 ms-3 style={max-width=540px}">
                 <div className="row g-0">
                     <div className="col-md-4">
                     <img src="..." className="img-fluid rounded-start" alt="..."/>

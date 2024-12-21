@@ -1,3 +1,32 @@
-.carousel-caption {
-    color: black;
+.welcome-image {
+
+}
+
+.welcome-card {
+    background-color: ;
+}
+
+.welcome-body {
+    background-color: lightblue;
+}
+.get-started {
+    text-decoration: black;
+    background-color: lightblue;
+}
+
+.get-started-image {
+    height: 415px;
+    width: 415px; 
+}
+
+.learn-more {
+    background-color: lightblue;
+}
+
+.learn-more-body {
+    background-color: lightblue;
+}
+
+.card-body-learn-more {
+    background-color: lightblue;
 }
