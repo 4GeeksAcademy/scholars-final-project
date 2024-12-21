@@ -4,7 +4,7 @@ const Grades = () => {
 
     return (
         <>
-            Grades
+            <h1>Grades</h1>
         </>
     )
 }

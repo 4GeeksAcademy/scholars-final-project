@@ -7,6 +7,11 @@ import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
 import DashBoard from "./pages/dashboard.jsx";
+import Assignments from "./component/dashboardComponents/Assignments.jsx";
+import Calendar from "./component/dashboardComponents/Calendar.jsx";
+import CardsCourses from "./component/dashboardComponents/CardsCourses.jsx";
+import Grades from "./component/dashboardComponents/Grades.jsx";
+import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
@@ -28,7 +33,13 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
-                        <Route element={<DashBoard />} path="/dashboard" />
+                        <Route element={<DashBoard />} path="/dashboard" >
+                            <Route index element={<CardsCourses/>}/>
+                            <Route element={<Assignments/>} path="assignments"/>  
+                            <Route element={<Grades/>} path="grades"/> 
+                            <Route element={<Notebook/>} path="notebooks"/> 
+                            <Route element={<Calendar/>} path="calendar"/>                  
+                        </Route>
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
