@@ -10,7 +10,7 @@ const DashBoard = () =>{
                     <VerticalMenu />
                 </div>
 
-                <div className="ms-5 me-4">
+                <div className="ms-5 me-4" style={{position:"relative"}}>
                     <Outlet />
                 </div>
             </div>
