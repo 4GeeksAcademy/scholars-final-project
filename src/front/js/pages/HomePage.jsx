@@ -41,8 +41,8 @@ const HomePage = () => {
                             </div>
                             <div className="learn-more-body col-md-8">
                                 <div className="card-body-learn-more mt-5 mx-2">
-                                    <h1 className="card-title mt-5"><strong>Learn more about our Program!</strong></h1>
-                                    <p className="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                                    <h1 className="card-title my-5 ms-5"><strong>Learn more about our Program!</strong></h1>
+                                    <p className="card-text mt-5 mx-5">Welcome to Scholars.ai! We're thrilled to have you join us on this educational journey. This program has been carefully designed to equip you with the skills, knowledge, and experiences necessary to excel in your personal and professional endeavors. Whether you're aiming to enhance your career, deepen your expertise, or discover new areas of interest, our learning program is here to support your growth every step of the way.</p>
                                 </div>
                             </div>
                         </div>
@@ -61,58 +61,43 @@ const HomePage = () => {
         </div>
 
         <br/> 
-        <div>
-            <h1>Our Goal at Scholars.ai</h1>
-            <p>Bringing together teachers and students aspiring to further their intellectual development. </p>
+        <div className="row col-12 d-flex justify-content-end">
+            <h1 className="d-flex justify-content-center my-5">Our Goal at Scholars.ai</h1>
+            <h5 className="d-flex justify-content-center mb-4">Our primary goal is to empower learners by providing a comprehensive, engaging, and effective learning experience. We strive to:</h5>
+            <p className="d-flex justify-content-center">
+                Equip you with practical skills and knowledge that can be immediately applied.
+                </p>
+                <p className="d-flex justify-content-center">
+                Foster a growth mindset that encourages continuous learning and improvement.
+                </p>
+                <p className="d-flex justify-content-center">
+                Promote critical thinking, problem-solving, and collaboration in real-world scenarios.
+                </p>
+                <p className="d-flex justify-content-center">
+                Cultivate a community of learners who support and challenge each other.
+                </p>
         </div>
         <br/>
-
-        <div className="row col-12 d-flex justify-content-center">
-            <div className="card col-5 mb-3 me-3 style={max-width=540px}">
-                <div className="row g-0">
-                    <div className="col-md-4">
-                    <img src="..." className="img-fluid rounded-start" alt="..."/>
-                    </div>
-                    <div className="col-md-8">
-                        <div className="card-body">
-                            <h5 className="card-title">Our Goal</h5>
-                            <p className="card-text">
-                            Our primary goal is to empower learners by providing a comprehensive, engaging, and effective learning experience. We strive to:
-
-                            Equip you with practical skills and knowledge that can be immediately applied.
-                            Foster a growth mindset that encourages continuous learning and improvement.
-                            Promote critical thinking, problem-solving, and collaboration in real-world scenarios.
-                            Cultivate a community of learners who support and challenge each other.
-                            Through these goals, we aim to help you reach your highest potential and succeed in your endeavors.
-                                </p>
-                            <p className="card-text"><small className="text-muted">Last updated 3 mins ago</small></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="card col-5 mb-3 mx-3 style={max-width=540px}">
-                <div className="row g-0">
-                    <div className="col-md-4">
-                    <img src="..." className="img-fluid rounded-start" alt="..."/>
-                    </div>
-                    <div className="col-md-8">
-                        <div className="card-body">
-                            <h5 className="card-title">Our Mission</h5>
-                            <p className="card-text">
-                                Our mission is to deliver high-quality, accessible, and inclusive education that inspires learners to achieve excellence and make meaningful contributions to their communities and industries. We are committed to:
-
-                                Providing an innovative curriculum that meets the evolving needs of our learners.
-                                Creating a dynamic and supportive learning environment where all participants can thrive.
-                                Promoting lifelong learning and personal development to ensure success in an ever-changing world.
-                                Building a community of learners who are passionate, driven, and ready to take on the challenges of tomorrow.
-                                Together, we will shape the leaders and innovators of the future, one learner at a time.
-                                </p>
-                            <p className="card-text"><small className="text-muted"></small></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
+        <div className="row col-12 d-flex justify-content-end">
+            <h1 className="d-flex justify-content-center my-5">Our Mission at Scholars.ai</h1>
+            <div className="row col-2"></div>
+            <h5 className=" row col-8 d-flex justify-content-center mb-4">Our mission is to deliver high-quality, accessible, and inclusive education that inspires learners to achieve excellence and make meaningful contributions to their communities and industries. We are committed to:</h5>
+            <div className="row col-2"></div>
+            <p className="d-flex justify-content-center">
+                Providing an innovative curriculum that meets the evolving needs of our learners.
+                </p>
+                <p className="d-flex justify-content-center">
+                Creating a dynamic and supportive learning environment where all participants can thrive.              
+                </p>
+                <p className="d-flex justify-content-center">
+                Promoting lifelong learning and personal development to ensure success in an ever-changing world.
+                </p>
+                <p className="d-flex justify-content-center">
+                Building a community of learners who are passionate, driven, and ready to take on the challenges of tomorrow.
+                </p>
+                <p className="d-flex justify-content-center">
+                Together, we will shape the leaders and innovators of the future, one learner at a time.
+                </p>
         </div>
         </body>
         </>
