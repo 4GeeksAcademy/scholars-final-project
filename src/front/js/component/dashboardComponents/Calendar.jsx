@@ -7,10 +7,9 @@ import { useState } from "react";
 
 const Calendar = () => {
 
-    useEffect(()=>{},[events])
     const [events,setEvents] = useState ([
-        {id:1, title: "Event 1", date: "2024-12-25"},
-        {id:2, title: "Event 2", date: "2024-12-31"}
+        {id:1, title: "Event 1", start: "2024-12-25"},
+        {id:2, title: "Event 2", start: "2024-12-31"}
     ]);
     const [contextMenu, setContextMenu] = useState({visible: false, x:0,y:0,event:null,date:null})
 
@@ -36,16 +35,28 @@ const Calendar = () => {
             const title = prompt("Add a new event:")
             if(title){
                 const newEvent={
-                    id: `${events.length} + 1`,
+                    id: events.length + 1,
                     title: title,
                     date: contextMenu.date
                 }
                 setEvents([... events,newEvent]);
+                console.log(events);
             }
             setContextMenu({visible:false});
         }
     }
 
+    const handleEventDrop = (dropInfo) => {
+
+        const {event} = dropInfo;
+        const updateEvent = events.map((e)=> {
+            if(e.id === event.id)
+                return {...e, start: event.start.toISOString()};
+            return e;
+        });
+        setEvents(updateEvent);
+        console.log(events)
+    }
     const handleEditEvent = () =>{
         if(contextMenu.event){
             const updateEvent = prompt("Change the event:", contextMenu.event.title)
@@ -64,9 +75,11 @@ const Calendar = () => {
         handleCloseContextMenu();
     }
 
+    useEffect(()=>{console.log(events)},[events])
+
     return (
         <>
-            <div onClick={handleCloseContextMenu} style={{position:'relative', height:"100vh"}}>
+            <div onClick={handleCloseContextMenu} style={{position:'relative'}}>
                 <FullCalendar
                     headerToolbar={{
                         start: "prev,next today title",
@@ -79,8 +92,9 @@ const Calendar = () => {
                     editable={true}
                     droppable={true}
                     events={events}
-                    dateClick={(clickInfo) =>handleEventClick(clickInfo.jsEvent,clickInfo)}
-                    eventClick={(clickInfo) =>handleEventClick(clickInfo.jsEvent,clickInfo)}
+                    dateClick={(clickInfo) => handleEventClick(clickInfo.jsEvent,clickInfo)}
+                    eventClick={(clickInfo) => handleEventClick(clickInfo.jsEvent,clickInfo)}
+                    eventDragStop={(dropInfo)=>handleEventDrop(dropInfo)}
                 />
                 {contextMenu.visible && (
                     <ul className="dropdown-menu show" 
