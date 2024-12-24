@@ -1,5 +1,7 @@
-.welcome-image {
-
+.background-Home-Page {
+    background-image: url("https://cdn.pixabay.com/photo/2017/10/05/13/50/watercolour-2819482_960_720.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .welcome-card {
