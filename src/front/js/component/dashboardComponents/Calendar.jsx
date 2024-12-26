@@ -37,7 +37,7 @@ const Calendar = () => {
                 const newEvent={
                     id: events.length + 1,
                     title: title,
-                    date: contextMenu.date
+                    start: contextMenu.date
                 }
                 setEvents([... events,newEvent]);
                 console.log(events);
@@ -47,14 +47,15 @@ const Calendar = () => {
     }
 
     const handleEventDrop = (dropInfo) => {
-
-        const {event} = dropInfo;
-        const updateEvent = events.map((e)=> {
-            if(e.id === event.id)
-                return {...e, start: event.start.toISOString()};
-            return e;
-        });
-        setEvents(updateEvent);
+        const {event} = dropInfo
+        console.log(event.id)
+        const updateEvent = {
+            id: event.id,
+            title: event.title,
+            start: event.start.toISOString().split('T')[0],
+        };
+        console.log(updateEvent.start)
+        setEvents((prevEvents) => prevEvents.map((currentEvent)=> currentEvent.id == event.id ? updateEvent : currentEvent));
         console.log(events)
     }
     const handleEditEvent = () =>{
@@ -62,7 +63,8 @@ const Calendar = () => {
             const updateEvent = prompt("Change the event:", contextMenu.event.title)
             if(updateEvent){
                 console.log("before",events);
-                setEvents(events.map((event)=>event.id === contextMenu.event.id ? {...event,title:updateEvent}: event))
+                console.log(updateEvent)
+                setEvents(events.map((event)=>event.id == contextMenu.event.id ? {...event,title:updateEvent}: event))
                 console.log("after",events);
             }
         }
@@ -71,7 +73,7 @@ const Calendar = () => {
 
     const handleRemoveEvent = () =>{
         if(contextMenu.event && window.confirm(`Are you sure to delete the event "${contextMenu.event.title}"?`))
-            setEvents(events.filter((event)=>event.id !== contextMenu.event.id));
+            setEvents(events.filter((event)=>event.id != contextMenu.event.id));
         handleCloseContextMenu();
     }
 
@@ -91,10 +93,10 @@ const Calendar = () => {
                     height={"auto"}
                     editable={true}
                     droppable={true}
+                    eventReceive={(dropInfo) => handleEventDrop(dropInfo)}
                     events={events}
                     dateClick={(clickInfo) => handleEventClick(clickInfo.jsEvent,clickInfo)}
                     eventClick={(clickInfo) => handleEventClick(clickInfo.jsEvent,clickInfo)}
-                    eventDragStop={(dropInfo)=>handleEventDrop(dropInfo)}
                 />
                 {contextMenu.visible && (
                     <ul className="dropdown-menu show" 
