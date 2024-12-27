@@ -1,60 +1,56 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
-const AccordionMenu = () => {
-  const [activeIndex, setActiveIndex] = useState(null);
-
-  const toggleSection = (index) => {
-    setActiveIndex(activeIndex === index ? null : index);
+const AccordionMenu = ({ modules, onTopicSelect }) => {
+  const handleClick = (resource) => {
+    onTopicSelect(resource);
+    // Scroll to the top of the current page
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const menuItems = [
-    {
-      title: "Menu 1",
-      content: "Content for Menu 1",
-    },
-    {
-      title: "Menu 2",
-      content: "Content for Menu 2",
-    },
-    {
-      title: "Menu 3",
-      content: "Content for Menu 3",
-    },
-  ];
-
   return (
-    <div style={styles.accordion}>
-      {menuItems.map((item, index) => (
-        <div key={index} style={styles.section}>
-          <div style={styles.title} onClick={() => toggleSection(index)}>
-            {item.title}
+    <div
+      className="accordion accordion-flush overflow-auto mh-100"
+      id="accordionFlushExample"
+    >
+      {console.log(modules[0])}
+      {modules.map((item, index) => (
+        <div className="accordion-item" key={index}>
+          <h2 className="accordion-header" id={`flush-heading${index}`}>
+            <button
+              className="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target={`#flush-collapse${index}`}
+              aria-expanded="false"
+              aria-controls={`flush-collapse${index}`}
+            >
+              {item.moduleName}
+            </button>
+          </h2>
+          <div
+            id={`flush-collapse${index}`}
+            className="accordion-collapse collapse"
+            aria-labelledby={`flush-heading${index}`}
+            data-bs-parent="#accordionFlushExample"
+          >
+            {item.topics.map((topic, i) => (
+              <Link
+                key={i}
+                to="#"
+                className="text-decoration-none"
+                onClick={() => handleClick(topic.resource)}
+              >
+                <div className="accordion-body dropdown-item cursor-pointer">
+                  {topic.topic}
+                </div>
+              </Link>
+            ))}
           </div>
-          {activeIndex === index && (
-            <div style={styles.content}>{item.content}</div>
-          )}
         </div>
       ))}
     </div>
   );
-};
-
-const styles = {
-  accordion: {
-    width: "300px",
-    border: "1px solid #ccc",
-  },
-  section: {
-    borderBottom: "1px solid #ccc",
-  },
-  title: {
-    padding: "10px",
-    cursor: "pointer",
-    background: "#f7f7f7",
-  },
-  content: {
-    padding: "10px",
-    background: "#fff",
-  },
 };
 
 export default AccordionMenu;

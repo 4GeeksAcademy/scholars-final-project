@@ -9,26 +9,67 @@ const getState = ({ getStore, getActions, setStore }) => {
           {
             moduleId: "MOD1",
             moduleName: "Algebra Basics",
-            topics: ["Linear Equations", "Quadratic Equations", "Polynomials"],
-            resources: [
+            topics: [
               {
-                type: "video",
-                title: "Understanding Linear Equations",
-                url: "https://example.com/math/algebra/linear-equations",
+                topic: "Linear Equations",
+                resource:
+                  "https://www.youtube.com/embed/vDqOoI-4Z6M?list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg",
               },
               {
-                type: "document",
-                title: "Algebra Basics Notes",
-                url: "https://example.com/resources/algebra-basics.pdf",
+                topic: "Linear Equations",
+                resource:
+                  "https://www.youtube.com/watch?v=vDqOoI-4Z6M&list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg&t=7s",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+            ],
+          },
+          {
+            moduleId: "MOD1",
+            moduleName: "Algebra Basics",
+            topics: [
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+            ],
+          },
+          {
+            moduleId: "MOD1",
+            moduleName: "Algebra Basics",
+            topics: [
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
               },
             ],
           },
         ],
-        instructor: {
-          name: "Dr. John Smith",
-          email: "john.smith@example.com",
-          profileUrl: "https://example.com/instructors/john-smith",
-        },
       },
     },
     actions: {
