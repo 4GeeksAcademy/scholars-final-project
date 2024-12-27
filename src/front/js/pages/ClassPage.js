@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Context } from "../store/appContext.js";
 import AccordionMenu from "../component/AccordionMenu.js";
 import PopupChat from "../component/PopupChat.jsx";
+import Notebook from "../component/Notebook.jsx";
 
 export const ClassPage = () => {
   const { store, actions } = useContext(Context);
@@ -61,6 +62,7 @@ export const ClassPage = () => {
               </div>
             )}
           </div>
+          <Notebook />
         </div>
         <div class="col-3">
           <PopupChat />

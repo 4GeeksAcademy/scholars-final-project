@@ -24,7 +24,7 @@ const PopupChat = () => {
   return (
     <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
       {isOpen && (
-        <div className="card " style={{ width: "400px", height: "400px" }}>
+        <div className="card " style={{ width: "450px", height: "550px" }}>
           <div className="card-header bg-primary text-white text-center">
             Chat
           </div>
