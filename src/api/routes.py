@@ -84,13 +84,21 @@ def create_user():
 
 @api.route('/login', methods=['POST'])
 def authenticate_user():
+    print(request.json)
     email = request.json.get('email')
     username = request.json.get('username')
     password = request.json.get('password')
     role = request.json.get('role')
-    user_by_email = Users.query.filter_by(email=email, role=role).first()
-    user_by_username = Users.query.filter_by(username=username).first()
-    user = user_by_email if user_by_email else user_by_username
+    
+    if email != '':
+        user = Users.query.filter_by(email=email, role=role).first()
+        print(email)
+        print('user by email')
+        print(user)
+    else:
+        user = Users.query.filter_by(username=username).first()
+        print('user by username')
+        print(user.role)
     if not user or not check_password_hash(user.password, password):
         return jsonify({"error": "Invalid credentials"}, 400)
     
