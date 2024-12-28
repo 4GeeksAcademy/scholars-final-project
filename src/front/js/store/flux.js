@@ -39,16 +39,17 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			// stuff below this line was not in the template
 
-			handleLogin: async (login, password) => {
+			handleLogin: async (username, email, password, role) => {
 				let response = await fetch(process.env.BACKEND_URL + 'api/login', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({
-						email: login,
+						email: email,
 						password: password,
-						username: login
+						username: username,
+						role: role
 					}),
 				})
 				let data = await response.json()
