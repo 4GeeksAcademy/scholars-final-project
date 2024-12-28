@@ -11,6 +11,7 @@ import DashBoard from "./pages/dashboard.jsx";
 import Assignments from "./component/dashboardComponents/Assignments.jsx";
 import Calendar from "./component/dashboardComponents/Calendar.jsx";
 import CardsCourses from "./component/dashboardComponents/CardsCourses.jsx";
+import MathCoursePage from "./pages/MathCoursePage.jsx"
 import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import { TestHomeByNathan } from "./pages/testHomeByNathan";
