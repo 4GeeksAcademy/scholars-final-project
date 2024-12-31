@@ -104,6 +104,27 @@ const getState = ({ getStore, getActions, setStore }) => {
         //reset the global store
         setStore({ demo: demo });
       },
+      chatBot: async (message) => {
+        try {
+          const resp = await fetch(`${process.env.BACKEND_URL}/api/chatbot`, {
+            method: "POST", // Set method to POST
+            headers: {
+              "Content-Type": "application/json", // Specify JSON content type
+            },
+            body: JSON.stringify({ message }), // Send the message in the request body
+          });
+          if (!resp.ok) {
+            throw new Error(
+              `HTTP error for Chatbot API! Status: ${resp.status}`
+            );
+          }
+          const data = await resp.json(); // Parse JSON response
+          console.log("ben calisiyorum", data);
+          return data;
+        } catch (error) {
+          console.log("Error sending message to backend", error);
+        }
+      },
     },
   };
 };

@@ -1,23 +1,30 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { Context } from "../store/appContext";
 
 const PopupChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-
+  const { store, actions } = useContext(Context);
   const toggleChat = () => setIsOpen(!isOpen);
 
-  const handleSendMessage = () => {
-    if (input.trim()) {
-      setMessages([...messages, { text: input, sender: "user" }]);
-      setInput("");
-      // Simulating chatbot response
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          { text: "This is a chatbot response.", sender: "bot" },
-        ]);
-      }, 1000);
+  const handleSendMessage = (event) => {
+    if (event.key === "Enter") {
+      if (input.trim()) {
+        setMessages([...messages, { text: input, sender: "user" }]);
+        setInput("");
+        actions
+          .chatBot(input)
+          .then((response) => {
+            setMessages((prev) => [
+              ...prev,
+              { text: response.message, sender: "bot" },
+            ]);
+          })
+          .catch((error) => {
+            console.log(error); // Logs if there was an error
+          });
+      }
     }
   };
 
@@ -57,17 +64,15 @@ const PopupChat = () => {
                 placeholder="Type a message..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleSendMessage}
               />
-              <button className="btn btn-primary" onClick={handleSendMessage}>
-                Send
-              </button>
             </div>
           </div>
         </div>
       )}
       <button
         onClick={toggleChat}
-        className="btn btn-primary rounded-circle"
+        className="btn btn-primary rounded-circle mt-2"
         style={{ width: "50px", height: "50px" }}
       >
         {isOpen ? "-" : "+"}
