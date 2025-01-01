@@ -12,7 +12,7 @@ from flask_jwt_extended import decode_token
 
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
-
+from api.chatbot import get_chatbot_response
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
@@ -114,3 +114,17 @@ def protected():
     user = Users.query.get(current_user_id)
     print('user:' + user.username)
     return jsonify(user=user.serialize()), 200
+
+@api.route('chatbot', methods =['POST', 'GET'])
+def handle_chatbot():
+     
+    if request.method == 'POST':
+        data = request.get_json() 
+        message = data.get('message', 'No message provided')
+        chatbot_response = get_chatbot_response(message)
+        return jsonify({"message": chatbot_response}), 200
+    
+    response_body = {
+        "message": "asd"
+    }
+    return jsonify(response_body), 200
