@@ -114,6 +114,7 @@ def protected():
     user = Users.query.get(current_user_id)
     print('user:' + user.username)
     return jsonify(user=user.serialize()), 200
+
 @api.route('chatbot', methods =['POST', 'GET'])
 def handle_chatbot():
      

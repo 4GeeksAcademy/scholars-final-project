@@ -2,6 +2,75 @@ const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
       message: null,
+      demo: {
+        courseId: "MATH101",
+        courseName: "Mathematics",
+        modules: [
+          {
+            moduleId: "MOD1",
+            moduleName: "Algebra Basics",
+            topics: [
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://www.youtube.com/embed/vDqOoI-4Z6M?list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://www.youtube.com/watch?v=vDqOoI-4Z6M&list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg&t=7s",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+            ],
+          },
+          {
+            moduleId: "MOD1",
+            moduleName: "Algebra Basics",
+            topics: [
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+            ],
+          },
+          {
+            moduleId: "MOD1",
+            moduleName: "Algebra Basics",
+            topics: [
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+            ],
+          },
+        ],
+      },
       token: sessionStorage.getItem('jwtToken'),
     },
     actions: {
@@ -131,34 +200,31 @@ const getState = ({ getStore, getActions, setStore }) => {
           throw new Error('Failed to fetch user info');
         }
       },
+      chatBot: async (message) => {
+        try {
+          const resp = await fetch(`${process.env.BACKEND_URL}/api/chatbot`, {
+            method: "POST", // Set method to POST
+            headers: {
+              "Content-Type": "application/json", // Specify JSON content type
+            },
+            body: JSON.stringify({ message }), // Send the message in the request body
+          });
+          if (!resp.ok) {
+            throw new Error(
+              `HTTP error for Chatbot API! Status: ${resp.status}`
+            );
+          }
+          const data = await resp.json(); // Parse JSON response
+          console.log("ben calisiyorum", data);
+          return data;
+        } catch (error) {
+          console.log("Error sending message to backend", error);
+        }
+      },
+
     }
-  };
-  //reset the global store
-  setStore({ demo: demo });
-},
-  chatBot: async (message) => {
-    try {
-      const resp = await fetch(`${process.env.BACKEND_URL}/api/chatbot`, {
-        method: "POST", // Set method to POST
-        headers: {
-          "Content-Type": "application/json", // Specify JSON content type
-        },
-        body: JSON.stringify({ message }), // Send the message in the request body
-      });
-      if (!resp.ok) {
-        throw new Error(
-          `HTTP error for Chatbot API! Status: ${resp.status}`
-        );
-      }
-      const data = await resp.json(); // Parse JSON response
-      console.log("ben calisiyorum", data);
-      return data;
-    } catch (error) {
-      console.log("Error sending message to backend", error);
-    }
-  },
-    },
   };
 };
 
 export default getState;
+

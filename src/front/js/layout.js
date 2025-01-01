@@ -19,7 +19,6 @@ import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { ClassPage } from "./pages/ClassPage";
-import ChatAPI from "./component/ChatAPI";
 
 //create your first component
 const Layout = () => {
@@ -47,7 +46,6 @@ const Layout = () => {
               <Route element={<Calendar />} path="calendar" />
             </Route>
             <Route element={<ClassPage />} path="/class-page" />
-            <Route element={<ChatAPI />} path="/chatgpt" />
             <Route element={<Single />} path="/single/:theid" />
             <Route element={<TestHomeByNathan />} path="/testhomebynathan" />
             <Route element={<h1>Not found!</h1>} />
