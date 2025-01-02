@@ -1,15 +1,18 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import "../../../../front/styles/MathCoursePage.css";
 import { Link } from "react-router-dom";
 
 
+
 const MathCoursePage = () => {
 
+    
     return (
         <>
             <div className="">
                 <div className="">
                 <h1 className="col-6 ms-5 mt-2">Algebra 1 Courses</h1>
+                
                 <div className="search-courses me-5">
                     <input type="text" placeholder="Search Courses"/>
                     <button type="submit"><i className="search-course-button fa fa-search"></i></button>
