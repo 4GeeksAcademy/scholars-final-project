@@ -35,7 +35,7 @@ const MathCoursePage = () => {
                                 <div className="card-body">
                                     <h5 className="card-title">Lesson 1</h5>
                                     <h3>Instructor: Math and Science YouTube Channel</h3>
-                                    <p className="card-text">This course will cover Natural Numbers, Whole Numbers, Integers, Rational Numbers, Irrational Numbers, Real Numbers, Symbols, and so much more.</p>
+                                    <p className="card-text">This course will cover Natural Numbers, Whole Numbers, Integers, Rational Numbers, and so much more!</p>
                                     
                                 </div>
                             </div>
@@ -53,7 +53,7 @@ const MathCoursePage = () => {
                                 <div className="card-body">
                                     <h5 className="card-title">Lesson 2</h5>
                                     <h3>Instructor: Math and Science YouTube Channel</h3>
-                                    <p className="card-text">This course will cover Natural Numbers, Whole Numbers, Integers, Rational Numbers, Irrational Numbers, Real Numbers, Symbols, and so much more.</p>
+                                    <p className="card-text">This course will cover Natural Numbers, Whole Numbers, Integers, Rational Numbers, and so much more!</p>
                                 </div>
                             </div>
                         </div>
@@ -69,7 +69,7 @@ const MathCoursePage = () => {
                                 <div className="card-body">
                                     <h5 className="card-title">Lesson 3</h5>
                                     <h3>Instructor: Math and Science YouTube Channel</h3>
-                                    <p className="card-text">This course will cover Natural Numbers, Whole Numbers, Integers, Rational Numbers, Irrational Numbers, Real Numbers, Symbols, and so much more.</p>
+                                    <p className="card-text">This course will cover Natural Numbers, Whole Numbers, Integers, Rational Numbers, and so much more!</p>
                                 </div>
                             </div>
                         </div>
@@ -85,7 +85,7 @@ const MathCoursePage = () => {
                                 <div className="card-body">
                                     <h5 className="card-title">Lesson 4</h5>
                                     <h3>Instructor: Math and Science YouTube Channel</h3>
-                                    <p className="card-text">This course will cover Natural Numbers, Whole Numbers, Integers, Rational Numbers, Irrational Numbers, Real Numbers, Symbols, and so much more.</p>
+                                    <p className="card-text">This course will cover Natural Numbers, Whole Numbers, Integers, Rational Numbers, and so much more!</p>
                                 </div>
                             </div>
                         </div>

@@ -34,18 +34,17 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
-                        <Route element={<Home />} path="/" />
-                        <Route element={<HomePage />} path="/HomePage" />
+                        <Route element={<HomePage />} path="/" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<DashBoard />} path="/dashboard" >
                             <Route index element={<CardsCourses />} />
-                            
+
                             <Route element={<Assignments />} path="assignments" />
                             <Route element={<Grades />} path="grades" />
                             <Route element={<Notebook />} path="notebooks" />
                             <Route element={<Calendar />} path="calendar" />
                         </Route>
-                        <Route element={<MathCoursePage />} path="/mathcoursepage" />                        
+                        <Route element={<MathCoursePage />} path="/mathcoursepage" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<TestHomeByNathan />} path="/testhomebynathan" />
                         <Route element={<h1>Not found!</h1>} />

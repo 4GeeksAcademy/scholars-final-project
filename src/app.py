@@ -1,7 +1,7 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-import requests
+#import requests
 import json
 import os
 from flask import Flask, request, jsonify, url_for, send_from_directory
