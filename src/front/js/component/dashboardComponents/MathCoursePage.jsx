@@ -10,13 +10,14 @@ const MathCoursePage = () => {
     return (
         <>
             <div className="">
-                <div className="">
                 <h1 className="col-6 ms-5 mt-2">Algebra 1 Courses</h1>
                 
                 <div className="search-courses me-5">
                     <input type="text" placeholder="Search Courses"/>
                     <button type="submit"><i className="search-course-button fa fa-search"></i></button>
                 </div>
+                <div className="returnToDashboard">
+                    <Link to="/dashboard" className='text-primary ms-5 mt-2'>Return to Dashboard</Link>
                 </div>
             </div>
             <div className="d-flex justify-content-center">
