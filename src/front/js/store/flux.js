@@ -2,6 +2,10 @@ const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
       message: null,
+      student: {
+        calendar:"",
+        Notebook:""
+      },
       demo: {
         courseId: "MATH101",
         courseName: "Mathematics",
