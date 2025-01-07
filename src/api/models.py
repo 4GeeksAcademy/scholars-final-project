@@ -28,3 +28,4 @@ class Users(db.Model):
             "role": self.role,
             # do not serialize the password, its a security breach
         }
+    

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Card = () => {
   return (
@@ -15,9 +16,9 @@ const Card = () => {
             Some quick example text to build on the card title and make up the
             bulk of the card's content.
           </p>
-          <a href="#" className="btn btn-primary">
-            Go somewhere
-          </a>
+          <button type="button" className="btn btn-primary mt-1">
+            <Link to="/mathcoursepage" className='text-decoration-none text-reset '>View Math Courses</Link>
+          </button>
         </div>
       </div>
     </>
