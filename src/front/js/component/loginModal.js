@@ -18,7 +18,7 @@ export function LoginModal({ closeModal }) {
 
   return (
     <div className="modal">
-      <div className="modal-content" style={{ background: "#9FA6B2" }}>
+      <div className="modal-content">
         <span className="close" onClick={() => closeModal()}>&times;</span>
         <h2>Login</h2>
         <form>
@@ -27,8 +27,7 @@ export function LoginModal({ closeModal }) {
               <label htmlFor="username">Username</label>
               <input
                 type="text"
-                className="form-control border border-0"
-                style={{ background: "#54B4D3" }}
+                className="form-control border"
                 placeholder="Username"
                 aria-label="Username"
                 aria-describedby="basic-addon1"
@@ -41,8 +40,7 @@ export function LoginModal({ closeModal }) {
               <label htmlFor="email">Email</label>
               <input
                 type="email"
-                className="form-control border border-0"
-                style={{ background: "#54B4D3" }}
+                className="form-control border"
                 placeholder="Email"
                 aria-label="Email"
                 aria-describedby="basic-addon1"
@@ -55,8 +53,7 @@ export function LoginModal({ closeModal }) {
           <label htmlFor="password">Password:</label>
           <input
             type="password"
-            className="form-control border border-0"
-            style={{ background: "#54B4D3" }}
+            className="form-control border"
             placeholder="Password"
             aria-label="Password"
             aria-describedby="basic-addon1"
@@ -66,7 +63,7 @@ export function LoginModal({ closeModal }) {
 
           {useEmailLogin ? <>
             <label htmlFor="role">Role:</label>
-            <select className="form-control border border-0" style={{ background: "#54B4D3" }} aria-label="Role" aria-describedby="basic-addon1" placeholder="Role"
+            <select className="form-control border" aria-label="Role" aria-describedby="basic-addon1" placeholder="Role"
               onChange={(e) => setRole(e.target.value)} value={role}>
               <option value="" disabled>
                 Select Role
@@ -81,19 +78,17 @@ export function LoginModal({ closeModal }) {
             className="btnModal"
             onClick={handleLogin}
             type="button"
-            style={{ background: "#54B4D3" }}
           >
             Log In
           </button>
         </form>
         <p>
-          <a
+          <a className="login-toggle"
             href="#"
             onClick={(e) => {
               e.preventDefault();
               setUseEmailLogin(!useEmailLogin);
             }}
-            style={{ color: "#FFFFFF", textDecoration: "underline" }}
           >
             {useEmailLogin
               ? "Log in with username instead"

@@ -1,7 +1,17 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { Context } from "../store/appContext";
+import { Link , useLocation } from "react-router-dom";
+import { SignupModal } from "../component/signupModal";
 import "../../styles/HomePage.css";
 
 const HomePage = () => {
+    const { store, actions } = useContext(Context);
+    const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+
+    const handleSignupModal = () => {
+		console.log("handleSignupModal");
+		setIsSignupModalOpen(!isSignupModalOpen);
+	};
 
     return (
         <>
@@ -24,7 +34,10 @@ const HomePage = () => {
                                 <div className="card-body-welcome row col d-flex justify-content-center align-center mx-2">
                                     <h1 className="card-title row col d-flex justify-content-center align-center mt-5"><strong>Welcome to Scholars.ai!</strong></h1>
                                     <p className="card-text row mb-5 mx-5">Welcome to our learning Program! This platform offers a diverse range of courses designed to help you acheive your personal and prefessional goals. Whether you're looking to develop new skill, deepen your knowledge, or explore a new area of interest, our courses provide high-quality content and practical learning experiences. With flexible learning paths, expert instructors, and a supportive community, you can learn at your own pace and on your own schedule. Start your learning journey today and unlock new opportunities!</p>
-                                    <p><a className="btn btn-lg btn-light mx-3 row mt-4" href="#">Sign Up!</a></p>
+                                    {store.user?
+                                    <></>
+                                    :
+                                    <p onClick={handleSignupModal}><a className="btn btn-lg btn-light mx-3 row mt-4" href="#">Sign Up!</a></p>}
                                 </div>
                             </div>
                         </div>
@@ -100,6 +113,7 @@ const HomePage = () => {
                 </p>
         </div>
         </body>
+        {isSignupModalOpen && <SignupModal closeModal={handleSignupModal} />}
         </>
     );
 };
