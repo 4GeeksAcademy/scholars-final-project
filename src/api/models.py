@@ -16,7 +16,7 @@ class Users(db.Model):
     __table_args__ = (
         db.UniqueConstraint('email', 'role', name='unique_email_role'),
     )
-
+ 
     def __repr__(self):
         return f'<User {self.email} {self.username} ({self.role})>'
 

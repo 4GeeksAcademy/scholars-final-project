@@ -12,7 +12,7 @@ from flask_jwt_extended import decode_token
 
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
-
+from api.chatbot import get_chatbot_response
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
@@ -84,13 +84,21 @@ def create_user():
 
 @api.route('/login', methods=['POST'])
 def authenticate_user():
+    print(request.json)
     email = request.json.get('email')
     username = request.json.get('username')
     password = request.json.get('password')
     role = request.json.get('role')
-    user_by_email = Users.query.filter_by(email=email, role=role).first()
-    user_by_username = Users.query.filter_by(username=username).first()
-    user = user_by_email if user_by_email else user_by_username
+    
+    if email != '':
+        user = Users.query.filter_by(email=email, role=role).first()
+        print(email)
+        print('user by email')
+        print(user)
+    else:
+        user = Users.query.filter_by(username=username).first()
+        print('user by username')
+        print(user.role)
     if not user or not check_password_hash(user.password, password):
         return jsonify({"error": "Invalid credentials"}, 400)
     
@@ -106,3 +114,17 @@ def protected():
     user = Users.query.get(current_user_id)
     print('user:' + user.username)
     return jsonify(user=user.serialize()), 200
+
+@api.route('chatbot', methods =['POST', 'GET'])
+def handle_chatbot():
+     
+    if request.method == 'POST':
+        data = request.get_json() 
+        message = data.get('message', 'No message provided')
+        chatbot_response = get_chatbot_response(message)
+        return jsonify({"message": chatbot_response}), 200
+    
+    response_body = {
+        "message": "asd"
+    }
+    return jsonify(response_body), 200
