@@ -1,4 +1,4 @@
-import React,{use, useState} from "react";
+import React,{useState} from "react";
 import "quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 import "../../../styles/Sidebar.css"
@@ -42,12 +42,40 @@ const courses = [
 const Notebook = () => {
 const [quillContent,setQuillContent] = useState("");
 const [selectedLesson, setSelectedLesson] = useState(null);
+const [editingNoteIndex, setEditingNoteIndex] = useState(null);
 
 
 const handleLessonSelect = (lesson) =>{
     setSelectedLesson(lesson);
     setQuillContent("");
 
+}
+
+const handleEditNote = (index) =>{
+    setEditingNoteIndex(index);
+    setQuillContent(selectedLesson.notes[index])
+}
+
+const handleRemoveNote = (index) =>{
+    if(selectedLesson){
+        selectedLesson.notes.splice(index,1);
+        setSelectedLesson({... selectedLesson});
+    }
+}
+
+const handleSavedEditNote = () =>{
+    if(editingNoteIndex != null && quillContent.trim()){
+        selectedLesson.notes[editingNoteIndex] = quillContent;
+        setQuillContent("");
+        setEditingNoteIndex(null);
+    }
+}
+
+const handleAddNote = () =>{
+    if(selectedLesson && quillContent.trim()){
+        selectedLesson.notes.push(quillContent);
+        setQuillContent("");
+    }
 }
 
     return (
@@ -64,11 +92,11 @@ const handleLessonSelect = (lesson) =>{
                                 <button className="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target={`#${course.name}-collapse`} aria-expanded="true">
                                     {course.name}
                                 </button>
-                                <ul className="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                <ul className="btn-toggle-nav fw-normal pb-1 small">
                                     {course.lessons.map((lesson)=>(
-                                        <div class="collapse" id={`${course.name}-collapse`}>
-                                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
-                                                <li key={lesson.id} onClick={() => handleLessonSelect(lesson)}>
+                                        <div className="collapse" id={`${course.name}-collapse`}>
+                                            <ul className="btn-toggle-nav list-group fw-normal pb-1 small ms-3" style={{listStyleType:"disc"}}>
+                                                <li className="list-group-item mt-1" key={lesson.id} onClick={() => handleLessonSelect(lesson)} onMouseEnter={(e) =>(e.target.style.cursor = "pointer")} onMouseLeave={(e) =>(e.target.style.cursor = "default")}>
                                                     {lesson.name}
                                                 </li>
                                             </ul>
@@ -86,11 +114,13 @@ const handleLessonSelect = (lesson) =>{
                                 <div className="card-header bg-transparent mt-5">
                                     <h2>{selectedLesson.name}</h2>
                                 </div>
-                                <div>
-                                    <ul>
+                                <div className="notes mt-4">
+                                    <ul className="list-group">
                                         {selectedLesson.notes.map((note,index)=>(
-                                            <li className="d-flex flex-fill justify-content-between align-items-center" key={index}>
+                                            <li className="list-group-item d-flex justify-content-between align-items-center" key={index}>
                                                 <span dangerouslySetInnerHTML={{__html: note}}></span>
+                                                <button type="button" className="btn btn-warning ms-3" onClick={() => handleEditNote(index)}>Edit</button>
+                                                <button type="button" className="btn btn-danger ms-3" onClick={() => handleRemoveNote(index)}>Remove</button>
                                             </li>
                                         ))}
                                     </ul>
@@ -106,8 +136,16 @@ const handleLessonSelect = (lesson) =>{
                         <ReactQuill
                             theme="snow"
                             value={quillContent}
+                            onChange={setQuillContent}
                             style={{height:"150px"}}
                         />
+                        <div className="mt-5">
+                            {editingNoteIndex != null ? (
+                                <button type="button" className="btn btn-primary" onClick={handleSavedEditNote}>Save Changes</button>
+                            ) :(
+                                <button type="button" class="btn btn-primary" onClick={handleAddNote}>Save Note</button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
