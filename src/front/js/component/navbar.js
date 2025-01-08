@@ -34,11 +34,11 @@ export const Navbar = () => {
 	return (
 		<nav className="navbar navbar-light bg-light">
 			<div className="container">
-				<Link to="/homepage" className={`navbar-brand mb-0 h1`}>
+				<Link to="/" className={`navbar-brand mb-0 h1`}>
 					<img style={{ width: '50px'}} src={logo} alt="logo" />
 				</Link>
 				<div className="ml-auto">
-					<Link to="/homepage" className={`navbar-brand mb-0 h1 ${isActive("/homepage")}`}>
+					<Link to="/" className={`navbar-brand mb-0 h1 ${isActive("/")}`}>
 						<span className="navbar-brand mb-0 h1">Home</span>
 					</Link>
 					<Link to="/about-us" className={`navbar-brand mb-0 h1 ${isActive("/about-us")}`}>
@@ -57,6 +57,7 @@ export const Navbar = () => {
 					)}
 				</div>
 			</div>
+			{console.log(store.user)}
 			{isLoginModalOpen && <LoginModal closeModal={handleLoginModal} />}
 			{isSignupModalOpen && <SignupModal closeModal={handleSignupModal} />}
 		</nav>
