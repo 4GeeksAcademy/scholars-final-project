@@ -2,7 +2,7 @@
 import time
 #import requests
 from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
-from api.models import db, Users
+from api.models import db, Students, Teachers
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -65,21 +65,32 @@ def create_user():
     if not validate_username(username):
         return jsonify({'error': 'Invalid username format'}, 400)
 
-    existing_email = Users.query.filter_by(email=email, role=role).first()
-    if existing_email:
-        return jsonify({'error': 'Email already in use as a ' + role}, 400)
-    
-    existing_username = Users.query.filter_by(username=username).first()
-    if existing_username:
-        return jsonify({'error': 'Username already in use'}, 400)
-    
-    hashed_password = generate_password_hash(password)
-    new_user = Users(email=email, username=username, password=hashed_password, is_active=False, role=role)
+
+    if role == 'student':
+        existing_email = Students.query.filter_by(email=email).first()
+        if existing_email:
+            return jsonify({'error': 'Email already in use as a student'}, 400)
+        existing_username_student = Students.query.filter_by(username=username).first()
+        existing_username_teacher = Teachers.query.filter_by(username=username).first()
+        if existing_username_student or existing_username_teacher:
+            return jsonify({'error': 'Username already in use'}, 400)
+        hashed_password = generate_password_hash(password)
+        new_user = Students(email=email, username=username, password=hashed_password, is_active=False)
+    else:
+        existing_email = Teachers.query.filter_by(email=email).first()
+        if existing_email:
+            return jsonify({'error': 'Email already in use as a teacher'}, 400)
+        existing_username_student = Students.query.filter_by(username=username).first()
+        existing_username_teacher = Teachers.query.filter_by(username=username).first()
+        if existing_username_student or existing_username_teacher:
+            return jsonify({'error': 'Username already in use'}, 400)
+        hashed_password = generate_password_hash(password)
+        new_user = Teachers(email=email, username=username, password=hashed_password, is_active=False)
 
     db.session.add(new_user)
     db.session.commit()
 
-    access_token = create_access_token(identity=str(new_user.id))
+    access_token = create_access_token(identity=f"{new_user.id}|{role}")
     return jsonify(access_token=access_token, success=True), 200
 
 @api.route('/login', methods=['POST'])
@@ -91,27 +102,47 @@ def authenticate_user():
     role = request.json.get('role')
     
     if email != '':
-        user = Users.query.filter_by(email=email, role=role).first()
+        if role == 'teacher':
+            user = Teachers.query.filter_by(email=email).first()
+        elif role == 'student':
+            user = Students.query.filter_by(email=email).first()
         print(email)
         print('user by email')
         print(user)
     else:
-        user = Users.query.filter_by(username=username).first()
+        user = Teachers.query.filter_by(username=username).first()
+        role = 'teacher'
+        if not user:
+            user = Students.query.filter_by(username=username).first()
+            role = 'student'
+        print(username)
         print('user by username')
-        print(user.role)
+        print(user)
     if not user or not check_password_hash(user.password, password):
         return jsonify({"error": "Invalid credentials"}, 400)
     
-    access_token = create_access_token(identity=str(user.id))
+    access_token = create_access_token(identity=f"{user.id}|{role}")
     return jsonify(access_token=access_token, success=True), 200
 
 @api.route('/protected', methods=['GET'])
 @jwt_required()
 def protected():
     print('protected')
-    current_user_id = get_jwt_identity()
-    print('current_user_id:' + current_user_id)
-    user = Users.query.get(current_user_id)
+    current_user = get_jwt_identity()
+    print(current_user)
+    user_id, role = current_user.split('|')
+    print('current_user_id:' + user_id + ', role: ' + role)
+
+
+    user = None
+    if role == 'student':
+        user = Students.query.get(user_id)
+    elif role == 'teacher':
+        user = Teachers.query.get(user_id)
+    
+    if not user:
+        return jsonify({'error': 'user not found'}), 404
+    
     print('user:' + user.username)
     return jsonify(user=user.serialize()), 200
 
