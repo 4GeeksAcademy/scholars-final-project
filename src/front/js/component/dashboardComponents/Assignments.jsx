@@ -16,7 +16,7 @@ const Assignments = () => {
     return (
 
         <>
-            <div className="container d-flex flex-column justify-content-center align-items-center" style={{minWidth: "120vh"}}>
+            <div className="container d-flex flex-column justify-content-center align-items-center" style={{minWidth: "75vw"}}>
                 <h1 className="text-center mb-4">Assignments</h1>
                 <div className="list-group">
                     {tasks.map((task)=>(
