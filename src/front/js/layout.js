@@ -8,6 +8,7 @@ import HomePage from "./pages/HomePage.jsx";
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
 import DashBoard from "./pages/dashboard.jsx";
+import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import Assignments from "./component/dashboardComponents/Assignments.jsx";
 import Calendar from "./component/dashboardComponents/Calendar.jsx";
 import CardsCourses from "./component/dashboardComponents/CardsCourses.jsx";
@@ -44,6 +45,7 @@ const Layout = () => {
                             <Route element={<Notebook />} path="notebooks" />
                             <Route element={<Calendar />} path="calendar" />
                         </Route>
+                        <Route element={<TeacherDashboard />} path="/teacherdashboard" />
                         <Route element={<ClassPage />} path="/class-page" />
                         <Route element={<MathCoursePage />} path="/mathcoursepage" />
                         <Route element={<h1>Not found!</h1>} />
