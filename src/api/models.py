@@ -34,12 +34,14 @@ class Teachers(db.Model):
  
     def __repr__(self):
         return f'<Teacher {self.email} {self.username}>'
+        return f'<Teacher {self.email} {self.username}>'
 
     def serialize(self):
         return {
             "id": self.id,
             "email": self.email,
             "username": self.username,
+            "role": "teacher"
             "role": "teacher"
             # do not serialize the password, its a security breach
         }

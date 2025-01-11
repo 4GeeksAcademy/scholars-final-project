@@ -11,6 +11,7 @@ import DashBoard from "./pages/dashboard.jsx";
 import Assignments from "./component/dashboardComponents/Assignments.jsx";
 import Calendar from "./component/dashboardComponents/Calendar.jsx";
 import CardsCourses from "./component/dashboardComponents/CardsCourses.jsx";
+import MathCoursePage from "./component/dashboardComponents/MathCoursePage.jsx";
 import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import { TestHomeByNathan } from "./pages/testHomeByNathan";
@@ -26,35 +27,32 @@ const Layout = () => {
   // you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
   const basename = process.env.BASENAME || "";
 
-  if (!process.env.BACKEND_URL || process.env.BACKEND_URL == "")
-    return <BackendURL />;
+    if (!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL />;
 
-  return (
-    <div>
-      <BrowserRouter basename={basename}>
-        <ScrollToTop>
-          <Navbar />
-          <Routes>
-            <Route element={<Home />} path="/" />
-            <Route element={<HomePage />} path="/HomePage" />
-            <Route element={<Demo />} path="/demo" />
-            <Route element={<DashBoard />} path="/dashboard" >
-              <Route index element={<CardsCourses />} />
-              <Route element={<Assignments />} path="assignments" />
-              <Route element={<Grades />} path="grades" />
-              <Route element={<Notebook />} path="notebooks" />
-              <Route element={<Calendar />} path="calendar" />
-            </Route>
-            <Route element={<ClassPage />} path="/class-page" />
-            <Route element={<Single />} path="/single/:theid" />
-            <Route element={<TestHomeByNathan />} path="/testhomebynathan" />
-            <Route element={<h1>Not found!</h1>} />
-          </Routes>
-          <Footer />
-        </ScrollToTop>
-      </BrowserRouter>
-    </div>
-  );
+    return (
+        <div>
+            <BrowserRouter basename={basename}>
+                <ScrollToTop>
+                    <Navbar />
+                    <Routes>
+                        <Route element={<HomePage />} path="/" />
+                        <Route element={<Demo />} path="/demo" />
+                        <Route element={<DashBoard />} path="/dashboard" >
+                            <Route index element={<CardsCourses />} />
+                            <Route element={<Assignments />} path="assignments" />
+                            <Route element={<Grades />} path="grades" />
+                            <Route element={<Notebook />} path="notebooks" />
+                            <Route element={<Calendar />} path="calendar" />
+                        </Route>
+                        <Route element={<ClassPage />} path="/class-page" />
+                        <Route element={<MathCoursePage />} path="/mathcoursepage" />
+                        <Route element={<h1>Not found!</h1>} />
+                    </Routes>
+                    <Footer />
+                </ScrollToTop>
+            </BrowserRouter>
+        </div>
+    );
 };
 
 export default injectContext(Layout);

@@ -1,3 +1,15 @@
-/* 
-    General Styles used on every website (Don't Repeat Yourself)
-*/
+.navbar .navbar-brand {
+    text-decoration: none; 
+    color: inherit; 
+}
+
+.active-link {
+    text-decoration: none; 
+    color: rgb(0, 99, 248) !important;
+    font-weight: bold; 
+}
+
+.navbar .navbar-brand:hover {
+    text-decoration: none; 
+    color: rgb(113, 158, 255); 
+}
