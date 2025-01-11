@@ -2,36 +2,47 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-class Users(db.Model):
-    __tablename__ = 'users'
+class Students(db.Model):
+    __tablename__ = 'students'
     id = db.Column(db.Integer, primary_key=True)
-    role = db.Column(db.String(8), unique=False, nullable=False)
     email = db.Column(db.String(120), unique=False, nullable=False) 
-    #email unique is false because same email could have account as student and teacher
-    #it is fixed by __table_args__ a few lines down
     username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    # Relationship with courses via a junction table (many-to-many relationship)
-    #courses = db.relationship('Course', secondary='user_courses', backref='users', lazy=True)
-    user_courses = db.relationship('UserCourse', backref='users', lazy=True)
-    
-    __table_args__ = (
-        db.UniqueConstraint('email', 'role', name='unique_email_role'),
-    )
+    student_courses = db.relationship('StudentCourse', backref='students', lazy=True)
  
     def __repr__(self):
-        return f'<User {self.email} {self.username} ({self.role})>'
+        return f'<Student {self.email} {self.username}>'
 
     def serialize(self):
         return {
             "id": self.id,
             "email": self.email,
             "username": self.username,
-            "role": self.role,
+            "role": "student"
             # do not serialize the password, its a security breach
         }
+    
 
+class Teachers(db.Model):
+    __tablename__ = 'teachers'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=False, nullable=False) 
+    username = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(256), unique=False, nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+ 
+    def __repr__(self):
+        return f'<Teacher {self.email} {self.username}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "email": self.email,
+            "username": self.username,
+            "role": "teacher"
+            # do not serialize the password, its a security breach
+        }
 class Course(db.Model):
     __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
@@ -39,7 +50,8 @@ class Course(db.Model):
     # Relationship with Modules table
     modules = db.relationship('Module', backref='course', lazy=True)
     #users = db.relationship('UserCourse', backref='users', lazy=True)
-    user_courses = db.relationship('UserCourse', backref='courses', lazy=True)
+    student_courses = db.relationship('StudentCourse', backref='courses', lazy=True)
+    
 
     def __repr__(self):
         return f"<Course {self.name}>"
@@ -74,14 +86,14 @@ class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'), nullable=False)
-
+    
     def __repr__(self):
         return f"<Topic {self.name} (Module ID: {self.module_id})>"
 
 # # Junction Table for Many-to-Many relationship between Users and Courses
-class UserCourse(db.Model):
-    __tablename__ = 'user_courses'
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+class StudentCourse(db.Model):
+    __tablename__ = 'student_courses'
+    user_id = db.Column(db.Integer, db.ForeignKey('students.id'), primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), primary_key=True)
     # user = db.relationship(Users, backref=db.backref('user_courses', lazy=True))
     # course = db.relationship(Course, backref=db.backref('user_courses', lazy=True))
