@@ -16,13 +16,16 @@ const PopupChat = () => {
         actions
           .chatBot(input)
           .then((response) => {
-            setMessages((prev) => [
-              ...prev,
-              { text: response.message, sender: "bot" },
-            ]);
+            console.log("ChatBot response:", response); // Debugging
+            const botMessage = response?.message || "I couldn't understand that.";
+            setMessages((prev) => [...prev, { text: botMessage, sender: "bot" }]);
           })
           .catch((error) => {
-            console.log(error); // Logs if there was an error
+            console.error("Error fetching chatbot response:", error);
+            setMessages((prev) => [
+              ...prev,
+              { text: "Failed to fetch bot response.", sender: "bot" },
+            ]);
           });
       }
     }
