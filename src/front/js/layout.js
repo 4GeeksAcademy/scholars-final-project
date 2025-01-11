@@ -8,7 +8,6 @@ import HomePage from "./pages/HomePage.jsx";
 import { Demo } from "./pages/demo";
 import { Single } from "./pages/single";
 import DashBoard from "./pages/dashboard.jsx";
-import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import Assignments from "./component/dashboardComponents/Assignments.jsx";
 import Calendar from "./component/dashboardComponents/Calendar.jsx";
 import CardsCourses from "./component/dashboardComponents/CardsCourses.jsx";
@@ -16,6 +15,7 @@ import MathCoursePage from "./component/dashboardComponents/MathCoursePage.jsx";
 import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import { TestHomeByNathan } from "./pages/testHomeByNathan";
+import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
@@ -24,9 +24,9 @@ import { ClassPage } from "./pages/ClassPage";
 
 //create your first component
 const Layout = () => {
-  //the basename is used when your project is published in a subdirectory and not in the root of the domain
-  // you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
-  const basename = process.env.BASENAME || "";
+    //the basename is used when your project is published in a subdirectory and not in the root of the domain
+    // you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
+    const basename = process.env.BASENAME || "";
 
     if (!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL />;
 
@@ -45,9 +45,9 @@ const Layout = () => {
                             <Route element={<Notebook />} path="notebooks" />
                             <Route element={<Calendar />} path="calendar" />
                         </Route>
-                        <Route element={<TeacherDashboard />} path="/teacherdashboard" />
                         <Route element={<ClassPage />} path="/class-page" />
                         <Route element={<MathCoursePage />} path="/mathcoursepage" />
+                        <Route element={<TeacherDashboard />} path="/teacherdashboard" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
