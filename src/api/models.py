@@ -9,6 +9,7 @@ class Students(db.Model):
     username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    student_courses = db.relationship('StudentCourse', backref='students', lazy=True)
  
     def __repr__(self):
         return f'<Student {self.email} {self.username}>'
@@ -32,13 +33,72 @@ class Teachers(db.Model):
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
  
     def __repr__(self):
-        return f'<Teacher {self.email} {self.username}>'
+        return f'<Teacher {self.email} {self.username}>' 
 
     def serialize(self):
         return {
             "id": self.id,
             "email": self.email,
             "username": self.username,
-            "role": "teacher"
+            "role": "teacher" 
             # do not serialize the password, its a security breach
         }
+class Course(db.Model):
+    __tablename__ = 'courses'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
+    # Relationship with Modules
+    modules = db.relationship('Module', backref='course', lazy=True, cascade="all, delete")
+
+    # Relationship with StudentCourse
+    student_courses = db.relationship('StudentCourse', backref='course', lazy=True, cascade="all, delete")
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
+    def __repr__(self):
+        return f"<Course {self.name}>"
+
+
+class Module(db.Model):
+    __tablename__ = 'modules'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
+    # Foreign key to Course
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), nullable=False)
+
+    # Relationship with Topics
+    topics = db.relationship('Topic', backref='module', lazy=True, cascade="all, delete")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
+
+    def __repr__(self):
+        return f"<Course {self.name}>"
+
+class Topic(db.Model):
+    __tablename__ = 'topics'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
+    # Foreign key to Module
+    module_id = db.Column(db.Integer, db.ForeignKey('modules.id', ondelete='CASCADE'), nullable=False)
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
+    def __repr__(self):
+        return f"<Topic {self.name} (Module ID: {self.module_id})>"
+
+
+class StudentCourse(db.Model):
+    __tablename__ = 'student_courses'
+    user_id = db.Column(db.Integer, db.ForeignKey('students.id', ondelete='CASCADE'), primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), primary_key=True)
