@@ -47,53 +47,58 @@ class Course(db.Model):
     __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    # Relationship with Modules table
-    modules = db.relationship('Module', backref='course', lazy=True)
-    #users = db.relationship('UserCourse', backref='users', lazy=True)
-    student_courses = db.relationship('StudentCourse', backref='courses', lazy=True)
-    
 
+    # Relationship with Modules
+    modules = db.relationship('Module', backref='course', lazy=True, cascade="all, delete")
+
+    # Relationship with StudentCourse
+    student_courses = db.relationship('StudentCourse', backref='course', lazy=True, cascade="all, delete")
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
     def __repr__(self):
         return f"<Course {self.name}>"
 
-    def serialize(self, include_modules=False, include_topics=False):
-        course_data = {
-            "id": self.id,
-            "name": self.name,
-        }
-
-        if include_modules:
-            course_data["modules"] = [
-                module.serialize(include_topics=include_topics) for module in self.modules
-            ]
-
-        return course_data
 
 class Module(db.Model):
     __tablename__ = 'modules'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+
+    # Foreign key to Course
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), nullable=False)
 
-    # Relationship with Topics table
-    topics = db.relationship('Topic', backref='module', lazy=True)
+    # Relationship with Topics
+    topics = db.relationship('Topic', backref='module', lazy=True, cascade="all, delete")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
 
     def __repr__(self):
-        return f"<Module {self.name} (Course ID: {self.course_id})>"
+        return f"<Course {self.name}>"
 
 class Topic(db.Model):
     __tablename__ = 'topics'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    module_id = db.Column(db.Integer, db.ForeignKey('modules.id'), nullable=False)
-    
+
+    # Foreign key to Module
+    module_id = db.Column(db.Integer, db.ForeignKey('modules.id', ondelete='CASCADE'), nullable=False)
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
     def __repr__(self):
         return f"<Topic {self.name} (Module ID: {self.module_id})>"
 
-# # Junction Table for Many-to-Many relationship between Users and Courses
+
 class StudentCourse(db.Model):
     __tablename__ = 'student_courses'
-    user_id = db.Column(db.Integer, db.ForeignKey('students.id'), primary_key=True)
-    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), primary_key=True)
-    # user = db.relationship(Users, backref=db.backref('user_courses', lazy=True))
-    # course = db.relationship(Course, backref=db.backref('user_courses', lazy=True))
+    user_id = db.Column(db.Integer, db.ForeignKey('students.id', ondelete='CASCADE'), primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), primary_key=True)

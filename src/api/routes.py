@@ -2,7 +2,7 @@
 import time
 #import requests
 from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
-from api.models import db, Students, Teachers
+from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -159,11 +159,26 @@ def handle_chatbot():
         "message": "this is chatbot api"
     }
     return jsonify(response_body), 200
+ 
+@api.route('/student/<int:student_id>/courses', methods=['GET'])
+def get_student_courses(student_id):
+    # Find the student by ID
+    student = Students.query.get(student_id)
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
 
-# GET 
-# /courses
-# /courses?include_modules=true
-# /courses?include_modules=true&include_topics=true
+    # Get all courses for the student
+    courses = Course.query.join(StudentCourse).filter(StudentCourse.user_id == student_id).all()
+
+    # Serialize the courses
+    serialized_courses = [course.serialize() for course in courses]
+
+    return jsonify({
+        "student_id": student_id,
+        "student_name": student.username,
+        "courses": serialized_courses
+    }), 200
+ 
 @api.route('/courses', methods=['GET'])
 def get_courses():
     if request.method == 'GET':
@@ -198,120 +213,85 @@ def get_courses():
             result.append(course_data)
 
         return jsonify(result), 200
+ 
+@api.route('/add-course', methods=['POST'])
+def add_course():
+    data = request.get_json()
 
-# POST this format
-# {
-#     "name": "Introduction to Python",
-#     "modules": [
-#         {
-#             "name": "Basics of Python",
-#             "topics": [
-#                 {"name": "Variables and Data Types"},
-#                 {"name": "Control Flow"}
-#             ]
-#         },
-#         {
-#             "name": "Advanced Topics",
-#             "topics": [
-#                 {"name": "Object-Oriented Programming"},
-#                 {"name": "Modules and Packages"}
-#             ]
-#         }
-#     ],
-#     "user_ids": [3]
-# }
-@api.route('/courses', methods=['POST'])
-def create_course():
-    try:
-        data = request.get_json()
+    # Validate required fields
+    if not data or 'name' not in data:
+        return jsonify({"error": "Missing required field: 'name'"}), 400
 
-        # Validate course data
-        if not data or 'name' not in data or not data['name'].strip():
-            return jsonify({"error": "Course name is required"}), 400
+    # Create the course
+    new_course = Course(name=data['name'])
+    db.session.add(new_course)
+    db.session.flush()  # Retrieve the course ID before committing
 
-        if 'modules' not in data or not isinstance(data['modules'], list):
-            return jsonify({"error": "Modules must be a list"}), 400
-
-        if 'user_ids' not in data or not isinstance(data['user_ids'], list):
-            return jsonify({"error": "User IDs must be a list"}), 400
-
-        # Create a new course
-        new_course = Course(name=data['name'])
-        db.session.add(new_course)
-        db.session.flush()  # Ensure new_course.id is generated
-
-        # Add modules and topics
+    # Add modules and topics if provided
+    if 'modules' in data:
         for module_data in data['modules']:
-            if 'name' not in module_data or not module_data['name'].strip():
-                return jsonify({"error": "Module name is required"}), 400
+            if 'name' not in module_data:
+                return jsonify({"error": "Each module must have a 'name'"}), 400
 
+            # Create a module
             new_module = Module(name=module_data['name'], course_id=new_course.id)
+            db.session.add(new_module)
+            db.session.flush()  # Retrieve the module ID before committing
 
+            # Add topics if provided
             if 'topics' in module_data:
-                for topic_data in module_data['topics']:
-                    if 'name' not in topic_data or not topic_data['name'].strip():
-                        return jsonify({"error": "Topic name is required"}), 400
-
-                    new_topic = Topic(name=topic_data['name'], module=new_module)
+                for topic_name in module_data['topics']:
+                    new_topic = Topic(name=topic_name, module_id=new_module.id)
                     db.session.add(new_topic)
 
-            db.session.add(new_module)
+    # Commit all changes to the database
+    db.session.commit()
 
-        # Temporarily disable autoflush
-        with db.session.no_autoflush:
-            # Associate users with the course
-            for user_id in data['user_ids']:
-                user = Users.query.get(user_id)
-                if not user:
-                    print(f"User with ID {user_id} not found, skipping.")
-                    continue
+    return jsonify({"message": "Course created successfully", "course_id": new_course.id}), 201
 
-                # Check for existing user-course association
-                existing_association = UserCourse.query.filter_by(
-                    user_id=user.id, course_id=new_course.id
-                ).first()
+@api.route('/add-course-to-student', methods=['POST'])
+def add_course_to_student():
+    data = request.get_json()
 
-                if existing_association:
-                    print(f"UserCourse for user_id={user.id} and course_id={new_course.id} already exists.")
-                    continue
+    # Validate input
+    if not data or 'user_id' not in data or 'course_id' not in data:
+        return jsonify({"error": "Missing required fields: 'user_id' and 'course_id'"}), 400
 
-                user_course = UserCourse(user_id=user.id, course_id=new_course.id)
-                db.session.add(user_course)
+    # Check if the student exists
+    student = Students.query.get(data['user_id'])
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
 
-        # Commit all changes to the database
+    # Check if the course exists
+    course = Course.query.get(data['course_id'])
+    if not course:
+        return jsonify({"error": "Course not found"}), 404
+
+    # Check if the relationship already exists
+    existing_record = StudentCourse.query.filter_by(user_id=data['user_id'], course_id=data['course_id']).first()
+    if existing_record:
+        return jsonify({"message": "Student is already enrolled in this course"}), 200
+
+    # Add the student-course relationship
+    new_student_course = StudentCourse(user_id=data['user_id'], course_id=data['course_id'])
+    db.session.add(new_student_course)
+    db.session.commit()
+
+    return jsonify({"message": "Course added to student successfully"}), 201
+
+@api.route('/delete-course/<int:course_id>', methods=['DELETE'])
+def delete_course(course_id):
+    # Find the course by its ID
+    course = Course.query.get(course_id)
+    
+    if not course:
+        return jsonify({"error": "Course not found"}), 404
+
+    try:
+        # Delete the course
+        db.session.delete(course)
         db.session.commit()
-
-        return jsonify({
-            "message": "Course created successfully",
-            "course": new_course.serialize()
-        }), 201
-
+        return jsonify({"message": f"Course with ID {course_id} deleted successfully"}), 200
     except Exception as e:
-        print(f"Error: {str(e)}")
-        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
-@api.route('/modules', methods=['GET', 'POST'])
-def handle_modules():
-    if request.method == 'GET':
-        modules = Module.query.all()
-        return jsonify([module.serialize() for module in modules]), 200
-
-    if request.method == 'POST':
-        data = request.json 
-        new_module = Module(name=data['name'], course_id=data['course_id'])
-        db.session.add(new_module)
-        db.session.commit()
-        return jsonify(new_module.serialize()), 201
-
-@api.route('/topics', methods=['GET', 'POST'])
-def handle_topics():
-    if request.method == 'GET':
-        topics = Topic.query.all()
-        return jsonify([topic.serialize() for topic in topics]), 200
-
-    if request.method == 'POST':
-        data = request.json
-        new_topic = Topic(name=data['name'], module_id=data['module_id'])
-        db.session.add(new_topic)
-        db.session.commit()
-        return jsonify(new_topic.serialize()), 201
-
+        db.session.rollback()  # Rollback in case of an error
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
