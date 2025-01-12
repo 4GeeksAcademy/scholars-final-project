@@ -89,6 +89,10 @@ class Topic(db.Model):
 
     # Foreign key to Module
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id', ondelete='CASCADE'), nullable=False)
+    
+    # Relationship to Resource
+    resources = db.relationship('Resource', backref='topic', cascade="all, delete-orphan", lazy=True)
+
     def serialize(self):
         return {
             "id": self.id,
@@ -97,7 +101,23 @@ class Topic(db.Model):
     def __repr__(self):
         return f"<Topic {self.name} (Module ID: {self.module_id})>"
 
+class Resource(db.Model):
+    __tablename__ = 'resources'
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(300), nullable=False)
+    # Foreign key to Topic
+    topic_id = db.Column(db.Integer, db.ForeignKey('topics.id', ondelete='CASCADE'), nullable=False)
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "url": self.url,
+            "topic_id": self.topic_id
+        }
+
+    def __repr__(self):
+        return f"<Resource {self.url} (Topic ID: {self.topic_id})>"
+    
 class StudentCourse(db.Model):
     __tablename__ = 'student_courses'
     user_id = db.Column(db.Integer, db.ForeignKey('students.id', ondelete='CASCADE'), primary_key=True)
