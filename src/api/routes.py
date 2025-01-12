@@ -178,7 +178,33 @@ def get_student_courses(student_id):
         "student_name": student.username,
         "courses": serialized_courses
     }), 200
- 
+
+@api.route('/course/<int:course_id>', methods=['GET'])
+def get_course_with_modules_and_topics(course_id):
+    # Find the course by its ID
+    course = Course.query.get(course_id)
+    if not course:
+        return jsonify({"error": "Course not found"}), 404
+
+    # Serialize course data with modules and topics
+    course_data = {
+        "id": course.id,
+        "name": course.name,
+        "modules": [
+            {
+                "id": module.id,
+                "name": module.name,
+                "topics": [
+                    {"id": topic.id, "name": topic.name}
+                    for topic in module.topics
+                ]
+            }
+            for module in course.modules
+        ]
+    }
+
+    return jsonify(course_data), 200
+
 @api.route('/courses', methods=['GET'])
 def get_courses():
     if request.method == 'GET':
