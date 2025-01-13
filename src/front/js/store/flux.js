@@ -225,7 +225,15 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("Error sending message to backend", error);
         }
       },
-
+      // getCourse: async (courseId) => {
+      //   try {
+           
+      //     }
+           
+      //   } catch (error) {
+      //     console.log("Error sending message to backend", error);
+      //   }
+      // },
     }
   };
 };
