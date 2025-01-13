@@ -9,7 +9,12 @@ class Students(db.Model):
     username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+<<<<<<< HEAD
     student_courses = db.relationship('StudentCourse', backref='students', lazy=True)
+=======
+
+    events = db.relationship('Events', back_populates='student', cascade='all, delete-orphan')
+>>>>>>> 681b5bb (Backend for student calendar is done)
  
     def __repr__(self):
         return f'<Student {self.email} {self.username}>'
@@ -19,8 +24,29 @@ class Students(db.Model):
             "id": self.id,
             "email": self.email,
             "username": self.username,
-            "role": "student"
+            "role": "student",
+            "events": [event.serialize() for event in self.events]
             # do not serialize the password, its a security breach
+        }
+
+class Events(db.Model):
+    __tablename__ = 'events'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    start = db.Column(db.String(10), nullable=False)
+    
+    student = db.relationship('Students', back_populates='events')
+
+    def __repr__(self):
+        return f'<Event {self.title} for Student ID {self.student_id}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "student_id": self.student_id,
+            "title": self.title,
+            "start": self.start,
         }
     
 
