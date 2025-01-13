@@ -9,6 +9,8 @@ class Students(db.Model):
     username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+
+    assignments = db.relationship("student_assignment", backref="student")
  
     def __repr__(self):
         return f'<Student {self.email} {self.username}>'
@@ -18,8 +20,9 @@ class Students(db.Model):
             "id": self.id,
             "email": self.email,
             "username": self.username,
-            "role": "student"
+            "role": "student",
             # do not serialize the password, its a security breach
+            "assignments": [assignment.serialize() for assignment in self.assignments]
         }
     
 
@@ -43,22 +46,19 @@ class Teachers(db.Model):
             # do not serialize the password, its a security breach
         }
 
-class student_assignment(db.Model):
-    pass
 
-class course(db.Model):
-    pass
+#class course(db.Model):
+  #  pass
 
 class Assignment(db.Model):
     __tablename__='assignment'
-    id = db.Column(db.Integer, Primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), unique=False, nullable=False)
-    deadline = db.Column(db.Datetime, unique=False, nullable=False)
+    deadline = db.Column(db.DateTime, unique=False, nullable=False)
     isCompleted = db.Column(db.Boolean, unique=False, nullable=False)
 
-    student_assignment = db.relationship(student_assignment)
-    course = db.relationship(course)
-
+    student_assignments = db.relationship("student_assignment", backref="assignment", lazy=True)
+    #course = db.relationship("course", backref="assignment", lazy=True)
 
     def serialize(self):
         return {
@@ -70,13 +70,13 @@ class Assignment(db.Model):
 
 class student_assignment(db.Model):
     __tablename__='student_assignment'
-    id = db.Column(db.Integer, Primary_key=True)
-    student_id = db.Column(db.Integer, foreign_key=True)
-    assignment_id = db.Column(db.Integer, foreign_key=True, unique=False, nullable=False)
-    submitted_at = db.Column(db.Datetime, unique=False, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    assignment_id = db.Column(db.Integer, db.ForeignKey("assignment.id"), unique=False, nullable=False)
+    submitted_at = db.Column(db.DateTime, unique=False, nullable=False)
     grade = db.Column(db.String(10), unique=False, nullable=False)
     
-    assignment = db.relationship(Assignment)
+    #assignment = db.relationship("Assignment", backref="student_assignments")
 
 
     def serialize(self):

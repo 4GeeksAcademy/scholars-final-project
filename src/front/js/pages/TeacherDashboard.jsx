@@ -26,17 +26,17 @@ const TeacherDashboard = () => {
             </div>
             <div className="container d-flex col-8 mt-5">
                 <ul class="nav nav-tabs">
-                    <li class="nav-item"
+                    <li class="nav-item me-1"
                     // onClick={() => handleTabClick('Lesson Plans')}
                     // className={activeTab === 'Lesson Plans' ? 'active' : ''}>
                         ><a class="nav-link active" aria-current="page" href="#">Lesson Plans</a>
                     </li>
-                    <li class="nav-item"
+                    <li class="nav-item me-1"
                     // onClick={() => handleTabClick('Assignments')}
                     // className={activeTab === 'Assignments' ? 'active' : ''}>
                         ><a class="nav-link active" href="#">Assignments</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item me-1">
                         <a class="nav-link active" href="#">Students</a>
                     </li>
                     <li class="nav-item">
