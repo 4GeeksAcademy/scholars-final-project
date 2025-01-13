@@ -9,12 +9,9 @@ class Students(db.Model):
     username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-<<<<<<< HEAD
+    
     student_courses = db.relationship('StudentCourse', backref='students', lazy=True)
-=======
-
     events = db.relationship('Events', back_populates='student', cascade='all, delete-orphan')
->>>>>>> 681b5bb (Backend for student calendar is done)
  
     def __repr__(self):
         return f'<Student {self.email} {self.username}>'
