@@ -2,7 +2,7 @@
 import time
 #import requests
 from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
-from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse
+from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -321,3 +321,58 @@ def delete_course(course_id):
     except Exception as e:
         db.session.rollback()  # Rollback in case of an error
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
+@api.route('/resources/by_topic/<int:topic_id>', methods=['GET'])
+def get_resources_by_topic(topic_id):
+    """
+    Fetch all resources associated with a specific topic_id.
+    """
+    resources = Resource.query.filter_by(topic_id=topic_id).all()
+    if not resources:
+        return jsonify({"message": "No resources found for the given topic ID."}), 404
+    return jsonify([resource.serialize() for resource in resources]), 200
+# POST a new resource
+@api.route('/resources', methods=['POST'])
+def create_resource():
+    """
+    request body below 
+    {
+    "url": "https://example.com/resource",
+    "topic_id": 1
+    }
+    """
+    data = request.get_json()
+    if not data or 'url' not in data:
+        abort(400, "Missing 'url' in request data.")
+    resource = Resource(url=data['url'], topic_id=data.get('topic_id'))
+    db.session.add(resource)
+    db.session.commit()
+    return jsonify(resource.serialize()), 201
+
+# PUT (update) an existing resource
+@api.route('/resources/<int:resource_id>', methods=['PUT'])
+def update_resource(resource_id):
+    """
+    Request body is below
+    {
+        "id": resource id,
+        "topic_id": topic id,
+        "url": "URL that you are gonna put"
+    }
+    """
+    resource = Resource.query.get_or_404(resource_id)
+    data = request.get_json()
+    if not data:
+        abort(400, "Missing request data.")
+    resource.url = data.get('url', resource.url)
+    resource.topic_id = data.get('topic_id', resource.topic_id)
+    db.session.commit()
+    return jsonify(resource.serialize()), 200
+
+# DELETE a resource
+@api.route('/resources/<int:resource_id>', methods=['DELETE'])
+def delete_resource(resource_id):
+    resource = Resource.query.get_or_404(resource_id)
+    db.session.delete(resource)
+    db.session.commit()
+    return jsonify({"message": "Resource deleted."}), 200

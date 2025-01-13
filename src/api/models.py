@@ -106,7 +106,7 @@ class Resource(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(300), nullable=False)
     # Foreign key to Topic
-    topic_id = db.Column(db.Integer, db.ForeignKey('topics.id', ondelete='CASCADE'), nullable=False)
+    topic_id = db.Column(db.Integer, db.ForeignKey('topics.id', ondelete='CASCADE'), nullable=True)
 
     def serialize(self):
         return {
