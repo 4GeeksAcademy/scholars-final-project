@@ -122,3 +122,19 @@ class StudentCourse(db.Model):
     __tablename__ = 'student_courses'
     user_id = db.Column(db.Integer, db.ForeignKey('students.id', ondelete='CASCADE'), primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), primary_key=True)
+
+class Note(db.Model):
+    __tablename__ = 'notes'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('students.id'),nullable=False)
+    topic_id = db.Column(db.Integer, db.ForeignKey('topics.id'),nullable=False)
+
+    def serialize(self):
+        return{
+            'id': self.id,
+            'content': self.content,
+            'student_id': self.student_id,
+            'topic_id': self.topic_id
+        }
+
