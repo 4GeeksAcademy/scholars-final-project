@@ -2,7 +2,7 @@
 import time
 #import requests
 from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
-from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource
+from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_migrate import Migrate

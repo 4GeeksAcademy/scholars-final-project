@@ -9,7 +9,6 @@ class Students(db.Model):
     username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    
     student_courses = db.relationship('StudentCourse', backref='students', lazy=True)
     events = db.relationship('Events', back_populates='student', cascade='all, delete-orphan')
  
