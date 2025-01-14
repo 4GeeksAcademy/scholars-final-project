@@ -225,7 +225,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       handleEditEvent: async (id, title, start) => {
         const response = await fetch(process.env.BACKEND_URL + 'api/edit_event', {
-          method: 'PUT',
+          method: 'POST',
           headers: {
             'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
             'Content-Type': 'application/json',

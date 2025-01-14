@@ -133,7 +133,6 @@ def protected():
     user_id, role = current_user.split('|')
     print('current_user_id:' + user_id + ', role: ' + role)
 
-
     user = None
     if role == 'student':
         user = Students.query.get(user_id)
@@ -175,7 +174,7 @@ def create_event():
     db.session.commit()
     return jsonify(new_event.serialize()), 200
 
-@api.route('/edit_event', methods=['PUT'])
+@api.route('/edit_event', methods=['POST'])
 @jwt_required()
 def edit_event():
     current_user = get_jwt_identity()
