@@ -57,7 +57,7 @@ class Assignment(db.Model):
     deadline = db.Column(db.DateTime, unique=False, nullable=False)
     isCompleted = db.Column(db.Boolean, unique=False, nullable=False)
 
-    student_assignments = db.relationship("student_assignment", backref="assignment", lazy=True)
+    student_assignment = db.relationship("student_assignment", backref="assignment", lazy=True)
     #course = db.relationship("course", backref="assignment", lazy=True)
 
     def serialize(self):
@@ -76,7 +76,7 @@ class student_assignment(db.Model):
     submitted_at = db.Column(db.DateTime, unique=False, nullable=False)
     grade = db.Column(db.String(10), unique=False, nullable=False)
     
-    #assignment = db.relationship("Assignment", backref="student_assignments")
+    #assignment = db.relationship("Assignment", backref="student_assignment")
 
 
     def serialize(self):
@@ -87,3 +87,5 @@ class student_assignment(db.Model):
             "submitted_at": self.submitted_at,
             "grade": self.grade
         }
+
+    
