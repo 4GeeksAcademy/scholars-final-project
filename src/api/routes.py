@@ -233,7 +233,7 @@ def delete_event():
     db.session.commit()
     return jsonify({'success': True}), 200
 
-@api.route('chatbot', methods =['POST', 'GET'])
+@api.route('/chatbot', methods =['POST', 'GET'])
 def handle_chatbot():
      
     if request.method == 'POST':
