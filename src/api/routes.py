@@ -197,6 +197,10 @@ def edit_event():
         return jsonify({'error': 'Title is required'}, 400)
     if not start:
         return jsonify({'error': 'Start is required'}, 400)
+    
+    print('event_id: ' + event_id)
+    print('title: ' + title)
+    print('start: ' + start)
 
     event = Events.query.get(event_id)
     if not event:

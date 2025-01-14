@@ -42,12 +42,12 @@ const Calendar = () => {
             const title = prompt("Add a new event:")
             if(title){
                 const newEvent={
-                    id: events.length + 1,
+                    id: 0,
                     title: title,
                     start: contextMenu.date
                 }
-                setEvents([... events,newEvent]);
                 actions.handleCreateEvent(title, contextMenu.date);
+                setEvents([... events,newEvent]);
                 console.log(events);
             }
             setContextMenu({visible:false});
@@ -110,6 +110,7 @@ const Calendar = () => {
                     dateClick={(clickInfo) => handleEventClick(clickInfo.jsEvent,clickInfo)}
                     eventClick={(clickInfo) => handleEventClick(clickInfo.jsEvent,clickInfo)}
                 />
+                {console.log(store.user)}
                 {contextMenu.visible && (
                     <ul className="dropdown-menu show" 
                             style={{

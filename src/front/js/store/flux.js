@@ -195,7 +195,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         console.log(response);
         if (response.ok) {
-          console.log(response);
           const data = await response.json();
           setStore({ user: data.user });
           sessionStorage.setItem('userInfo', JSON.stringify(data.user));
@@ -218,6 +217,9 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         if (response.ok) {
           console.log('Event created');
+          const data = await response.json();
+          // This is to get the evevnt id from the response
+          setStore({ user: { ...getStore().user, events: [...getStore().user.events, { id: data.id, title: data.title, start: data.start }] } });
         } else {
           throw new Error('Failed to create event');
         }
