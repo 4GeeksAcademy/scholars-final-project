@@ -1,17 +1,24 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
+import { Context } from "../../store/appContext";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction"
-import { useState } from "react";
 
 
 const Calendar = () => {
-
-    const [events,setEvents] = useState ([
-        {id:1, title: "Event 1", start: "2024-12-25"},
-        {id:2, title: "Event 2", start: "2024-12-31"}
-    ]);
+    const { store, actions } = useContext(Context);
+    const [events,setEvents] = useState ([]);
     const [contextMenu, setContextMenu] = useState({visible: false, x:0,y:0,event:null,date:null})
+
+    useEffect(() => {
+                actions.handleFetchUserInfo();
+            }, []);
+
+    useEffect(()=>{
+        if(store.user){
+            setEvents(store.user.events);
+        }
+    },[store.user])
 
     const handleEventClick = (e,clickInfo) => {
         e.preventDefault();
@@ -35,10 +42,11 @@ const Calendar = () => {
             const title = prompt("Add a new event:")
             if(title){
                 const newEvent={
-                    id: events.length + 1,
+                    id: 0,
                     title: title,
                     start: contextMenu.date
                 }
+                actions.handleCreateEvent(title, contextMenu.date);
                 setEvents([... events,newEvent]);
                 console.log(events);
             }
@@ -54,14 +62,17 @@ const Calendar = () => {
             title: event.title,
             start: event.start.toISOString().split('T')[0],
         };
+        actions.handleEditEvent(event.id, event.title, event.start.toISOString().split('T')[0]);
         console.log(updateEvent.start)
         setEvents((prevEvents) => prevEvents.map((currentEvent)=> currentEvent.id == event.id ? updateEvent : currentEvent));
         console.log(events)
     }
+
     const handleEditEvent = () =>{
         if(contextMenu.event){
             const updateEvent = prompt("Change the event:", contextMenu.event.title)
             if(updateEvent){
+                actions.handleEditEvent(contextMenu.event.id, updateEvent, contextMenu.event.start.toISOString().split('T')[0]);
                 console.log("before",events);
                 console.log(updateEvent)
                 setEvents(events.map((event)=>event.id == contextMenu.event.id ? {...event,title:updateEvent}: event))
@@ -74,6 +85,7 @@ const Calendar = () => {
     const handleRemoveEvent = () =>{
         if(contextMenu.event && window.confirm(`Are you sure to delete the event "${contextMenu.event.title}"?`))
             setEvents(events.filter((event)=>event.id != contextMenu.event.id));
+            actions.handleDeleteEvent(contextMenu.event.id);
         handleCloseContextMenu();
     }
 
@@ -98,6 +110,7 @@ const Calendar = () => {
                     dateClick={(clickInfo) => handleEventClick(clickInfo.jsEvent,clickInfo)}
                     eventClick={(clickInfo) => handleEventClick(clickInfo.jsEvent,clickInfo)}
                 />
+                {console.log(store.user)}
                 {contextMenu.visible && (
                     <ul className="dropdown-menu show" 
                             style={{

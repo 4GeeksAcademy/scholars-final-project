@@ -44,11 +44,18 @@ export const Navbar = () => {
 					<Link to="/about-us" className={`navbar-brand mb-0 h1 ${isActive("/about-us")}`}>
 						<span className="navbar-brand mb-0 h1">About us</span>
 					</Link>
-					<Link to="/dashboard" className={`navbar-brand mb-0 h1 ${isActive("/dashboard")}`}>
-						Dashboard
-					</Link>
+					
 					{store.user ? (
+						<>
+							<Link to="/dashboard" className={`navbar-brand mb-0 h1 ${isActive("/dashboard")}`}>
+								Dashboard
+							</Link>
 						<button className="btn btn-primary me-2" onClick={handleLogOut}>Log out</button>
+							<Link to="/dashboard" className={`navbar-brand mb-0 h1 ${isActive("/dashboard")}`}>
+
+								{store.user.username}
+							</Link>
+						</>
 					) : (
 						<>
 							<button className="btn btn-primary me-2" onClick={handleLoginModal}>Log in</button>

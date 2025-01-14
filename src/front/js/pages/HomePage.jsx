@@ -14,9 +14,7 @@ const HomePage = () => {
 	};
 
     return (
-        <>
-        
-        <body className="bakground-Home-Page">        
+        <div className="bakground-Home-Page">        
         <div id="myCarousel" className="carousel slide" data-bs-ride="carousel">
             <div className="carousel-indicators">
                 <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" className="active" aria-label="Slide 1" aria-current="true"></button>
@@ -112,9 +110,8 @@ const HomePage = () => {
                 Together, we will shape the leaders and innovators of the future, one learner at a time.
                 </p>
         </div>
-        </body>
         {isSignupModalOpen && <SignupModal closeModal={handleSignupModal} />}
-        </>
+        </div>
     );
 };
 

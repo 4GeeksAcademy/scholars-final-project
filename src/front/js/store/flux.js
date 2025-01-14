@@ -133,7 +133,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
         else {
           alert(data[0].error);
-          throw new Error(data[0].error);
         }
       },
 
@@ -196,7 +195,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         console.log(response);
         if (response.ok) {
-          console.log(response);
           const data = await response.json();
           setStore({ user: data.user });
           sessionStorage.setItem('userInfo', JSON.stringify(data.user));
@@ -204,6 +202,70 @@ const getState = ({ getStore, getActions, setStore }) => {
           throw new Error('Failed to fetch user info');
         }
       },
+
+      handleCreateEvent: async (title, start) => {
+        const response = await fetch(process.env.BACKEND_URL + 'api/create_event', { 
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: title,
+            start: start,
+          }),
+        });
+        if (response.ok) {
+          console.log('Event created');
+          const data = await response.json();
+          // This is to get the evevnt id from the response
+          setStore({ user: { ...getStore().user, events: [...getStore().user.events, { id: data.id, title: data.title, start: data.start }] } });
+        } else {
+          throw new Error('Failed to create event');
+        }
+      },
+
+      handleEditEvent: async (id, title, start) => {
+        const response = await fetch(process.env.BACKEND_URL + 'api/edit_event', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: id,
+            title: title,
+            start: start,
+          }),
+        });
+        if (response.ok) {
+          console.log('Event edited');
+        } else {
+          throw new Error('Failed to edit event');
+        }
+      },
+
+      handleDeleteEvent: async (id) => {
+        const response = await fetch(process.env.BACKEND_URL + 'api/delete_event', {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: id,
+          }),
+        });
+        if (response.ok) {
+          console.log('Event deleted');
+          console.log(getStore());
+          setStore({ events: getStore().user.events.filter(event => event.id !== id) });
+          console.log(getStore());
+        } else {
+          throw new Error('Failed to delete event');
+        }
+      },
+
       chatBot: async (message) => {
         try {
           const resp = await fetch(`${process.env.BACKEND_URL}/api/chatbot`, {
