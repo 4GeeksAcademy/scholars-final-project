@@ -10,6 +10,7 @@ class Students(db.Model):
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     student_courses = db.relationship('StudentCourse', backref='students', lazy=True)
+    note = db.relationship('Note', back_populates='student')
  
     def __repr__(self):
         return f'<Student {self.email} {self.username}>'
@@ -19,7 +20,9 @@ class Students(db.Model):
             "id": self.id,
             "email": self.email,
             "username": self.username,
-            "role": "student"
+            "role": "student",
+            "note": [student_notes.serialize() for student_notes in self.note],
+            "student_courses": [student_course.serialize() for student_course in self.student_courses]
             # do not serialize the password, its a security breach
         }
     
@@ -129,6 +132,7 @@ class Note(db.Model):
     content = db.Column(db.Text, nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('students.id'),nullable=False)
     topic_id = db.Column(db.Integer, db.ForeignKey('topics.id'),nullable=False)
+    student = db.relationship('Students', back_populates='note')
 
     def serialize(self):
         return{

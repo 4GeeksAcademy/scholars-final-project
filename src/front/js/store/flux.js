@@ -225,6 +225,22 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
+      getNotes: async () => {
+        const token = localStorage.getItem('jwtToken');
+        
+        const response = await fetch('/notes',{
+          method: 'GET',
+          headers:{
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+        const data = await response.json();
+        if(data.error){
+          console.error('Error', data.error);
+        }
+        setStore({notes:data})
+      },
+
       addNote: async (content , topicId, studentID) => {
         try{
           const response = await fetch(process.env.BACKEND_URL + '/api/notes', {

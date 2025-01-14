@@ -51,7 +51,7 @@ const [editIndex, setEditIndex] = useState(null);
 
 
 const handleLessonSelect = (topic) =>{
-    setSelectedLesson(lesson);
+    setSelectedLesson(topic);
     setQuillContent("");
 
 }
@@ -92,17 +92,19 @@ const handleAddNote = () =>{
                     <span className="fs-5 fw-semibold ms-4">Notebook</span>
                     </a>
                     <ul className="list-unstyled ps-0">
+                        {console.log(store.user)}
                         {store.demo.modules.map((module) =>(
                             <li className="mb-1" key={module.moduleId}>
                                 <button className="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target={`#${module.moduleName}-collapse`} aria-expanded="true">
                                     {module.moduleName}
+                                    
                                 </button>
                                 <ul className="btn-toggle-nav fw-normal pb-1 small">
                                     {module.topics.map((topic)=>(
-                                        <div className="collapse" id={`${module.moduleName}-collapse`}>
+                                        <div className="collapse" id={`${topic.topic}-collapse`}>
                                             <ul className="btn-toggle-nav list-group fw-normal pb-1 small ms-3" style={{listStyleType:"disc"}}>
-                                                <li className="list-group-item mt-1" key={topic.name} onClick={() => handleLessonSelect(topic)} onMouseEnter={(e) =>(e.target.style.cursor = "pointer")} onMouseLeave={(e) =>(e.target.style.cursor = "default")}>
-                                                    {topic.name}
+                                                <li className="list-group-item mt-1" key={topic.topic} onClick={() => handleLessonSelect(topic)} onMouseEnter={(e) =>(e.target.style.cursor = "pointer")} onMouseLeave={(e) =>(e.target.style.cursor = "default")}>
+                                                    {topic.topic}
                                                 </li>
                                             </ul>
                                         </div>

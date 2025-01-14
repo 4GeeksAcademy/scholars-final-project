@@ -389,10 +389,17 @@ def add_note_from_topic(topic_id):
     db.session.commit()
     return jsonify(new_note.serialize()), 201
 
-@api.route('/students/<int:students_id>/notes', methods=['GET'])
-def get_student_note(students_id):
-    notes = Note.query.filter_by(students_id=students_id).all()
-    return jsonify([note.serialize() for note in notes])
+@api.route('/notes', methods=['GET'])
+@jwt_required()
+def get_notes():
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role == 'student':
+        notes = Note.query.filter_by(students_id=user_id).all()
+        return jsonify([note.to_dict() for note in notes])
+    else:
+        return jsonify({'Error':'You can`t be a Teacher'}), 404
+        
 
 @api.route('/notes', methods=['POST'])
 def add_note():
