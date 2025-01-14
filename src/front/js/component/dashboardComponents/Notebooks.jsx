@@ -1,6 +1,8 @@
 import React,{useState} from "react";
 import "quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
+import { useContext } from "react";
+import {Context} from "../../store/appContext"
 import "../../../styles/Sidebar.css"
 
 const courses = [
@@ -43,10 +45,13 @@ const Notebook = () => {
 const [quillContent,setQuillContent] = useState("");
 const [selectedLesson, setSelectedLesson] = useState(null);
 const [editingNoteIndex, setEditingNoteIndex] = useState(null);
+const {store, actions} = useContext(Context);
+const [newNote, setNewNote] = useState('');
+const [editIndex, setEditIndex] = useState(null);
 
 
-const handleLessonSelect = (lesson) =>{
-    setSelectedLesson(lesson);
+const handleLessonSelect = (topic) =>{
+    setSelectedLesson(topic);
     setQuillContent("");
 
 }
@@ -87,17 +92,19 @@ const handleAddNote = () =>{
                     <span className="fs-5 fw-semibold ms-4">Notebook</span>
                     </a>
                     <ul className="list-unstyled ps-0">
-                        {courses.map((course) =>(
-                            <li className="mb-1" key={course.id}>
-                                <button className="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target={`#${course.name}-collapse`} aria-expanded="true">
-                                    {course.name}
+                        {console.log(store.user)}
+                        {store.demo.modules.map((module) =>(
+                            <li className="mb-1" key={module.moduleId}>
+                                <button className="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target={`#${module.moduleName}-collapse`} aria-expanded="true">
+                                    {module.moduleName}
+                                    
                                 </button>
                                 <ul className="btn-toggle-nav fw-normal pb-1 small">
-                                    {course.lessons.map((lesson)=>(
-                                        <div className="collapse" id={`${course.name}-collapse`}>
+                                    {module.topics.map((topic)=>(
+                                        <div className="collapse" id={`${topic.topic}-collapse`}>
                                             <ul className="btn-toggle-nav list-group fw-normal pb-1 small ms-3" style={{listStyleType:"disc"}}>
-                                                <li className="list-group-item mt-1" key={lesson.id} onClick={() => handleLessonSelect(lesson)} onMouseEnter={(e) =>(e.target.style.cursor = "pointer")} onMouseLeave={(e) =>(e.target.style.cursor = "default")}>
-                                                    {lesson.name}
+                                                <li className="list-group-item mt-1" key={topic.topic} onClick={() => handleLessonSelect(topic)} onMouseEnter={(e) =>(e.target.style.cursor = "pointer")} onMouseLeave={(e) =>(e.target.style.cursor = "default")}>
+                                                    {topic.topic}
                                                 </li>
                                             </ul>
                                         </div>
@@ -143,7 +150,7 @@ const handleAddNote = () =>{
                             {editingNoteIndex != null ? (
                                 <button type="button" className="btn btn-primary" onClick={handleSavedEditNote}>Save Changes</button>
                             ) :(
-                                <button type="button" class="btn btn-primary" onClick={handleAddNote}>Save Note</button>
+                                <button type="button" className="btn btn-primary" onClick={handleAddNote}>Save Note</button>
                             )}
                         </div>
                     </div>

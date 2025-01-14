@@ -2,80 +2,7 @@ const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
       message: null,
-      student: {
-        calendar:"",
-        Notebook:""
-      }, demo: {
-        courseId: "MATH101",
-        courseName: "Mathematics",
-        selectedModule: null,
-        selectedTopic: null,
-        modules: [
-          {
-            moduleId: "MOD1",
-            moduleName: "Algebra Basics",
-            topics: [
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://www.youtube.com/embed/vDqOoI-4Z6M?list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://www.youtube.com/watch?v=vDqOoI-4Z6M&list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg&t=7s",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-            ],
-          },
-          {
-            moduleId: "MOD1",
-            moduleName: "Algebra Basics",
-            topics: [
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-            ],
-          },
-          {
-            moduleId: "MOD1",
-            moduleName: "Algebra Basics",
-            topics: [
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-            ],
-          },
-        ],
-      },
+      notes:[],
       //All classes assigned to a student
       AllCourses:[{
         id: null, // placeholder for course ID
@@ -152,7 +79,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
         else {
           alert(data[0].error);
-          throw new Error(data[0].error);
         }
       },
 
@@ -215,7 +141,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         console.log(response);
         if (response.ok) {
-          console.log(response);
           const data = await response.json();
           setStore({ user: data.user });
           sessionStorage.setItem('userInfo', JSON.stringify(data.user));
@@ -223,6 +148,70 @@ const getState = ({ getStore, getActions, setStore }) => {
           throw new Error('Failed to fetch user info');
         }
       },
+
+      handleCreateEvent: async (title, start) => {
+        const response = await fetch(process.env.BACKEND_URL + 'api/create_event', { 
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: title,
+            start: start,
+          }),
+        });
+        if (response.ok) {
+          console.log('Event created');
+          const data = await response.json();
+          // This is to get the evevnt id from the response
+          setStore({ user: { ...getStore().user, events: [...getStore().user.events, { id: data.id, title: data.title, start: data.start }] } });
+        } else {
+          throw new Error('Failed to create event');
+        }
+      },
+
+      handleEditEvent: async (id, title, start) => {
+        const response = await fetch(process.env.BACKEND_URL + 'api/edit_event', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: id,
+            title: title,
+            start: start,
+          }),
+        });
+        if (response.ok) {
+          console.log('Event edited');
+        } else {
+          throw new Error('Failed to edit event');
+        }
+      },
+
+      handleDeleteEvent: async (id) => {
+        const response = await fetch(process.env.BACKEND_URL + 'api/delete_event', {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: id,
+          }),
+        });
+        if (response.ok) {
+          console.log('Event deleted');
+          console.log(getStore());
+          setStore({ events: getStore().user.events.filter(event => event.id !== id) });
+          console.log(getStore());
+        } else {
+          throw new Error('Failed to delete event');
+        }
+      },
+
       chatBot: async (message) => {
         try {
           const resp = await fetch(`${process.env.BACKEND_URL}/api/chatbot`, {
@@ -243,6 +232,93 @@ const getState = ({ getStore, getActions, setStore }) => {
         } catch (error) {
           console.log("Error sending message to backend", error);
         }
+      },
+
+      getNotes: async () => {
+        const token = localStorage.getItem('jwtToken');
+        
+        const response = await fetch('/notes',{
+          method: 'GET',
+          headers:{
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+        const data = await response.json();
+        if(data.error){
+          console.error('Error', data.error);
+        }
+        setStore({notes:data})
+      },
+
+      addNote: async (content , topicId, studentID) => {
+        try{
+          const response = await fetch(process.env.BACKEND_URL + '/api/notes', {
+            method: 'POST',
+            headers:{
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({content:content, topicId:topicId, studentID:studentID})
+          });
+
+          if(response.ok) {
+            const newNote = await response.json();
+            const store = getStore();
+            setStore({notes: [... store.notes, newNote]});
+          }
+          else{
+            console.error("Error when adding note")
+          }
+        }
+        catch (error) {
+          console.error("Error in addNote:", error);
+        }
+      },
+
+      editNote: async (noteId , updateContent) => {
+        try{
+          const response = await fetch(process.env.BACKEND_URL + `/api/notes/${noteId}`, {
+            method: 'PUT',
+            headers:{
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({content:updateContent})
+          });
+
+          if(response.ok) {
+            const updateNote = await response.json();
+            const store = getStore();
+            setStore({
+              note: store.notes.map((note) => note.id == noteId ? updateNote : note)
+            })
+          }
+          else{
+            console.error("Error when editing note")
+          }
+        }
+          catch (error) {
+            console.error("Error in editNote:", error);
+          }
+      },
+
+      deleteNote: async (noteId) => {
+        try{
+          const response = await fetch(process.env.BACKEND_URL + `/api/notes/${noteId}`, {
+            method: 'DELETE'
+          });
+
+          if(response.ok) {
+            const store = getStore();
+            setStore ({
+              notes: store.notes.filter((note) => note.id != noteId)
+            })
+          }
+          else{
+            console.error("Error when deleting note")
+          }
+        }
+          catch (error) {
+            console.error("Error in deleteNote:", error);
+          }
       },
       getAllCourses: async (studentID) => {
         try {
