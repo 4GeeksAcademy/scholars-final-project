@@ -2,7 +2,7 @@
 import time
 #import requests
 from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
-from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Note
+from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events, Note
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -133,18 +133,108 @@ def protected():
     user_id, role = current_user.split('|')
     print('current_user_id:' + user_id + ', role: ' + role)
 
-
     user = None
     if role == 'student':
         user = Students.query.get(user_id)
     elif role == 'teacher':
         user = Teachers.query.get(user_id)
-    
     if not user:
         return jsonify({'error': 'user not found'}), 404
     
     print('user:' + user.username)
     return jsonify(user=user.serialize()), 200
+
+@api.route('/create_event', methods=['POST'])
+@jwt_required()
+def create_event():
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    user = None
+    if role == 'student':
+        user = Students.query.get(user_id)
+    elif role == 'teacher':
+        return jsonify({'error': 'Teachers dont have calendars around here'}, 400)
+    if not user:
+        return jsonify({'error': 'user not found'}), 404
+
+    title = request.json.get('title')
+    start = request.json.get('start')
+
+    if not title:
+        return jsonify({'error': 'Title is required'}, 400)
+    if not start:
+        return jsonify({'error': 'Start is required'}, 400)
+
+    new_event = Events(
+        student_id=user.id,
+        title=title,
+        start=start,
+        )
+    db.session.add(new_event)
+    db.session.commit()
+    return jsonify(new_event.serialize()), 200
+
+@api.route('/edit_event', methods=['POST'])
+@jwt_required()
+def edit_event():
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    user = None
+    if role == 'student':
+        user = Students.query.get(user_id)
+    elif role == 'teacher':
+        return jsonify({'error': 'Teachers dont have calendars around here'}, 400)
+    if not user:
+        return jsonify({'error': 'user not found'}), 404
+
+    event_id = request.json.get('id')
+    title = request.json.get('title')
+    start = request.json.get('start')
+
+    if not event_id:
+        return jsonify({'error': 'Event ID is required'}, 400)
+    if not title:
+        return jsonify({'error': 'Title is required'}, 400)
+    if not start:
+        return jsonify({'error': 'Start is required'}, 400)
+    
+    print('event_id: ' + event_id)
+    print('title: ' + title)
+    print('start: ' + start)
+
+    event = Events.query.get(event_id)
+    if not event:
+        return jsonify({'error': 'Event not found'}), 404
+
+    event.title = title
+    event.start = start
+    db.session.commit()
+    return jsonify(event.serialize()), 200
+
+@api.route('/delete_event', methods=['DELETE'])
+@jwt_required()
+def delete_event():
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    user = None
+    if role == 'student':
+        user = Students.query.get(user_id)
+    elif role == 'teacher':
+        return jsonify({'error': 'Teachers dont have calendars around here'}, 400)
+    if not user:
+        return jsonify({'error': 'user not found'}), 404
+
+    event_id = request.json.get('id')
+    if not event_id:
+        return jsonify({'error': 'Event ID is required'}, 400)
+
+    event = Events.query.get(event_id)
+    if not event:
+        return jsonify({'error': 'Event not found'}), 404
+
+    db.session.delete(event)
+    db.session.commit()
+    return jsonify({'success': True}), 200
 
 @api.route('/chatbot', methods =['POST', 'GET'])
 def handle_chatbot():

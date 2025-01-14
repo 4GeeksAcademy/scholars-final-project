@@ -10,6 +10,7 @@ class Students(db.Model):
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     student_courses = db.relationship('StudentCourse', backref='students', lazy=True)
+    events = db.relationship('Events', back_populates='student', cascade='all, delete-orphan')
     note = db.relationship('Note', back_populates='student')
  
     def __repr__(self):
@@ -21,9 +22,30 @@ class Students(db.Model):
             "email": self.email,
             "username": self.username,
             "role": "student",
+            "events": [event.serialize() for event in self.events]
             "note": [student_notes.serialize() for student_notes in self.note],
             "student_courses": [student_course.serialize() for student_course in self.student_courses]
             # do not serialize the password, its a security breach
+        }
+
+class Events(db.Model):
+    __tablename__ = 'events'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    start = db.Column(db.String(10), nullable=False)
+    
+    student = db.relationship('Students', back_populates='events')
+
+    def __repr__(self):
+        return f'<Event {self.title} for Student ID {self.student_id}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "student_id": self.student_id,
+            "title": self.title,
+            "start": self.start,
         }
     
 
