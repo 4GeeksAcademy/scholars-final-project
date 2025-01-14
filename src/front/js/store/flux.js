@@ -5,10 +5,11 @@ const getState = ({ getStore, getActions, setStore }) => {
       student: {
         calendar:"",
         Notebook:""
-      },
-      demo: {
+      }, demo: {
         courseId: "MATH101",
         courseName: "Mathematics",
+        selectedModule: null,
+        selectedTopic: null,
         modules: [
           {
             moduleId: "MOD1",
@@ -75,6 +76,24 @@ const getState = ({ getStore, getActions, setStore }) => {
           },
         ],
       },
+      //All classes assigned to a student
+      AllCourses:[{
+        id: null, // placeholder for course ID
+        modules: [
+          {
+            id: null, // placeholder for module ID
+            name: "module", // Default string value
+            topics: [
+              {
+                id: null, // placeholder for topic ID
+                name: "topic", // Default string value
+              }
+            ]
+            
+          }
+        ],
+        name: "course" // Default string value for course name
+      }],
       token: sessionStorage.getItem('jwtToken'),
     },
     actions: {
@@ -225,15 +244,37 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log("Error sending message to backend", error);
         }
       },
-      // getCourse: async (courseId) => {
-      //   try {
-           
-      //     }
-           
-      //   } catch (error) {
-      //     console.log("Error sending message to backend", error);
-      //   }
-      // },
+      getAllCourses: async (studentID) => {
+        try {
+            const resp = await fetch(`${process.env.BACKEND_URL}/api/student/${studentID}/courses`);
+            if (!resp.ok) {
+              throw new Error(`Failed to fetch course: ${resp.statusText}`);
+            }
+            const courseData = await resp.json();
+            setStore(courseData);
+            
+          }
+        catch (error) {
+          console.log("Error sending message to backend", error);
+          
+        }
+      },
+      getResource: async (topicID) => {
+        try {
+          const resp = await fetch(`${process.env.BACKEND_URL}/api/resources/by_topic/${topicID}`);
+          if (!resp.ok) {
+            throw new Error(`Failed to fetch resource: ${resp.statusText}`);
+          }
+          const resourceData = await resp.json(); // Parse JSON response
+          
+          // Extract URLs if resourceData is an array
+          const urls = resourceData.map(resource => resource.url); // Convert to comma-separated string
+          return urls;
+        } catch (error) {
+          console.log("Error fetching resource from backend:", error);
+          return null; // Handle errors gracefully
+        }
+      },
     }
   };
 };

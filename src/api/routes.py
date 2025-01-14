@@ -170,13 +170,27 @@ def get_student_courses(student_id):
     # Get all courses for the student
     courses = Course.query.join(StudentCourse).filter(StudentCourse.user_id == student_id).all()
 
-    # Serialize the courses
-    serialized_courses = [course.serialize() for course in courses]
+    result = []
+    for course in courses:
+        course_data = {
+            "id": course.id,
+            "name": course.name
+        }
+        course_data["modules"] = []
+        for module in course.modules:
+            module_data = {
+                "id": module.id,
+                "name": module.name
+                }
+            module_data["topics"] = [
+                {"id": topic.id, "name": topic.name}
+                for topic in module.topics
+            ]
+            course_data["modules"].append(module_data)
+            result.append(course_data)
 
     return jsonify({
-        "student_id": student_id,
-        "student_name": student.username,
-        "courses": serialized_courses
+        "AllCourses": result
     }), 200
 
 @api.route('/course/<int:course_id>', methods=['GET'])
@@ -208,9 +222,7 @@ def get_course_with_modules_and_topics(course_id):
 @api.route('/courses', methods=['GET'])
 def get_courses():
     if request.method == 'GET':
-        include_modules = request.args.get('include_modules', 'false').lower() == 'true'
-        include_topics = request.args.get('include_topics', 'false').lower() == 'true'
-
+         
         courses = Course.query.all()
         result = []
 
@@ -219,25 +231,20 @@ def get_courses():
                 "id": course.id,
                 "name": course.name
             }
-
-            if include_modules:
-                course_data["modules"] = []
-                for module in course.modules:
-                    module_data = {
-                        "id": module.id,
-                        "name": module.name
-                    }
-
-                    if include_topics:
-                        module_data["topics"] = [
-                            {"id": topic.id, "name": topic.name}
-                            for topic in module.topics
-                        ]
-
-                    course_data["modules"].append(module_data)
-
+ 
+            course_data["modules"] = []
+            for module in course.modules:
+                module_data = {
+                    "id": module.id,
+                    "name": module.name
+                }
+ 
+                module_data["topics"] = [
+                    {"id": topic.id, "name": topic.name}
+                    for topic in module.topics
+                ]
+                course_data["modules"].append(module_data) 
             result.append(course_data)
-
         return jsonify(result), 200
  
 @api.route('/add-course', methods=['POST'])
