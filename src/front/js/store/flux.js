@@ -2,13 +2,12 @@ const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
       message: null,
-      student: {
-        calendar:"",
-        Notebook:""
-      },
+      notes:[],
       demo: {
         courseId: "MATH101",
         courseName: "Mathematics",
+        selectedModule: null,
+        selectedTopic: null,
         modules: [
           {
             moduleId: "MOD1",
@@ -286,6 +285,93 @@ const getState = ({ getStore, getActions, setStore }) => {
         } catch (error) {
           console.log("Error sending message to backend", error);
         }
+      },
+
+      getNotes: async () => {
+        const token = localStorage.getItem('jwtToken');
+        
+        const response = await fetch('/notes',{
+          method: 'GET',
+          headers:{
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+        const data = await response.json();
+        if(data.error){
+          console.error('Error', data.error);
+        }
+        setStore({notes:data})
+      },
+
+      addNote: async (content , topicId, studentID) => {
+        try{
+          const response = await fetch(process.env.BACKEND_URL + '/api/notes', {
+            method: 'POST',
+            headers:{
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({content:content, topicId:topicId, studentID:studentID})
+          });
+
+          if(response.ok) {
+            const newNote = await response.json();
+            const store = getStore();
+            setStore({notes: [... store.notes, newNote]});
+          }
+          else{
+            console.error("Error when adding note")
+          }
+        }
+        catch (error) {
+          console.error("Error in addNote:", error);
+        }
+      },
+
+      editNote: async (noteId , updateContent) => {
+        try{
+          const response = await fetch(process.env.BACKEND_URL + `/api/notes/${noteId}`, {
+            method: 'PUT',
+            headers:{
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({content:updateContent})
+          });
+
+          if(response.ok) {
+            const updateNote = await response.json();
+            const store = getStore();
+            setStore({
+              note: store.notes.map((note) => note.id == noteId ? updateNote : note)
+            })
+          }
+          else{
+            console.error("Error when editing note")
+          }
+        }
+          catch (error) {
+            console.error("Error in editNote:", error);
+          }
+      },
+
+      deleteNote: async (noteId) => {
+        try{
+          const response = await fetch(process.env.BACKEND_URL + `/api/notes/${noteId}`, {
+            method: 'DELETE'
+          });
+
+          if(response.ok) {
+            const store = getStore();
+            setStore ({
+              notes: store.notes.filter((note) => note.id != noteId)
+            })
+          }
+          else{
+            console.error("Error when deleting note")
+          }
+        }
+          catch (error) {
+            console.error("Error in deleteNote:", error);
+          }
       },
       // getCourse: async (courseId) => {
       //   try {

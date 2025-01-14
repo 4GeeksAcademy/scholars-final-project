@@ -2,7 +2,7 @@
 import time
 #import requests
 from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
-from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events
+from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events, Note
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -466,3 +466,58 @@ def delete_resource(resource_id):
     db.session.delete(resource)
     db.session.commit()
     return jsonify({"message": "Resource deleted."}), 200
+
+@api.route('/topic/<int:topic_id>/notes', methods=['POST'])
+def add_note_from_topic(topic_id):
+    data = request.json
+    new_note = Note(
+        content = data['content'],
+        topic_id = topic_id,
+        student_id = data['student_id']
+    )
+    db.session.add(new_note)
+    db.session.commit()
+    return jsonify(new_note.serialize()), 201
+
+@api.route('/notes', methods=['GET'])
+@jwt_required()
+def get_notes():
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role == 'student':
+        notes = Note.query.filter_by(students_id=user_id).all()
+        return jsonify([note.to_dict() for note in notes])
+    else:
+        return jsonify({'Error':'You can`t be a Teacher'}), 404
+        
+
+@api.route('/notes', methods=['POST'])
+def add_note():
+    data = request.json
+    new_note = Note(
+        content = data['content'],
+        topic_id = data['topic_id'],
+        student_id = data['student_id']
+    )
+    db.session.add(new_note)
+    db.session.commit()
+    return jsonify(new_note.serialize()), 201
+
+@api.route('/notes/<int:note_id>', methods=['PUT'])
+def edit_note(note_id):
+    data = request.json
+    note = Note.query.get(note_id)
+    if not note:
+        return jsonify({"error": "Note not found"}), 404
+    note.content = data['content']
+    db.session.commit()
+    return jsonify(note.serialize()), 200
+
+@api.route('/notes/<int:note_id>', methods=['DELETE'])
+def delete_note(note_id):
+    note = Note.query.get(note_id)
+    if not note:
+        return jsonify({"error": "Note not found"}), 404
+    db.session.delete(note)
+    db.session.commit()
+    return jsonify({"message":"Note deleted"}), 200
