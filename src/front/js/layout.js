@@ -2,11 +2,8 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
-
-import { Home } from "./pages/home";
 import HomePage from "./pages/HomePage.jsx";
 import { Demo } from "./pages/demo";
-import { Single } from "./pages/single";
 import DashBoard from "./pages/dashboard.jsx";
 import Assignments from "./component/dashboardComponents/Assignments.jsx";
 import Calendar from "./component/dashboardComponents/Calendar.jsx";
@@ -14,7 +11,7 @@ import CardsCourses from "./component/dashboardComponents/CardsCourses.jsx";
 import MathCoursePage from "./component/dashboardComponents/MathCoursePage.jsx";
 import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
-import { TestHomeByNathan } from "./pages/testHomeByNathan";
+import { TestTeacherDashboard } from "./pages/testTeacherDashboard";
 import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
@@ -35,6 +32,7 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
+                        <Route element={<TestTeacherDashboard />} path="/testTeacherDashboard" />
                         <Route element={<HomePage />} path="/" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<DashBoard />} path="/dashboard" >
