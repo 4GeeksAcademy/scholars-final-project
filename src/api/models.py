@@ -135,8 +135,10 @@ class Topic(db.Model):
     
     # Relationship to Resource
     resources = db.relationship('Resource', backref='topic', cascade="all, delete-orphan", lazy=True)
-
-            "name": self.name
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name, 
         }
     def __repr__(self):
         return f"<Topic {self.name} (Module ID: {self.module_id})>"
