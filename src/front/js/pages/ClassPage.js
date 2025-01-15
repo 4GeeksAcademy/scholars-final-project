@@ -8,7 +8,10 @@ import Notebook from "../component/Notebook.jsx";
 export const ClassPage = () => {
   const { store, actions } = useContext(Context);
   const [resourceLink, setResourceLink] = useState("");
-   
+  
+  useEffect(() => {
+    actions.getAllCourses();
+  }, []);
 
   const getEmbedLink = (url) => {
     const urlObj = new URL(url);

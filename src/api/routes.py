@@ -262,7 +262,6 @@ def get_student_courses():
     if role != 'student':
         return jsonify({"error": "Only students can access their courses"}), 403
 
-
     # Get all courses for the student
     courses = Course.query.join(StudentCourse).filter(StudentCourse.user_id == student_id).all()
 
