@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy 
 
 db = SQLAlchemy()
 
@@ -22,11 +22,12 @@ class Students(db.Model):
             "email": self.email,
             "username": self.username,
             "role": "student",
-            "events": [event.serialize() for event in self.events]
+            "events": [event.serialize() for event in self.events],
             "note": [student_notes.serialize() for student_notes in self.note],
             "student_courses": [student_course.serialize() for student_course in self.student_courses]
             # do not serialize the password, its a security breach
         }
+
 
 class Events(db.Model):
     __tablename__ = 'events'
@@ -68,6 +69,8 @@ class Teachers(db.Model):
             "role": "teacher" 
             # do not serialize the password, its a security breach
         }
+
+
 class Course(db.Model):
     __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
@@ -78,11 +81,13 @@ class Course(db.Model):
 
     # Relationship with StudentCourse
     student_courses = db.relationship('StudentCourse', backref='course', lazy=True, cascade="all, delete")
+
     def serialize(self):
         return {
             "id": self.id,
             "name": self.name
         }
+
     def __repr__(self):
         return f"<Course {self.name}>"
 
@@ -105,7 +110,8 @@ class Module(db.Model):
         }
 
     def __repr__(self):
-        return f"<Course {self.name}>"
+        return f"<Module {self.name}>"
+
 
 class Topic(db.Model):
     __tablename__ = 'topics'
@@ -123,8 +129,10 @@ class Topic(db.Model):
             "id": self.id,
             "name": self.name
         }
+
     def __repr__(self):
         return f"<Topic {self.name} (Module ID: {self.module_id})>"
+
 
 class Resource(db.Model):
     __tablename__ = 'resources'
@@ -143,24 +151,25 @@ class Resource(db.Model):
     def __repr__(self):
         return f"<Resource {self.url} (Topic ID: {self.topic_id})>"
     
+
 class StudentCourse(db.Model):
     __tablename__ = 'student_courses'
     user_id = db.Column(db.Integer, db.ForeignKey('students.id', ondelete='CASCADE'), primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), primary_key=True)
 
+
 class Note(db.Model):
     __tablename__ = 'notes'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    student_id = db.Column(db.Integer, db.ForeignKey('students.id'),nullable=False)
-    topic_id = db.Column(db.Integer, db.ForeignKey('topics.id'),nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False)
+    topic_id = db.Column(db.Integer, db.ForeignKey('topics.id'), nullable=False)
     student = db.relationship('Students', back_populates='note')
 
     def serialize(self):
-        return{
+        return {
             'id': self.id,
             'content': self.content,
             'student_id': self.student_id,
             'topic_id': self.topic_id
         }
-
