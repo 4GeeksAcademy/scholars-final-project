@@ -10,11 +10,10 @@ class Students(db.Model):
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
-    student_courses = db.relationship('StudentCourse', backref='students', lazy=True)
-    events = db.relationship('Events', back_populates='student', cascade='all, delete-orphan')
-    note = db.relationship('Note', back_populates='student')
     assignments = db.relationship("student_assignment", backref="student")
-
+    courses = db.relationship('Course', secondary='student_courses', back_populates='students')
+    events = db.relationship('Events', back_populates='student', cascade='all, delete-orphan')
+    note = db.relationship('Note', back_populates='student', cascade='all, delete-orphan')
  
     def __repr__(self):
         return f'<Student {self.email} {self.username}>'
@@ -26,8 +25,8 @@ class Students(db.Model):
             "username": self.username,
             "role": "student",
             "events": [event.serialize() for event in self.events],
-            "note": [student_notes.serialize() for student_notes in self.note],
-            "student_courses": [student_course.serialize() for student_course in self.student_courses],
+            "note": [student_notes.serialize() for student_notes in self.note], 
+            "courses": [course.serialize() for course in self.courses]
             # do not serialize the password, its a security breach
             "assignments": [assignment.serialize() for assignment in self.assignments]
         }
@@ -35,7 +34,7 @@ class Students(db.Model):
 class Events(db.Model):
     __tablename__ = 'events'
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('students.id', ondelete='CASCADE'), nullable=False)
     title = db.Column(db.String(255), nullable=False)
     start = db.Column(db.String(10), nullable=False)
     
@@ -60,6 +59,8 @@ class Teachers(db.Model):
     username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+
+    courses = db.relationship('Course', back_populates='teacher', lazy=True, cascade="all, delete")
  
     def __repr__(self):
         return f'<Teacher {self.email} {self.username}>' 
@@ -69,25 +70,42 @@ class Teachers(db.Model):
             "id": self.id,
             "email": self.email,
             "username": self.username,
-            "role": "teacher" 
-            # do not serialize the password, its a security breach
-        }
+            "role": "teacher",
+            "courses": [course.serialize() for course in self.courses],
 
+        }
+    
+    def serializeWithoutCourses(self):
+        return {
+            "id": self.id,
+            "email": self.email,
+            "username": self.username,
+            "role": "teacher",
+        }
+      
 class Course(db.Model):
     __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id', ondelete='CASCADE'), nullable=False)
+    description = db.Column(db.Text, nullable=False)
 
+    teacher = db.relationship('Teachers', back_populates='courses', lazy=True)
     # Relationship with Modules
-    modules = db.relationship('Module', backref='course', lazy=True, cascade="all, delete")
+    modules = db.relationship('Module', back_populates='course', lazy=True, cascade="all, delete")
 
     # Relationship with StudentCourse
-    student_courses = db.relationship('StudentCourse', backref='course', lazy=True, cascade="all, delete")
+    students = db.relationship('Students', secondary='student_courses', back_populates='courses', lazy=True)
+
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.name
+            "name": self.name,
+            "description": self.description,
+            "teacher_id": self.teacher_id,
+            "teacher": self.teacher.serializeWithoutCourses()
         }
+    
     def __repr__(self):
         return f"<Course {self.name}>"
 
@@ -100,8 +118,10 @@ class Module(db.Model):
     # Foreign key to Course
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), nullable=False)
 
+    course = db.relationship('Course', back_populates='modules', lazy=True)
+
     # Relationship with Topics
-    topics = db.relationship('Topic', backref='module', lazy=True, cascade="all, delete")
+    topics = db.relationship('Topic', back_populates='module', lazy=True, cascade="all, delete")
 
 class Assignment(db.Model):
     __tablename__='assignment'
@@ -133,8 +153,9 @@ class Topic(db.Model):
     # Foreign key to Module
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id', ondelete='CASCADE'), nullable=False)
     
+    module = db.relationship('Module', back_populates='topics', lazy=True)
     # Relationship to Resource
-    resources = db.relationship('Resource', backref='topic', cascade="all, delete-orphan", lazy=True)
+    resources = db.relationship('Resource', back_populates ='topic', cascade="all, delete-orphan", lazy=True)
 
             "name": self.name
         }
@@ -170,6 +191,8 @@ class Resource(db.Model):
     # Foreign key to Topic
     topic_id = db.Column(db.Integer, db.ForeignKey('topics.id', ondelete='CASCADE'), nullable=True)
 
+    topic = db.relationship('Topic', back_populates='resources', lazy=True)
+
     def serialize(self):
         return {
             "id": self.id,
@@ -182,8 +205,18 @@ class Resource(db.Model):
     
 class StudentCourse(db.Model):
     __tablename__ = 'student_courses'
-    user_id = db.Column(db.Integer, db.ForeignKey('students.id', ondelete='CASCADE'), primary_key=True)
+
+    student_id = db.Column(db.Integer, db.ForeignKey('students.id', ondelete='CASCADE'), primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), primary_key=True)
+
+    def serialize(self):
+        return {
+            "student_id": self.student_id,
+            "course_id": self.course_id
+        }
+    
+    def __repr__(self):
+        return f"<StudentCourse {self.student_id} {self.course_id}>"
 
 class Note(db.Model):
     __tablename__ = 'notes'
