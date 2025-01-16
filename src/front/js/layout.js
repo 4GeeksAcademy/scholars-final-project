@@ -14,6 +14,7 @@ import CardsCourses from "./component/dashboardComponents/CardsCourses.jsx";
 import MathCoursePage from "./component/dashboardComponents/MathCoursePage.jsx";
 import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
+import CoursesPage from "./pages/CoursesPage.jsx";
 import { TestHomeByNathan } from "./pages/testHomeByNathan";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import injectContext from "./store/appContext";
@@ -46,6 +47,7 @@ const Layout = () => {
                             <Route element={<Calendar />} path="calendar" />
                         </Route>
                         <Route element={<ClassPage />} path="/class-page" />
+                        <Route element={<CoursesPage />} path="/courses-page" />
                         <Route element={<MathCoursePage />} path="/mathcoursepage" />
                         <Route element={<TeacherDashboard />} path="/teacherdashboard" />
                         <Route element={<h1>Not found!</h1>} />
