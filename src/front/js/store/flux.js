@@ -228,7 +228,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           console.log('Course created');
           const data = await response.json();
-          setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: data.id, courseName: data.courseName }]}});
+          setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: data.id, courseName: data.courseName }] } });
         } else {
           throw new Error('Failed to create course');
         }
@@ -349,7 +349,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         if (response.ok) {
           const data = await response.json();
-          console.log("handleFetchAllCourses: ",data);
+          console.log("handleFetchAllCourses: ", data);
           setStore({ courses: data });
         } else {
           throw new Error('Failed to fetch courses');
@@ -371,7 +371,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           console.log('Course added to student');
           getActions().handleFetchUserInfo();
-          setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: courseId }] }});
+          setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: courseId }] } });
         } else {
           throw new Error('Failed to add course to student');
         }
@@ -399,30 +399,30 @@ const getState = ({ getStore, getActions, setStore }) => {
       // Fetches all courses assigned to a student
       getAllCourses: async () => {
         try {
-            // Retrieve the token from sessionStorage
-            const token = sessionStorage.getItem('jwtToken');
-             
-            const response = await fetch(`${process.env.BACKEND_URL}/api/student/courses`, {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-                    'Content-Type': 'application/json',
-                },
-            });
-    
-            if (!response.ok) {
-                const errorDetails = await response.json();
-                throw new Error(errorDetails.error || `Failed to fetch courses: ${response.statusText}`);
-            }
-    
-            const courseData = await response.json();
-            setStore({
-                AllCourses: courseData.AllCourses, // Update state with fetched courses
-            });
-    
-            console.log("Courses fetched successfully:", courseData);
+          // Retrieve the token from sessionStorage
+          const token = sessionStorage.getItem('jwtToken');
+
+          const response = await fetch(`${process.env.BACKEND_URL}/api/student/courses`, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            const errorDetails = await response.json();
+            throw new Error(errorDetails.error || `Failed to fetch courses: ${response.statusText}`);
+          }
+
+          const courseData = await response.json();
+          setStore({
+            AllCourses: courseData.AllCourses, // Update state with fetched courses
+          });
+
+          console.log("Courses fetched successfully:", courseData);
         } catch (error) {
-            console.error("Error fetching courses:", error.message);
+          console.error("Error fetching courses:", error.message);
         }
       },
       // Add a course to database
@@ -442,7 +442,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           const resp = await fetch(`${process.env.BACKEND_URL}/api/add-course`, {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify(POSTBody)
           });
@@ -465,7 +466,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           const response = await fetch(`${process.env.BACKEND_URL}/api/courses/${courseId}`, {
             method: "PUT",
             headers: {
-              "Content-Type": "application/json"
+              'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               name: updatedName
@@ -487,11 +489,16 @@ const getState = ({ getStore, getActions, setStore }) => {
       // Delete a course from database
       deleteCourse: async (courseID) => {
         try {
-          const response = await fetch(`${process.env.BACKEND_URL}/api/delete-course/${courseID}`, {
-            method: 'DELETE',
+          const token = sessionStorage.getItem('jwtToken');
+          if (!token) {
+            throw new Error("User is not authenticated. Please log in.");
+          } 
+          const response = await fetch(`${process.env.BACKEND_URL}/api/delete-course/${courseID}`,{
+            method: "DELETE",
             headers: {
-              'Content-Type': 'application/json',
-            },
+              'Authorization': `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }
           });
 
           if (!response.ok) {
@@ -512,7 +519,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         try {
           // Retrieve the token from sessionStorage
           const token = sessionStorage.getItem('jwtToken');
-           
+
           // Check if token is present
           if (!token) {
             throw new Error("User is not authenticated. Please log in.");
@@ -551,7 +558,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           // Retrieve the JWT token
           // Retrieve the token from sessionStorage
           const token = sessionStorage.getItem('jwtToken');
-           
+
           if (!token) {
             throw new Error("User is not authenticated. Please log in.");
           }
@@ -585,7 +592,17 @@ const getState = ({ getStore, getActions, setStore }) => {
       // Fetches resources by topic ID
       getResource: async (topicID) => {
         try {
-          const resp = await fetch(`${process.env.BACKEND_URL}/api/resources/by_topic/${topicID}`);
+          const token = sessionStorage.getItem('jwtToken');
+          if (!token) {
+            throw new Error("User is not authenticated. Please log in.");
+          } 
+          const resp = await fetch(`${process.env.BACKEND_URL}api/resources/by_topic/${topicID}`, {
+            method: "GET",
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              "Content-Type": "application/json"
+            }             
+          });
           if (!resp.ok) {
             throw new Error(`Failed to fetch resource: ${resp.statusText}`);
           }
@@ -593,6 +610,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
           // Extract URLs if resourceData is an array
           const urls = resourceData.map(resource => resource.url); // Convert to comma-separated string
+          console.error("urls: ", urls);
           return urls;
         } catch (error) {
           console.log("Error fetching resource from backend:", error);
@@ -604,7 +622,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           const response = await fetch(`${process.env.BACKEND_URL}/api/resources`, {
             method: "POST",
             headers: {
-              "Content-Type": "application/json"
+              'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               url: url,
@@ -629,7 +648,8 @@ const getState = ({ getStore, getActions, setStore }) => {
           const response = await fetch(`${process.env.BACKEND_URL}/api/resources/${resourceId}`, {
             method: "PUT",
             headers: {
-              "Content-Type": "application/json"
+              'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               url: url,
@@ -651,11 +671,16 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       deleteResource: async (resourceId) => {
         try {
-          const response = await fetch(`${process.env.BACKEND_URL}/api/resources/${resourceId}`, {
+          const token = sessionStorage.getItem('jwtToken');
+          if (!token) {
+            throw new Error("User is not authenticated. Please log in.");
+          } 
+          const response = await fetch(`${process.env.BACKEND_URL}/api/resources/${resourceId}`,{
             method: "DELETE",
             headers: {
+              'Authorization': `Bearer ${token}`,
               "Content-Type": "application/json"
-            }
+            } 
           });
 
           if (!response.ok) {

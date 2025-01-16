@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Context } from "../store/appContext.js";
 import AccordionMenu from "../component/AccordionMenu.js";
 import PopupChat from "../component/PopupChat.jsx";
 import Notebook from "../component/Notebook.jsx";
 
+
 export const ClassPage = () => {
   const { store, actions } = useContext(Context);
   const [resourceLink, setResourceLink] = useState("");
-  
+  const params = useParams();
+
   useEffect(() => {
     actions.getAllCourses();
   }, []);
@@ -40,11 +42,11 @@ export const ClassPage = () => {
 
   return (
     <div className="container-fluid p-0" style={{ height: "90vh" }}>
-      {console.log("ALL COURSESs",store?.AllCourses)}
+      {console.log("findCourse: ", findCourse(store.AllCourses, params.courseId))}
       <div class="row h-100">
         <div class="col-3 h-100">
           <AccordionMenu
-            modules={store?.AllCourses[0]?.modules}
+            modules={findCourse(store.AllCourses, params.courseId)?.modules}
             onTopicSelect={setResourceLink}
           />
         </div>
@@ -76,3 +78,16 @@ export const ClassPage = () => {
     </div>
   );
 };
+
+const findCourse = (AllCourse, ID) => {
+  for (const course of AllCourse) {
+    console.log("course id", course.id);
+    console.log("id:", parseInt(ID, 10));
+    if (course.id == parseInt(ID, 10)) {
+      console.log("course id", course.id);
+      return course;
+    }
+  }
+  return null;
+};
+

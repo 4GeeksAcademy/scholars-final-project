@@ -26,7 +26,7 @@ const AccordionMenu = ({ modules, onTopicSelect }) => {
       className="accordion accordion-flush overflow-auto mh-100"
       id="accordionFlushExample"
     > 
-      {modules.map((item, index) => (
+      {modules?.map((item, index) => (
         <div className="accordion-item" key={index}>
           <h2 className="accordion-header" id={`flush-heading${index}`}>
             <button
