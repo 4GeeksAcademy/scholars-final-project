@@ -253,7 +253,7 @@ def handle_chatbot():
     return jsonify(response_body), 200
  
 ############
-@api.route('/student/courses', methods=['GET'])
+@api.route('/student/courses', methods=['GET']) 
 @jwt_required()
 def get_student_courses():
     # Get the current user from the JWT
@@ -267,7 +267,7 @@ def get_student_courses():
 
 
     # Get all courses for the student
-    courses = Course.query.join(StudentCourse).filter(StudentCourse.user_id == student_id).all()
+    courses = Course.query.join(StudentCourse).filter(StudentCourse.student_id == student_id).all()
 
     result = []
     for course in courses:
