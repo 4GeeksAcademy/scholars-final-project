@@ -139,7 +139,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         sessionStorage.removeItem("jwtToken");
         sessionStorage.removeItem("userInfo");
         setStore({ user: null });
-        window.location.reload()
+        window.location.href = '/';
       },
 
       handleSignUp: async (username, email, password, role) => {
@@ -426,6 +426,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         if (response.ok) {
           console.log('Course added to student');
+          getActions().handleFetchUserInfo();
           setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: courseId }] }});
         } else {
           throw new Error('Failed to add course to student');

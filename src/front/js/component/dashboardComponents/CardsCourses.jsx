@@ -7,9 +7,9 @@ const CardsCourses = () =>{
     const {store, actions} = useContext(Context);
 
     useEffect(() => {
-        console.log('fetching all courses');
         actions.handleFetchAllCourses();
-    },[])
+        actions.handleFetchUserInfo();
+    },[]);
 
     return(
         <>
@@ -21,8 +21,8 @@ const CardsCourses = () =>{
             </div>
             <h1 className='text-center'>My Courses</h1>
             <div className='d-flex justify-content-center'>
-                {store.courses && store.user? store.courses.map((course, index) => {
-                    <></>
+                {store.user ? store.user.courses.map((course, index) => {
+                    return <Card key={index} course={ course }/>
                 }) : 'loading...'}
             </div>
         </>
