@@ -86,7 +86,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         sessionStorage.removeItem("jwtToken");
         sessionStorage.removeItem("userInfo");
         setStore({ user: null });
-        window.location.reload()
+        window.location.href = '/';
       },
 
       handleSignUp: async (username, email, password, role) => {
@@ -142,6 +142,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         console.log(response);
         if (response.ok) {
           const data = await response.json();
+          console.log(data);
           setStore({ user: data.user });
           sessionStorage.setItem('userInfo', JSON.stringify(data.user));
         } else {
@@ -209,6 +210,27 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(getStore());
         } else {
           throw new Error('Failed to delete event');
+        }
+      },
+
+      handleCreateCourse: async (courseName, courseDescription) => {
+        const response = await fetch(process.env.BACKEND_URL + 'api/create_course', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            course_name: courseName,
+            course_description: courseDescription,
+          }),
+        });
+        if (response.ok) {
+          console.log('Course created');
+          const data = await response.json();
+          setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: data.id, courseName: data.courseName }]}});
+        } else {
+          throw new Error('Failed to create course');
         }
       },
 
@@ -315,6 +337,63 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
         catch (error) {
           console.error("Error in deleteNote:", error);
+        }
+      },
+      handleFetchAllCourses: async () => {
+        const response = await fetch(process.env.BACKEND_URL + 'api/courses', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setStore({ courses: data });
+        } else {
+          throw new Error('Failed to fetch courses');
+        }
+      },
+      handleAddCourseToStudent: async (courseId) => {
+        console.log('Adding course to student');
+        console.log(courseId);
+        const response = await fetch(process.env.BACKEND_URL + 'api/add_course_to_student', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            course_id: courseId,
+          }),
+        });
+        if (response.ok) {
+          console.log('Course added to student');
+          getActions().handleFetchUserInfo();
+          setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: courseId }] }});
+        } else {
+          throw new Error('Failed to add course to student');
+        }
+      },
+      handleDropCourseFromStudent: async (courseId) => {
+        console.log('Dropping course from student');
+        console.log(courseId);
+        const response = await fetch(process.env.BACKEND_URL + 'api/drop_course_from_student', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            course_id: courseId,
+          }),
+        });
+        if (response.ok) {
+          console.log('Course dropped from student');
+          setStore({ user: { ...getStore().user, courses: getStore().user.courses.filter(course => course.id !== courseId) } });
+        } else {
+          throw new Error('Failed to drop course from student');
         }
       },
       // Fetches all courses assigned to a student
@@ -598,4 +677,3 @@ const getState = ({ getStore, getActions, setStore }) => {
 };
 
 export default getState;
-

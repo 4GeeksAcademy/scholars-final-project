@@ -416,7 +416,7 @@ def enroll_course():
         return jsonify({"error": "Missing required field: 'course_id'"}), 400
  
     # Check if the course exists
-    course = Course.query.get(data['course_id'])
+    course = Course.query.get(course_id)
     if not course:
         return jsonify({"error": "Course not found"}), 404
 
@@ -637,7 +637,6 @@ def delete_note(note_id):
     db.session.commit()
     return jsonify({"message":"Note deleted"}), 200
 
-
 @api.route("/assignments", methods=["GET"])
 def get_all_assignments():
 
@@ -691,3 +690,38 @@ def create_assignment():
 
     except Exception as e:
         return jsonify({"message": "An unexpected error occurred.", "error": str(e)}), 500
+
+@api.route('/create_course', methods=['POST'])
+@jwt_required()
+def create_course():
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role != 'teacher':
+        return jsonify({'error': 'Only teachers can create courses'}, 403)
+    course_name = request.json.get('course_name')
+    course_description = request.json.get('course_description')
+    if not course_name:
+        return jsonify({'error': 'Course name is required'}, 400)
+    new_course = Course(name=course_name, description=course_description, teacher_id=user_id)
+
+    db.session.add(new_course)
+    db.session.commit()
+    return jsonify(new_course.serialize()), 201
+
+
+@api.route('/drop_course_from_student', methods=['POST'])
+@jwt_required()
+def drop_course():
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role != 'student':
+        return jsonify({'error': 'Only students can drop courses'}, 403)
+    course_id = request.json.get('course_id')
+    if not course_id:
+        return jsonify({'error': 'Course ID is required'}, 400)
+    student_course = StudentCourse.query.filter_by(student_id=user_id, course_id=course_id).first()
+    if not student_course:
+        return jsonify({'error': 'Student is not enrolled in that course'}, 404)
+    db.session.delete(student_course)
+    db.session.commit()
+    return jsonify({'message': 'Course dropped successfully'}), 200
