@@ -252,6 +252,7 @@ def handle_chatbot():
     }
     return jsonify(response_body), 200
  
+############
 @api.route('/student/courses', methods=['GET'])
 @jwt_required()
 def get_student_courses():
@@ -263,6 +264,7 @@ def get_student_courses():
     # Check if the user is a student
     if role != 'student':
         return jsonify({"error": "Only students can access their courses"}), 403
+
 
     # Get all courses for the student
     courses = Course.query.join(StudentCourse).filter(StudentCourse.user_id == student_id).all()
@@ -402,7 +404,7 @@ def add_course():
 
 @api.route('/enroll-course', methods=['POST'])
 @jwt_required()
-def enroll_course():
+def add_course_to_student():
     current_user = get_jwt_identity()
     student_id, role = current_user.split('|')
 
@@ -416,7 +418,7 @@ def enroll_course():
         return jsonify({"error": "Missing required field: 'course_id'"}), 400
  
     # Check if the course exists
-    course = Course.query.get(course_id)
+    course = Course.query.get(data['course_id'])
     if not course:
         return jsonify({"error": "Course not found"}), 404
 
@@ -489,30 +491,23 @@ def update_course(course_id):
 @api.route('/delete-course/<int:course_id>', methods=['DELETE'])
 @jwt_required()
 def delete_course(course_id):
-    current_user = get_jwt_identity()
-    user_id, role = current_user.split('|')
-
-    if role != 'student':
-        return jsonify({"error": "Only students can delete courses"}), 403
-
-    course = Course.query.get(course_id)
-    if not course:
-        return jsonify({"error": "Course not found"}), 404
-
-    db.session.delete(course)
-    db.session.commit()
-    return jsonify({"message": f"Course with ID {course_id} deleted successfully"}), 200
-    # Find the course by its ID
-    course = Course.query.get(course_id)
     
-    if not course:
-        return jsonify({"error": "Course not found"}), 404
-
     try:
-        # Delete the course
+        current_user = get_jwt_identity()
+        user_id, role = current_user.split('|')
+
+        if role != 'student':
+            return jsonify({"error": "Only students can delete courses"}), 403
+
+        course = Course.query.get(course_id)
+        if not course:
+            return jsonify({"error": "Course not found"}), 404
+        
         db.session.delete(course)
         db.session.commit()
         return jsonify({"message": f"Course with ID {course_id} deleted successfully"}), 200
+        # Find the course by its ID
+    
     except Exception as e:
         db.session.rollback()  # Rollback in case of an error
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
@@ -643,12 +638,11 @@ def get_all_assignments():
     all_assignments = Assignment.query.all()
 
     if not all_assignments:
-        return jsonify([]), 
+        return jsonify([]) 
     
     # Serialize assignments and return them in the response
     all_assignments = list(map(lambda x: x.serialize(), all_assignments))
     return jsonify(all_assignments), 200
-
 
 @api.route("/assignments/<int:assignment_id>", methods=["GET"])
 def get_assignment(assignment_id):
@@ -659,7 +653,6 @@ def get_assignment(assignment_id):
     
     single_assignment = single_assignment.serialize()
     return jsonify(single_assignment), 200
-
 
 @api.route("/assignments", methods=["POST"])
 def create_assignment():
@@ -683,7 +676,7 @@ def create_assignment():
         # Serialize the newly created assignment and return it in the response
         serialized_assignment = new_assignment.serialize()
 
-        return jsonify(serialized_assignment),
+        return jsonify(serialized_assignment)
 
     except APIException as e:
         return jsonify({"message": str(e)}), e.status_code
@@ -707,7 +700,6 @@ def create_course():
     db.session.add(new_course)
     db.session.commit()
     return jsonify(new_course.serialize()), 201
-
 
 @api.route('/drop_course_from_student', methods=['POST'])
 @jwt_required()

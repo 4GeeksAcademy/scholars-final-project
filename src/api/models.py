@@ -9,9 +9,8 @@ class Students(db.Model):
     username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-
     assignments = db.relationship("student_assignment", backref="student")
-    courses = db.relationship('Course', secondary='student_courses', back_populates='students')
+    student_courses = db.relationship('StudentCourse', backref='students', lazy=True)
     events = db.relationship('Events', back_populates='student', cascade='all, delete-orphan')
     note = db.relationship('Note', back_populates='student', cascade='all, delete-orphan')
  
@@ -24,13 +23,13 @@ class Students(db.Model):
             "email": self.email,
             "username": self.username,
             "role": "student",
+            "student": self.student_courses,
             "events": [event.serialize() for event in self.events],
             "note": [student_notes.serialize() for student_notes in self.note], 
-            "courses": [course.serialize() for course in self.courses]
+            "courses": [course.serialize() for course in self.courses],
             # do not serialize the password, its a security breach
             "assignments": [assignment.serialize() for assignment in self.assignments]
         }
-
 
 class Events(db.Model):
     __tablename__ = 'events'
@@ -51,7 +50,6 @@ class Events(db.Model):
             "title": self.title,
             "start": self.start,
         }
-    
 
 class Teachers(db.Model):
     __tablename__ = 'teachers'
@@ -103,13 +101,11 @@ class Course(db.Model):
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "teacher_id": self.teacher_id,
-            "teacher": self.teacher.serializeWithoutCourses()
+            "teacher_id": self.teacher_id 
         }
 
     def __repr__(self):
         return f"<Course {self.name}>"
-
 
 class Module(db.Model):
     __tablename__ = 'modules'
@@ -144,8 +140,7 @@ class Assignment(db.Model):
         }
 
     def __repr__(self):
-        return f"<Module {self.name}>"
-
+        return f"<Assignment {self.title}>"
 
 class Topic(db.Model):
     __tablename__ = 'topics'
@@ -187,16 +182,12 @@ class student_assignment(db.Model):
             "grade": self.grade
         }
 
-
-
 class Resource(db.Model):
     __tablename__ = 'resources'
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(300), nullable=False)
     # Foreign key to Topic
     topic_id = db.Column(db.Integer, db.ForeignKey('topics.id', ondelete='CASCADE'), nullable=True)
-
-    topic = db.relationship('Topic', back_populates='resources', lazy=True)
 
     def serialize(self):
         return {
@@ -206,8 +197,7 @@ class Resource(db.Model):
         }
 
     def __repr__(self):
-        return f"<Resource {self.url} (Topic ID: {self.topic_id})>"
-    
+        return f"<Resource {self.url} (Topic ID: {self.topic_id})>"  
 
 class StudentCourse(db.Model):
     __tablename__ = 'student_courses'

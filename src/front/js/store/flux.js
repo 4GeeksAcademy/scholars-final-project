@@ -425,8 +425,6 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.error("Error fetching courses:", error.message);
         }
       },
-    
-    
       // Add a course to database
       addCourse: async (POSTBody) => {
 
