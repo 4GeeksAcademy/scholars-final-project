@@ -1,8 +1,8 @@
-"""Notes Table Added
+"""empty message
 
-Revision ID: d70efa9486e1
-Revises:
-Create Date: 2025-01-13 20:58:16.613019
+Revision ID: b6cbe3336ea2
+Revises: d70efa9486e1
+Create Date: 2025-01-14 04:29:21.694909
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd70efa9486e1'
-down_revision = None
+revision = 'b6cbe3336ea2'
+down_revision = 'd70efa9486e1'
 branch_labels = None
 depends_on = None
 
@@ -40,6 +40,14 @@ def upgrade():
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('username')
+    )
+    op.create_table('events',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('student_id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=255), nullable=False),
+    sa.Column('start', sa.String(length=10), nullable=False),
+    sa.ForeignKeyConstraint(['student_id'], ['students.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('modules',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -88,6 +96,7 @@ def downgrade():
     op.drop_table('topics')
     op.drop_table('student_courses')
     op.drop_table('modules')
+    op.drop_table('events')
     op.drop_table('teachers')
     op.drop_table('students')
     op.drop_table('courses')

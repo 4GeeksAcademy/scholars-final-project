@@ -2,11 +2,8 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
-
-import { Home } from "./pages/home";
 import HomePage from "./pages/HomePage.jsx";
 import { Demo } from "./pages/demo";
-import { Single } from "./pages/single";
 import DashBoard from "./pages/dashboard.jsx";
 import Assignments from "./component/dashboardComponents/Assignments.jsx";
 import Calendar from "./component/dashboardComponents/Calendar.jsx";
@@ -15,10 +12,8 @@ import MathCoursePage from "./component/dashboardComponents/MathCoursePage.jsx";
 import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import CoursesPage from "./pages/CoursesPage.jsx";
-import { TestHomeByNathan } from "./pages/testHomeByNathan";
-import TeacherDashboard from "./pages/TeacherDashboard.jsx";
+import { TestTeacherDashboard } from "./pages/testTeacherDashboard";
 import injectContext from "./store/appContext";
-
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { ClassPage } from "./pages/ClassPage";
@@ -37,6 +32,7 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
+                        <Route element={<TestTeacherDashboard />} path="/testTeacherDashboard" />
                         <Route element={<HomePage />} path="/" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<DashBoard />} path="/dashboard" >
