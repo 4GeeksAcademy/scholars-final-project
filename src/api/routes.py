@@ -2,7 +2,10 @@
 import time
 #import requests
 from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
-from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events, Note
+
+from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events, Note,Assignment
+
+
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -634,3 +637,58 @@ def delete_note(note_id):
     db.session.delete(note)
     db.session.commit()
     return jsonify({"message":"Note deleted"}), 200
+
+
+@api.route("/assignments", methods=["GET"])
+def get_all_assignments():
+
+    all_assignments = Assignment.query.all()
+
+    if not all_assignments:
+        return jsonify([]), 
+    
+    # Serialize assignments and return them in the response
+    all_assignments = list(map(lambda x: x.serialize(), all_assignments))
+    return jsonify(all_assignments), 200
+
+
+@api.route("/assignments/<int:assignment_id>", methods=["GET"])
+def get_assignment(assignment_id):
+    single_assignment = Assignment.query.get(assignment_id)
+
+    if single_assignment is None:
+        raise APIException(f'Assignment ID {assignment_id} is not found!', status_code=404)
+    
+    single_assignment = single_assignment.serialize()
+    return jsonify(single_assignment), 200
+
+
+@api.route("/assignments", methods=["POST"])
+def create_assignment():
+    try:
+        # Parse the incoming JSON data from the request
+        data = request.get_json()
+
+        if not data or 'title' not in data or 'deadline' not in data:
+            raise APIException("Missing required fields: 'title' and 'deadline'", status_code=400)
+
+        # Create a new Assignment object from the data
+        new_assignment = Assignment(
+            title=data['title'],
+            deadline=data['deadline']  # Make sure 'due_date' is in the correct format (datetime)
+        )
+
+        # Add the new assignment to the session and commit to the database
+        db.session.add(new_assignment)
+        db.session.commit()
+
+        # Serialize the newly created assignment and return it in the response
+        serialized_assignment = new_assignment.serialize()
+
+        return jsonify(serialized_assignment),
+
+    except APIException as e:
+        return jsonify({"message": str(e)}), e.status_code
+
+    except Exception as e:
+        return jsonify({"message": "An unexpected error occurred.", "error": str(e)}), 500
