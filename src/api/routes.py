@@ -131,8 +131,7 @@ def authenticate_user():
 @jwt_required()
 def protected():
     print('protected')
-    current_user = get_jwt_identity()
-    print(current_user)
+    current_user = get_jwt_identity() 
     user_id, role = current_user.split('|')
     print('current_user_id:' + user_id + ', role: ' + role)
 
@@ -403,7 +402,7 @@ def add_course():
 
 @api.route('/enroll-course', methods=['POST'])
 @jwt_required()
-def add_course_to_student():
+def enroll_course():
     current_user = get_jwt_identity()
     student_id, role = current_user.split('|')
 

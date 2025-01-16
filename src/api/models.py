@@ -139,7 +139,9 @@ class Topic(db.Model):
     
     # Relationship to Resource
     resources = db.relationship('Resource', backref='topic', cascade="all, delete-orphan", lazy=True)
-
+    def serialize(self):
+        return {
+            "id": self.id,
             "name": self.name
         }
 
@@ -190,7 +192,11 @@ class StudentCourse(db.Model):
     __tablename__ = 'student_courses'
     user_id = db.Column(db.Integer, db.ForeignKey('students.id', ondelete='CASCADE'), primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), primary_key=True)
-
+    def serialize(self):
+        return {
+            "user_id": self.user_id,
+            "course_id": self.course_id
+        }
 
 class Note(db.Model):
     __tablename__ = 'notes'

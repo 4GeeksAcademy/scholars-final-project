@@ -1,9 +1,12 @@
-import React, { useActionState, useState, useContext } from "react";
+import React, { useActionState, useState, useContext, useEffect } from "react";
 import { Context } from "../store/appContext.js";
 import { Link } from "react-router-dom";
 
 const AccordionMenu = ({ modules, onTopicSelect }) => {
   const { actions } = useContext(Context);
+
+  
+
   const handleClick =  (resource) => {
     resource.then((data) => {
       console.log("Resolved data:", data );
@@ -22,8 +25,7 @@ const AccordionMenu = ({ modules, onTopicSelect }) => {
     <div
       className="accordion accordion-flush overflow-auto mh-100"
       id="accordionFlushExample"
-    >
-       
+    > 
       {modules.map((item, index) => (
         <div className="accordion-item" key={index}>
           <h2 className="accordion-header" id={`flush-heading${index}`}>
