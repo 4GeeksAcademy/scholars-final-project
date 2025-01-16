@@ -349,7 +349,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
+          console.log("handleFetchAllCourses: ",data);
           setStore({ courses: data });
         } else {
           throw new Error('Failed to fetch courses');

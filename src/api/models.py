@@ -23,10 +23,9 @@ class Students(db.Model):
             "email": self.email,
             "username": self.username,
             "role": "student",
-            "student": self.student_courses,
             "events": [event.serialize() for event in self.events],
             "note": [student_notes.serialize() for student_notes in self.note], 
-            "courses": [course.serialize() for course in self.courses],
+            "student_courses": [course.serialize() for course in self.student_courses],
             # do not serialize the password, its a security breach
             "assignments": [assignment.serialize() for assignment in self.assignments]
         }
