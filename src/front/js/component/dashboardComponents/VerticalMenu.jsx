@@ -55,7 +55,7 @@ const VerticalMenu = () => {
       )
 };
 
-const styles = {
+export const styles = {
   menuContainer: {
     width: '200px',
     height: '100vh',

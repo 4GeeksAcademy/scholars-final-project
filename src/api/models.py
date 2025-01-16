@@ -10,6 +10,7 @@ class Students(db.Model):
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
+    assignments = db.relationship("student_assignment", backref="student")
     courses = db.relationship('Course', secondary='student_courses', back_populates='students')
     events = db.relationship('Events', back_populates='student', cascade='all, delete-orphan')
     note = db.relationship('Note', back_populates='student', cascade='all, delete-orphan')
@@ -27,6 +28,7 @@ class Students(db.Model):
             "note": [student_notes.serialize() for student_notes in self.note], 
             "courses": [course.serialize() for course in self.courses]
             # do not serialize the password, its a security breach
+            "assignments": [assignment.serialize() for assignment in self.assignments]
         }
 
 class Events(db.Model):
@@ -80,7 +82,7 @@ class Teachers(db.Model):
             "username": self.username,
             "role": "teacher",
         }
-    
+      
 class Course(db.Model):
     __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
@@ -121,10 +123,23 @@ class Module(db.Model):
     # Relationship with Topics
     topics = db.relationship('Topic', back_populates='module', lazy=True, cascade="all, delete")
 
+class Assignment(db.Model):
+    __tablename__='assignment'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(120), unique=False, nullable=False)
+    deadline = db.Column(db.DateTime, unique=False, nullable=False)
+    isCompleted = db.Column(db.Boolean, unique=False, nullable=False)
+
+    student_assignment = db.relationship("student_assignment", backref="assignment", lazy=True)
+    #course = db.relationship("course", backref="assignment", lazy=True)
+
+
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.name
+            "title": self.title,
+            "deadline": self.deadline,
+            "isCompleted": self.isCompleted
         }
 
     def __repr__(self):
@@ -142,13 +157,32 @@ class Topic(db.Model):
     # Relationship to Resource
     resources = db.relationship('Resource', back_populates ='topic', cascade="all, delete-orphan", lazy=True)
 
-    def serialize(self):
-        return {
-            "id": self.id,
             "name": self.name
         }
     def __repr__(self):
         return f"<Topic {self.name} (Module ID: {self.module_id})>"
+
+class student_assignment(db.Model):
+    __tablename__='student_assignment'
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    assignment_id = db.Column(db.Integer, db.ForeignKey("assignment.id"), unique=False, nullable=False)
+    submitted_at = db.Column(db.DateTime, unique=False, nullable=False)
+    grade = db.Column(db.String(10), unique=False, nullable=False)
+    
+    #assignment = db.relationship("Assignment", backref="student_assignment")
+
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "student_id": self.student_id,
+            "assignment_id": self.assignment_id,
+            "submitted_at": self.submitted_at,
+            "grade": self.grade
+        }
+
+
 
 class Resource(db.Model):
     __tablename__ = 'resources'
@@ -199,4 +233,5 @@ class Note(db.Model):
             'student_id': self.student_id,
             'topic_id': self.topic_id
         }
+
 
