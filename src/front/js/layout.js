@@ -13,7 +13,6 @@ import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import CoursesPage from "./pages/CoursesPage.jsx";
 import { TestTeacherDashboard } from "./pages/testTeacherDashboard";
-import TeacherDashboard from "./pages/TeacherDashboard.jsx"
 import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";

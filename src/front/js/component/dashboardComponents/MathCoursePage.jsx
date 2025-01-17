@@ -18,20 +18,20 @@ let lessons = []
     
 // })
 
-// fetch("...")
-//     .then(res => res.json())
-//     .then(data => {
-//         lessons = data.map(lesson => {
+fetch("...")
+    .then(res => res.json())
+    .then(data => {
+        lessons = data.map(lesson => {
 
-//         const card = lessonCardTemplate.content.cloneNode(true)
-//         const header = card.querySelector("[data-header]")
-//         const body = card.querySelector("[data-body]")
-//         header.textContent = lesson.title
-//         body.textContent = lesson.author
-//         lessonCardContainer.append(card)
-//         return{title: lesson.title, author: lesson.author, element: card}
-//         })
-//     })
+        const card = lessonCardTemplate.content.cloneNode(true)
+        const header = card.querySelector("[data-header]")
+        const body = card.querySelector("[data-body]")
+        header.textContent = lesson.title
+        body.textContent = lesson.author
+        lessonCardContainer.append(card)
+        return{title: lesson.title, author: lesson.author, element: card}
+        })
+    })
 
 const MathCoursePage = () => {
 

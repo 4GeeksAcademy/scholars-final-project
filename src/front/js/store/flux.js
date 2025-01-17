@@ -2,25 +2,78 @@ const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
       message: null,
-      notes: [],
-      //Courses that are assigned to student
-      AllCourses: [{
-        id: null, // placeholder for course ID
+      notes:[],
+      demo: {
+        courseId: "MATH101",
+        courseName: "Mathematics",
+        selectedModule: null,
+        selectedTopic: null,
         modules: [
           {
-            id: null, // placeholder for module ID
-            name: "module", // Default string value
+            moduleId: "MOD1",
+            moduleName: "Algebra Basics",
             topics: [
               {
-                id: null, // placeholder for topic ID
-                name: "topic", // Default string value
-              }
-            ]
-
-          }
+                topic: "Linear Equations",
+                resource:
+                  "https://www.youtube.com/embed/vDqOoI-4Z6M?list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://www.youtube.com/watch?v=vDqOoI-4Z6M&list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg&t=7s",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+            ],
+          },
+          {
+            moduleId: "MOD1",
+            moduleName: "Algebra Basics",
+            topics: [
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+            ],
+          },
+          {
+            moduleId: "MOD1",
+            moduleName: "Algebra Basics",
+            topics: [
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+              {
+                topic: "Linear Equations",
+                resource:
+                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
+              },
+            ],
+          },
         ],
-        name: "course" // Default string value for course name
-      }],
+      },
       token: sessionStorage.getItem('jwtToken'),
     },
     actions: {
@@ -151,7 +204,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
 
       handleCreateEvent: async (title, start) => {
-        const response = await fetch(process.env.BACKEND_URL + 'api/create_event', {
+        const response = await fetch(process.env.BACKEND_URL + 'api/create_event', { 
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
@@ -258,35 +311,36 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       getNotes: async () => {
         const token = localStorage.getItem('jwtToken');
-
-        const response = await fetch('/notes', {
+        
+        const response = await fetch('/notes',{
           method: 'GET',
-          headers: {
+          headers:{
             'Authorization': `Bearer ${token}`,
           }
         });
         const data = await response.json();
-        if (data.error) {
+        if(data.error){
           console.error('Error', data.error);
         }
-        setStore({ notes: data })
+        setStore({notes:data})
       },
-      addNote: async (content, topicId, studentID) => {
-        try {
+
+      addNote: async (content , topicId, studentID) => {
+        try{
           const response = await fetch(process.env.BACKEND_URL + '/api/notes', {
             method: 'POST',
-            headers: {
+            headers:{
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ content: content, topicId: topicId, studentID: studentID })
+            body: JSON.stringify({content:content, topicId:topicId, studentID:studentID})
           });
 
-          if (response.ok) {
+          if(response.ok) {
             const newNote = await response.json();
             const store = getStore();
-            setStore({ notes: [...store.notes, newNote] });
+            setStore({notes: [... store.notes, newNote]});
           }
-          else {
+          else{
             console.error("Error when adding note")
           }
         }
@@ -294,50 +348,52 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.error("Error in addNote:", error);
         }
       },
-      editNote: async (noteId, updateContent) => {
-        try {
+
+      editNote: async (noteId , updateContent) => {
+        try{
           const response = await fetch(process.env.BACKEND_URL + `/api/notes/${noteId}`, {
             method: 'PUT',
-            headers: {
+            headers:{
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ content: updateContent })
+            body: JSON.stringify({content:updateContent})
           });
 
-          if (response.ok) {
+          if(response.ok) {
             const updateNote = await response.json();
             const store = getStore();
             setStore({
               note: store.notes.map((note) => note.id == noteId ? updateNote : note)
             })
           }
-          else {
+          else{
             console.error("Error when editing note")
           }
         }
-        catch (error) {
-          console.error("Error in editNote:", error);
-        }
+          catch (error) {
+            console.error("Error in editNote:", error);
+          }
       },
+
       deleteNote: async (noteId) => {
-        try {
+        try{
           const response = await fetch(process.env.BACKEND_URL + `/api/notes/${noteId}`, {
             method: 'DELETE'
           });
 
-          if (response.ok) {
+          if(response.ok) {
             const store = getStore();
-            setStore({
+            setStore ({
               notes: store.notes.filter((note) => note.id != noteId)
             })
           }
-          else {
+          else{
             console.error("Error when deleting note")
           }
         }
-        catch (error) {
-          console.error("Error in deleteNote:", error);
-        }
+          catch (error) {
+            console.error("Error in deleteNote:", error);
+          }
       },
       handleFetchAllCourses: async () => {
         const response = await fetch(process.env.BACKEND_URL + 'api/courses', {
@@ -349,7 +405,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         if (response.ok) {
           const data = await response.json();
-          console.log("handleFetchAllCourses: ",data);
+          console.log(data);
           setStore({ courses: data });
         } else {
           throw new Error('Failed to fetch courses');
@@ -394,280 +450,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           setStore({ user: { ...getStore().user, courses: getStore().user.courses.filter(course => course.id !== courseId) } });
         } else {
           throw new Error('Failed to drop course from student');
-        }
-      },
-      // Fetches all courses assigned to a student
-      getAllCourses: async () => {
-        try {
-            // Retrieve the token from sessionStorage
-            const token = sessionStorage.getItem('jwtToken');
-             
-            const response = await fetch(`${process.env.BACKEND_URL}/api/student/courses`, {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-                    'Content-Type': 'application/json',
-                },
-            });
-    
-            if (!response.ok) {
-                const errorDetails = await response.json();
-                throw new Error(errorDetails.error || `Failed to fetch courses: ${response.statusText}`);
-            }
-    
-            const courseData = await response.json();
-            setStore({
-                AllCourses: courseData.AllCourses, // Update state with fetched courses
-            });
-    
-            console.log("Courses fetched successfully:", courseData);
-        } catch (error) {
-            console.error("Error fetching courses:", error.message);
-        }
-      },
-      // Add a course to database
-      addCourse: async (POSTBody) => {
-
-        // Example POST body
-        // {
-        //   name: "",
-        //   modules: [
-        //       {
-        //           name: "",
-        //           topics: [""]
-        //       }
-        //   ]
-        // }
-        try {
-          const resp = await fetch(`${process.env.BACKEND_URL}/api/add-course`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(POSTBody)
-          });
-
-          if (!resp.ok) {
-            throw new Error(`Failed to fetch course: ${resp.statusText}`);
-          }
-          console.log(await resp.json());
-          setStore({ AllCourses: POSTBody });
-
-        }
-        catch (error) {
-          console.log("Error sending message to backend", error);
-
-        }
-      },
-      // Update course
-      updateCourse: async (courseId, updatedName) => {
-        try {
-          const response = await fetch(`${process.env.BACKEND_URL}/api/courses/${courseId}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              name: updatedName
-            })
-          });
-
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || "Failed to update the course.");
-          }
-
-          const data = await response.json();
-          console.log("Course updated successfully:", data);
-          return data;
-        } catch (error) {
-          console.error("Error updating the course:", error.message);
-        }
-      },
-      // Delete a course from database
-      deleteCourse: async (courseID) => {
-        try {
-          const response = await fetch(`${process.env.BACKEND_URL}/api/delete-course/${courseID}`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-
-          if (!response.ok) {
-            const errorMsg = await response.text();
-            throw new Error(`Failed to delete course: ${errorMsg}`);
-          }
-          const result = await response.json();
-          console.log(result.message); // Log the success message
-
-          return true; // Indicate successful deletion
-        } catch (error) {
-          console.error('Error deleting course:', error);
-          return false; // Indicate failure
-        }
-      },
-      // Assign course to student
-      enrollStudent: async (courseID) => {
-        try {
-          // Retrieve the token from sessionStorage
-          const token = sessionStorage.getItem('jwtToken');
-           
-          // Check if token is present
-          if (!token) {
-            throw new Error("User is not authenticated. Please log in.");
-          }
-
-          const POSTBody = {
-            course_id: courseID
-          };
-
-          const resp = await fetch(`${process.env.BACKEND_URL}/api/assign-course`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json' // Add Content-Type header
-            },
-            body: JSON.stringify(POSTBody)
-          });
-
-          if (!resp.ok) {
-            // Try to extract error details from response
-            const errorDetails = await resp.json();
-            throw new Error(errorDetails.error || `Failed to enroll in course: ${resp.statusText}`);
-          }
-
-          const courseData = await resp.json();
-          setStore(courseData);
-
-          console.log("Enrolled in course successfully:", courseData);
-        } catch (error) {
-          console.error("Error enrolling in course:", error.message);
-        }
-      },
-      // Remove course from student
-      unEnrollStudent: async (courseID) => {
-        try {
-          // Retrieve the JWT token
-          // Retrieve the token from sessionStorage
-          const token = sessionStorage.getItem('jwtToken');
-           
-          if (!token) {
-            throw new Error("User is not authenticated. Please log in.");
-          }
-
-          const response = await fetch(`${process.env.BACKEND_URL}/api/unenroll-course`, {
-            method: "DELETE",
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              course_id: courseID
-            })
-          });
-
-          // Parse response
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.error || "Failed to remove course.");
-          }
-          setStore({
-            Allcourses: store.AllCourses.filter(course => course.id !== courseID)
-          });
-          console.log("Course removed successfully:", data);
-          return data;
-        } catch (error) {
-          console.error("Error removing course:", error.message);
-        }
-      },
-      // Fetches resources by topic ID
-      getResource: async (topicID) => {
-        try {
-          const resp = await fetch(`${process.env.BACKEND_URL}/api/resources/by_topic/${topicID}`);
-          if (!resp.ok) {
-            throw new Error(`Failed to fetch resource: ${resp.statusText}`);
-          }
-          const resourceData = await resp.json(); // Parse JSON response
-
-          // Extract URLs if resourceData is an array
-          const urls = resourceData.map(resource => resource.url); // Convert to comma-separated string
-          return urls;
-        } catch (error) {
-          console.log("Error fetching resource from backend:", error);
-          return null; // Handle errors gracefully
-        }
-      },
-      createResource: async (url, topicId) => {
-        try {
-          const response = await fetch(`${process.env.BACKEND_URL}/api/resources`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              url: url,
-              topic_id: topicId
-            })
-          });
-
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || "Failed to create resource.");
-          }
-
-          const data = await response.json();
-          console.log("Resource created successfully:", data);
-          return data;
-        } catch (error) {
-          console.error("Error creating resource:", error.message);
-        }
-      },
-      updateResource: async (resourceId, url, topicId) => {
-        try {
-          const response = await fetch(`${process.env.BACKEND_URL}/api/resources/${resourceId}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              url: url,
-              topic_id: topicId
-            })
-          });
-
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || "Failed to update resource.");
-          }
-
-          const data = await response.json();
-          console.log("Resource updated successfully:", data);
-          return data;
-        } catch (error) {
-          console.error("Error updating resource:", error.message);
-        }
-      },
-      deleteResource: async (resourceId) => {
-        try {
-          const response = await fetch(`${process.env.BACKEND_URL}/api/resources/${resourceId}`, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json"
-            }
-          });
-
-          if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || "Failed to delete resource.");
-          }
-
-          const data = await response.json();
-          console.log("Resource deleted successfully:", data);
-          return data;
-        } catch (error) {
-          console.error("Error deleting resource:", error.message);
         }
       },
     }
