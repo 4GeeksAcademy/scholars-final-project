@@ -8,6 +8,10 @@ import Notebook from "../component/Notebook.jsx";
 export const ClassPage = () => {
   const { store, actions } = useContext(Context);
   const [resourceLink, setResourceLink] = useState("");
+  
+  useEffect(() => {
+    actions.getAllCourses();
+  }, []);
 
   const getEmbedLink = (url) => {
     const urlObj = new URL(url);
@@ -36,10 +40,11 @@ export const ClassPage = () => {
 
   return (
     <div className="container-fluid p-0" style={{ height: "90vh" }}>
+      {console.log("ALL COURSESs",store?.AllCourses)}
       <div class="row h-100">
         <div class="col-3 h-100">
           <AccordionMenu
-            modules={store.demo.modules}
+            modules={store?.AllCourses[0]?.modules}
             onTopicSelect={setResourceLink}
           />
         </div>
