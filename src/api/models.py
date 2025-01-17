@@ -26,7 +26,7 @@ class Students(db.Model):
             "role": "student",
             "events": [event.serialize() for event in self.events],
             "note": [student_notes.serialize() for student_notes in self.note], 
-            "courses": [course.serialize() for course in self.courses]
+            "courses": [course.serialize() for course in self.courses],
             # do not serialize the password, its a security breach
             "assignments": [assignment.serialize() for assignment in self.assignments]
         }
@@ -157,6 +157,9 @@ class Topic(db.Model):
     # Relationship to Resource
     resources = db.relationship('Resource', back_populates ='topic', cascade="all, delete-orphan", lazy=True)
 
+    def serialize(self):
+        return {
+            "id": self.id,
             "name": self.name
         }
     def __repr__(self):
