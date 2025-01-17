@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../../store/appContext.js";
+import { Context } from "../store/appContext.js";
 
-import Card from "./Card.jsx";
+import Card from "../component/dashboardComponents/Card.jsx";
 
-const CardsCourses = () =>{
+
+const CoursesPage = () =>{
     const {store, actions} = useContext(Context);
 
     useEffect(() => {
@@ -11,7 +12,7 @@ const CardsCourses = () =>{
         actions.handleFetchUserInfo();
     },[]);
 
-    return(
+    return (
         <>
             <h1 className='text-center'>All Courses</h1>
             <div className='d-flex justify-content-center'>
@@ -19,8 +20,9 @@ const CardsCourses = () =>{
                     return <Card key={index} course={ course }/>
                 }) : 'loading...'}
             </div>
-            <h1 className='text-center'>My Courses</h1>
+            
             <div className='d-flex justify-content-center'>
+                {store.user && <h1 className='text-center'>My Courses</h1>}
                 {store.user ? store.user.courses.map((course, index) => {
                     return <Card key={index} course={ course }/>
                 }) : 'loading...'}
@@ -29,4 +31,4 @@ const CardsCourses = () =>{
     )
 }
 
-export default CardsCourses;
+export default CoursesPage;

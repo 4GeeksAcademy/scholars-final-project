@@ -1,7 +1,32 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { Context } from "../../store/appContext";
 import { Link } from "react-router-dom";
 
-const Card = () => {
+
+
+
+const Card = ({ course }) => {
+  const { store, actions } = useContext(Context);
+
+  useEffect(() => {
+  }, [store.user]);
+
+  const isUserSignedUp = (courseId) => {
+    if (!store.user || !store.user.courses) return false;
+    const isSignedUp = store.user.courses.some((a) => {
+      return a.id === courseId;
+    });
+    return isSignedUp;
+  };
+
+  const handleAddCourseToStudent = () => {
+    actions.handleAddCourseToStudent(course.id);
+  }
+
+  const handleDropCourseFromStudent = () => {
+    actions.handleDropCourseFromStudent(course.id);
+  }
+
   return (
     <>
       <div className="card" style={{ width: "16rem" }}>
@@ -11,14 +36,28 @@ const Card = () => {
           alt="..."
         />
         <div className="card-body">
-          <h5 className="card-title">Card title</h5>
+          <h5 className="card-title">{course.name}</h5>
           <p className="card-text">
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
           </p>
-          <button type="button" className="btn btn-primary mt-1">
-            <Link to="/mathcoursepage" className='text-decoration-none text-reset '>View Math Courses</Link>
-          </button>
+          <p className="card-text">
+            {course.description}
+          </p>
+          <p className="card-text">
+            teacher: {course.teacher && course.teacher.username}
+          </p>
+          {isUserSignedUp(course.id) ? (
+          <>
+            <button type="button" className="btn btn-primary mt-1" onClick={handleDropCourseFromStudent}>
+              Drop Course
+            </button>
+          </>
+          ) : (
+          <>
+            <button type="button" className="btn btn-primary mt-1" onClick={handleAddCourseToStudent}>
+              Sign up!
+            </button>
+          </>)}
+          
         </div>
       </div>
     </>

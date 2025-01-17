@@ -50,6 +50,11 @@ export const Navbar = () => {
 							<Link to="/dashboard" className={`navbar-brand mb-0 h1 ${isActive("/dashboard")}`}>
 								Dashboard
 							</Link>
+
+							<Link to="/courses-page" className={`navbar-brand mb-0 h1 ${isActive("/courses-page")}`}>
+								Courses
+							</Link>
+
 						<button className="btn btn-primary me-2" onClick={handleLogOut}>Log out</button>
 							<Link to="/dashboard" className={`navbar-brand mb-0 h1 ${isActive("/dashboard")}`}>
 
