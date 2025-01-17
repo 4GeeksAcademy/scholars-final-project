@@ -13,7 +13,6 @@ import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import CoursesPage from "./pages/CoursesPage.jsx";
 import { TestTeacherDashboard } from "./pages/testTeacherDashboard";
-import TeacherDashboard from "./pages/TeacherDashboard.jsx"
 import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
@@ -46,7 +45,6 @@ const Layout = () => {
                         <Route element={<ClassPage />} path="/class-page" />
                         <Route element={<CoursesPage />} path="/courses-page" />
                         <Route element={<MathCoursePage />} path="/mathcoursepage" />
-                        <Route element={<TeacherDashboard />} path="/teacherdashboard" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
