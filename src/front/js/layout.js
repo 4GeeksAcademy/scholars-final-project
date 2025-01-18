@@ -16,6 +16,7 @@ import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourses.jsx";
 import YoursCourses from "./component/teacherdashboardComponents/YoursCourses.jsx";
 import { TestTeacherDashboard } from "./pages/testTeacherDashboard";
+import TeacherDashboard from "./pages/TeacherDashboard.jsx"
 import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
@@ -52,6 +53,7 @@ const Layout = () => {
                         <Route element={<ClassPage />} path="/class-page" />
                         <Route element={<CoursesPage />} path="/courses-page" />
                         <Route element={<MathCoursePage />} path="/mathcoursepage" />
+                        <Route element={<TeacherDashboard />} path="/TeacherDashboard" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
