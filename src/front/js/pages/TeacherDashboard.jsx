@@ -17,6 +17,7 @@ import TeacherVerticalMenu from "../pages/TeacherVerticalMenu.jsx";
 const TeacherDashboard = () => {
     return (
         <>
+ 
         <div className="row">
             <div className="TeacherVerticalMenu col-2">
                 <div className="text-center ms-3 mt-3 ps-3 pe-3">
@@ -26,21 +27,28 @@ const TeacherDashboard = () => {
             </div>
             <div className="container row d-flex col-8 mt-5 ms-5">
                 <div className="row">
-                
-                <div className="row">
-                        <p>
-                            Lesson Plan: Solving Linear Equations
-                            Objective:
-                        </p>
-                        <p>
-                            By the end of the lesson, students will be able to:
-                        </p>
-                        <p>
-                            Understand and define linear equations.
-                            Solve simple linear equations involving one variable.
-                            Apply the concept of balancing both sides of an equation.
-                        </p>
-                </div>
+                    <div className="col-5">
+                        <div className="card text-center" style={{width:300}}>
+                           
+                            <div className="card-body">
+                                <h5 className="card-title">Course Title</h5>
+                                <a href="#" className="btn btn-primary mb-1">Lesson Plans</a> <br/>
+                                <a href="#" className="btn btn-primary mb-1">Assignments</a> <br/>
+                                <a href="#" className="btn btn-primary">Student List</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-5">
+                        <div className="card text-center" style={{width:300}}>
+                           
+                            <div className="card-body">
+                                <h5 className="card-title">Course Title</h5>
+                                <a href="#" className="btn btn-primary mb-1">Lesson Plans</a> <br/>
+                                <a href="#" className="btn btn-primary mb-1">Assignments</a> <br/>
+                                <a href="#" className="btn btn-primary">Student List</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>   
             </div>
         </div> 
