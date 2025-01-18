@@ -103,7 +103,8 @@ class Course(db.Model):
             "name": self.name,
             "description": self.description,
             "teacher_id": self.teacher_id,
-            "teacher": self.teacher.serializeWithoutCourses()
+            "teacher": self.teacher.serializeWithoutCourses(),
+            "modules": [courses_modules.serialize() for courses_modules in self.modules]
         }
     
     def __repr__(self):
@@ -122,6 +123,13 @@ class Module(db.Model):
 
     # Relationship with Topics
     topics = db.relationship('Topic', back_populates='module', lazy=True, cascade="all, delete")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "topics": [modules_topics.serialize() for modules_topics in self.topics]
+        }
 
 class Assignment(db.Model):
     __tablename__='assignment'
@@ -156,11 +164,13 @@ class Topic(db.Model):
     module = db.relationship('Module', back_populates='topics', lazy=True)
     # Relationship to Resource
     resources = db.relationship('Resource', back_populates ='topic', cascade="all, delete-orphan", lazy=True)
+    note = db.relationship('Note', back_populates='topic', cascade='all, delete-orphan')
 
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.name
+            "name": self.name,
+            "note": self.note
         }
     def __repr__(self):
         return f"<Topic {self.name} (Module ID: {self.module_id})>"
@@ -227,6 +237,7 @@ class Note(db.Model):
     content = db.Column(db.Text, nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('students.id'),nullable=False)
     topic_id = db.Column(db.Integer, db.ForeignKey('topics.id'),nullable=False)
+    topic = db.relationship('Topic', back_populates='note')
     student = db.relationship('Students', back_populates='note')
 
     def serialize(self):
