@@ -191,7 +191,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           throw new Error('Failed to edit event');
         }
       },
-
+      
       handleDeleteEvent: async (id) => {
         const response = await fetch(process.env.BACKEND_URL + 'api/delete_event', {
           method: 'DELETE',
@@ -350,6 +350,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           const data = await response.json();
           console.log("handleFetchAllCourses: ", data);
+          
           setStore({ courses: data });
         } else {
           throw new Error('Failed to fetch courses');
@@ -371,7 +372,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           console.log('Course added to student');
           getActions().handleFetchUserInfo();
-          setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: courseId }] } });
+          setStore({ user: { courses:{ id: courseId } } });
+          console.log(getStore());
         } else {
           throw new Error('Failed to add course to student');
         }
@@ -391,7 +393,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         if (response.ok) {
           console.log('Course dropped from student');
-          setStore({ user: { ...getStore().user, courses: getStore().user.courses.filter(course => course.id !== courseId) } });
+          setStore({ user: { courses: getStore().user?.courses?.filter(course => course.id !== courseId) } });
+          console.log("Whole store",getStore())
         } else {
           throw new Error('Failed to drop course from student');
         }

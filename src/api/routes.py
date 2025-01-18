@@ -402,7 +402,7 @@ def add_course():
 
     return jsonify({"message": "Course created successfully", "course_id": new_course.id}), 201
 
-@api.route('/enroll-course', methods=['POST'])
+@api.route('/add_course_to_student', methods=['POST'])
 @jwt_required()
 def add_course_to_student():
     current_user = get_jwt_identity()
@@ -423,12 +423,12 @@ def add_course_to_student():
         return jsonify({"error": "Course not found"}), 404
 
     # Check if the relationship already exists
-    existing_record = StudentCourse.query.filter_by(user_id=student_id, course_id=data['course_id']).first()
+    existing_record = StudentCourse.query.filter_by(student_id=student_id, course_id=data['course_id']).first()
     if existing_record:
         return jsonify({"message": "Student is already enrolled in this course"}), 200
 
     # Add the student-course relationship
-    new_student_course = StudentCourse(user_id=student_id, course_id=data['course_id'])
+    new_student_course = StudentCourse(student_id=student_id, course_id=data['course_id'])
     db.session.add(new_student_course)
     db.session.commit()
 
