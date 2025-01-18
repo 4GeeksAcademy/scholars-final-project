@@ -104,11 +104,8 @@ class Course(db.Model):
             "description": self.description,
             "teacher_id": self.teacher_id,
             "teacher": self.teacher.serializeWithoutCourses(),
-<<<<<<< HEAD
-            "students": [student.username for student in self.students]
-=======
-            "modules": [courses_modules.serialize() for courses_modules in self.modules]
->>>>>>> f2871434d64ae85f66fec2f342488d87f94ac130
+            "students": [student.username for student in self.students],
+            "modules": [courses_modules.serialize() for courses_modules in self.modules],
         }
     
     def __repr__(self):
