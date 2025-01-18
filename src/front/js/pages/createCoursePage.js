@@ -15,7 +15,6 @@ export const CreateCoursePage = () => {
     }
 
     useEffect(() => {
-
     }, []);
 
     return (

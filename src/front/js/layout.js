@@ -12,7 +12,9 @@ import MathCoursePage from "./component/dashboardComponents/MathCoursePage.jsx";
 import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import CoursesPage from "./pages/CoursesPage.jsx";
-import TeacherDashboard from "./pages/TeacherDashboard.jsx"
+import TeacherDashboard from "./pages/TeacherDashboard.jsx";
+import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourses.jsx";
+import YoursCourses from "./component/teacherdashboardComponents/YoursCourses.jsx";
 import { CreateCoursePage } from "./pages/createCoursePage.js";
 import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
@@ -36,6 +38,10 @@ const Layout = () => {
                         <Route element={<CreateCoursePage />} path="/create-course" />
                         <Route element={<HomePage />} path="/" />
                         <Route element={<Demo />} path="/demo" />
+                        <Route element={<TeacherDashboard/> } path="/teacherdashboard">
+                            <Route element={<AddNewCourse/>} path="addnewcourse"/>
+                            <Route element={<YoursCourses/>} path="yourscourses"/>
+                        </Route>
                         <Route element={<DashBoard />} path="/dashboard" >
                             <Route index element={<CardsCourses />} />
                             <Route element={<Assignments />} path="assignments" />
@@ -46,7 +52,6 @@ const Layout = () => {
                         <Route element={<ClassPage />} path="/class-page" />
                         <Route element={<CoursesPage />} path="/courses-page" />
                         <Route element={<MathCoursePage />} path="/mathcoursepage" />
-                        <Route element={<TeacherDashboard />} path="/TeacherDashboard" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />

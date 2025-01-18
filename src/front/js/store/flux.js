@@ -395,6 +395,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.error("Error in deleteNote:", error);
           }
       },
+      
       handleFetchAllCourses: async () => {
         const response = await fetch(process.env.BACKEND_URL + 'api/courses', {
           method: 'GET',
