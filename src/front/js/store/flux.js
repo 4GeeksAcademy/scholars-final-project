@@ -372,7 +372,9 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           console.log('Course added to student');
           getActions().handleFetchUserInfo();
-          setStore({ user: { courses:{ id: courseId } } });
+          
+          //setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: courseId }] }});
+          setStore({ user: { courses:[{ id: courseId } ]} });
           console.log(getStore());
         } else {
           throw new Error('Failed to add course to student');

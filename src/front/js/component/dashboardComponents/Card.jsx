@@ -13,7 +13,7 @@ const Card = ({ course }) => {
 
   const isUserSignedUp = (courseId) => {
     if (!store.user || !store.user.courses) return false;
-    const isSignedUp = store?.user?.courses?.some((a) => {
+    const isSignedUp = store.user.courses.some((a) => {
       return a.id === courseId;
     });
     return isSignedUp;
