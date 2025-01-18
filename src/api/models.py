@@ -103,7 +103,8 @@ class Course(db.Model):
             "name": self.name,
             "description": self.description,
             "teacher_id": self.teacher_id,
-            "teacher": self.teacher.serializeWithoutCourses()
+            "teacher": self.teacher.serializeWithoutCourses(),
+            "students": [student.username for student in self.students]
         }
     
     def __repr__(self):

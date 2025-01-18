@@ -12,7 +12,7 @@ import MathCoursePage from "./component/dashboardComponents/MathCoursePage.jsx";
 import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import CoursesPage from "./pages/CoursesPage.jsx";
-import { TestTeacherDashboard } from "./pages/testTeacherDashboard";
+import { CreateCoursePage } from "./pages/createCoursePage.js";
 import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
@@ -32,7 +32,7 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
-                        <Route element={<TestTeacherDashboard />} path="/testTeacherDashboard" />
+                        <Route element={<CreateCoursePage />} path="/create-course" />
                         <Route element={<HomePage />} path="/" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<DashBoard />} path="/dashboard" >

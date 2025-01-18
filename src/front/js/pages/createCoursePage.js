@@ -5,7 +5,7 @@ import { SignupModal } from "../component/signupModal";
 import { LoginModal } from "../component/loginModal";
 import "../../styles/home.css";
 
-export const TestTeacherDashboard = () => {
+export const CreateCoursePage = () => {
     const { store, actions } = useContext(Context);
     const [courseName, setCourseName] = useState('');
     const [courseDescription, setCourseDescription] = useState('');
@@ -20,22 +20,14 @@ export const TestTeacherDashboard = () => {
 
     return (
       <>
-        <div className="text-center mt-5">
-          {console.log('store.user', store.user)}
-          store.user: {store.user? store.user.username : "no user"} 
-          <br/>
-          store.courses: {store.courses? store.courses.map(course => course.name) : "no courses"}
-          <br/>
-          store: {JSON.stringify(store)}
-        </div>
         <div>
-          <form>
-            <div className="form-group">
+          <form className='mt-5'>
+            <div className="d-flex flex-column justify-content-center align-items-center form-group" style={{width: '100%'}}>
               <label htmlFor="course_name">course name</label>
-              <input type="text" className="form-control" id="course_name" placeholder="name"
+              <input type="text" className="form-control" style={{width: '70%', maxWidth: '400px'}} id="course_name" placeholder="name"
                 onChange={(e) => setCourseName(e.target.value)} value={courseName}/>
               <label htmlFor="course_description">course description</label>
-              <input type="text" className="form-control" id="course_description" placeholder="description"
+              <input type="text" className="form-control" style={{width: '70%', maxWidth: '400px'}} id="course_description" placeholder="description"
                 onChange={(e) => setCourseDescription(e.target.value)} value={courseDescription}/>
               <button onClick={handleCreateCourse} type="button" className="btn btn-primary">Create Course</button>
             </div>
