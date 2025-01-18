@@ -99,7 +99,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               window.location.reload();
             } else {
               alert(data[0].error);
-              console.log(data[0].error);
               throw new Error(data[0].error);
             }
           })
@@ -111,10 +110,8 @@ const getState = ({ getStore, getActions, setStore }) => {
       handleFetchUserInfo: async () => {
         const token = sessionStorage.getItem('jwtToken');
         if (!token) {
-          console.log('No token found');
           return;
         }
-        console.log('Token found:', token);
         const response = await fetch(process.env.BACKEND_URL + 'api/protected', {
           method: 'GET',
           headers: {
@@ -122,10 +119,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             'Content-Type': 'application/json',
           }
         });
-        console.log(response);
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           setStore({ user: data.user });
           sessionStorage.setItem('userInfo', JSON.stringify(data.user));
         } else {
@@ -188,9 +183,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         if (response.ok) {
           console.log('Event deleted');
-          console.log(getStore());
           setStore({ events: getStore().user.events.filter(event => event.id !== id) });
-          console.log(getStore());
         } else {
           throw new Error('Failed to delete event');
         }
@@ -211,7 +204,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           console.log('Course created');
           const data = await response.json();
-          setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: data.id, courseName: data.courseName }]}});
+          setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: data.id, name: data.name }]}});
+          getActions().handleFetchUserInfo();
         } else {
           throw new Error('Failed to create course');
         }
@@ -343,8 +337,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
       handleAddCourseToStudent: async (courseId) => {
-        console.log('Adding course to student');
-        console.log(courseId);
         const response = await fetch(process.env.BACKEND_URL + 'api/add_course_to_student', {
           method: 'POST',
           headers: {
@@ -364,8 +356,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
       handleDropCourseFromStudent: async (courseId) => {
-        console.log('Dropping course from student');
-        console.log(courseId);
         const response = await fetch(process.env.BACKEND_URL + 'api/drop_course_from_student', {
           method: 'POST',
           headers: {
@@ -399,7 +389,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
       
           const courseData = await response.json();
-          console.log('Fetched course data:', courseData);
       
           // Update the store with the fetched course data
           const store = getStore();

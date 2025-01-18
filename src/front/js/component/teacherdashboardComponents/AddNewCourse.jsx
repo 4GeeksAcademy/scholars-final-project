@@ -1,17 +1,19 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../store/appContext";
+import { Context } from "../../store/appContext";
 import { Link } from "react-router-dom";
-import { SignupModal } from "../component/signupModal";
-import { LoginModal } from "../component/loginModal";
-import "../../styles/home.css";
+import { SignupModal } from "../signupModal";
+import { LoginModal } from "../loginModal";
+import "../../../styles/home.css";
 
-export const CreateCoursePage = () => {
+export const AddNewCourse = () => {
     const { store, actions } = useContext(Context);
     const [courseName, setCourseName] = useState('');
     const [courseDescription, setCourseDescription] = useState('');
 
     const handleCreateCourse = () => {
       actions.handleCreateCourse(courseName, courseDescription);
+      setCourseName('');
+      setCourseDescription('');
     }
 
     useEffect(() => {
@@ -35,3 +37,5 @@ export const CreateCoursePage = () => {
       </>
     );
 };
+
+export default AddNewCourse;

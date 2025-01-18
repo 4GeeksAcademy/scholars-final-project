@@ -2,15 +2,15 @@ import React from "react";
 import { useContext, useEffect } from "react";
 import {Context} from "../../store/appContext.js"
 
-import Card from "../../component/dashboardComponents/Card.jsx";
+import Card from "../dashboardComponents/Card.jsx";
 
-const YoursCourses = () =>{
+const YourCourses = () =>{
 
     return (
         <>
-            Yours Courses
+            Your Courses
         </>
     )
 }
 
-export default YoursCourses;
+export default YourCourses;
