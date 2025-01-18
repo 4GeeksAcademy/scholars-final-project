@@ -3,78 +3,8 @@ const getState = ({ getStore, getActions, setStore }) => {
     store: {
       message: null,
       notes:[],
-      demo: {
-        courseId: "MATH101",
-        courseName: "Mathematics",
-        selectedModule: null,
-        selectedTopic: null,
-        modules: [
-          {
-            moduleId: "MOD1",
-            moduleName: "Algebra Basics",
-            topics: [
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://www.youtube.com/embed/vDqOoI-4Z6M?list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://www.youtube.com/watch?v=vDqOoI-4Z6M&list=PLSQl0a2vh4HDdl6PcjwZH2CkM5OoV6spg&t=7s",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-            ],
-          },
-          {
-            moduleId: "MOD1",
-            moduleName: "Algebra Basics",
-            topics: [
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-            ],
-          },
-          {
-            moduleId: "MOD1",
-            moduleName: "Algebra Basics",
-            topics: [
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-              {
-                topic: "Linear Equations",
-                resource:
-                  "https://youtu.be/uhxtUt_-GyM?list=PL1328115D3D8A2566",
-              },
-            ],
-          },
-        ],
-      },
       token: sessionStorage.getItem('jwtToken'),
+      resource:null
     },
     actions: {
       // Use getActions to call a function within a fuction
@@ -453,6 +383,34 @@ const getState = ({ getStore, getActions, setStore }) => {
           throw new Error('Failed to drop course from student');
         }
       },
+      getCourseByID: async (courseId) => {
+        try {
+          const response = await fetch(`${process.env.BACKEND_URL}/api/course/${courseId}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`, // Add token if authentication is required
+              'Content-Type': 'application/json',
+            },
+          });
+      
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || `Failed to fetch course: ${response.statusText}`);
+          }
+      
+          const courseData = await response.json();
+          console.log('Fetched course data:', courseData);
+      
+          // Update the store with the fetched course data
+          const store = getStore();
+          setStore({
+            selectedCourse: courseData, // Update the selected course in the store
+          });
+        } catch (error) {
+          console.error('Error fetching course:', error.message);
+        }
+      },
+      
     }
   };
 };

@@ -1,11 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
-const AccordionMenu = ({ modules, onTopicSelect }) => {
-  const handleClick = (resource) => {
-    onTopicSelect(resource);
-    // Scroll to the top of the current page
-    window.scrollTo({ top: 0, behavior: "smooth" });
+const AccordionMenu = ({ modules = [], onTopicSelect, getResource }) => {
+  const handleClick = async (id) => {
+    try {
+      const data = await getResource(id);
+      
+      if (Array.isArray(data) && data.length > 0) {
+        onTopicSelect( data[0]); // Access the first value in the array
+      } else {
+        onTopicSelect( data);
+      } 
+
+      // Scroll to the top of the current page
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (error) {
+      console.error("Error in handleClick:", error);
+    }
   };
 
   return (
@@ -13,7 +24,11 @@ const AccordionMenu = ({ modules, onTopicSelect }) => {
       className="accordion accordion-flush overflow-auto mh-100"
       id="accordionFlushExample"
     >
-      {console.log(modules[0])}
+      {/* Handle the case where modules is empty */}
+      {(!modules || modules.length === 0) && (
+        <p className="text-center mt-3">No modules available</p>
+      )}
+
       {modules.map((item, index) => (
         <div className="accordion-item" key={index}>
           <h2 className="accordion-header" id={`flush-heading${index}`}>
@@ -25,7 +40,7 @@ const AccordionMenu = ({ modules, onTopicSelect }) => {
               aria-expanded="false"
               aria-controls={`flush-collapse${index}`}
             >
-              {item.moduleName}
+              {item.name}
             </button>
           </h2>
           <div
@@ -34,15 +49,15 @@ const AccordionMenu = ({ modules, onTopicSelect }) => {
             aria-labelledby={`flush-heading${index}`}
             data-bs-parent="#accordionFlushExample"
           >
-            {item.topics.map((topic, i) => (
+            {item.topics?.map((topic, i) => (
               <Link
                 key={i}
                 to="#"
                 className="text-decoration-none"
-                onClick={() => handleClick(topic.resource)}
+                onClick={() => handleClick(topic.id)}
               >
                 <div className="accordion-body dropdown-item cursor-pointer">
-                  {topic.topic}
+                  {topic.name}
                 </div>
               </Link>
             ))}
@@ -54,3 +69,4 @@ const AccordionMenu = ({ modules, onTopicSelect }) => {
 };
 
 export default AccordionMenu;
+ 
