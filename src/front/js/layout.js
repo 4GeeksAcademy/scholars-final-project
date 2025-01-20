@@ -13,6 +13,7 @@ import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import CoursesPage from "./pages/CoursesPage.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
 import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourses.jsx";
 import YoursCourses from "./component/teacherdashboardComponents/YoursCourses.jsx";
 import { CreateCoursePage } from "./pages/createCoursePage.js";
@@ -50,6 +51,7 @@ const Layout = () => {
                             <Route element={<Calendar />} path="calendar" />
                         </Route>
                         <Route element={<CoursesPage />} path="/courses-page" />
+                        <Route element={<AboutUs />} path="/about-us" />
                         <Route element={<MathCoursePage />} path="/mathcoursepage" />
                         <Route element={<ClassPage />} path="/class-page/:courseId" />
                         <Route element={<h1>Not found!</h1>} />
