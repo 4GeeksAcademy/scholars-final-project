@@ -87,15 +87,13 @@ class Course(db.Model):
     __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id', ondelete='CASCADE'), nullable=False)
     description = db.Column(db.Text, nullable=False)
+    teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id', ondelete='CASCADE'), nullable=False)
 
     teacher = db.relationship('Teachers', back_populates='courses', lazy=True)
-    # Relationship with Modules
-    modules = db.relationship('Module', back_populates='course', lazy=True, cascade="all, delete")
-
-    # Relationship with StudentCourse
     students = db.relationship('Students', secondary='student_courses', back_populates='courses', lazy=True)
+    modules = db.relationship('Module', back_populates='course', lazy=True, cascade="all, delete")
+    assignments = db.relationship('Assignment', back_populates='course', lazy=True, cascade="all, delete")
 
     def serialize(self):
         return {
@@ -103,7 +101,7 @@ class Course(db.Model):
             "name": self.name,
             "description": self.description,
             "teacher_id": self.teacher_id,
-            "teacher": self.teacher.serializeWithoutCourses(),
+            "assignments": [assignment.serialize() for assignment in self.assignments],
             "students": [student.username for student in self.students],
             "modules": [courses_modules.serialize() for courses_modules in self.modules],
         }
@@ -135,11 +133,15 @@ class Module(db.Model):
 class Assignment(db.Model):
     __tablename__='assignment'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120), unique=False, nullable=False)
-    deadline = db.Column(db.DateTime, unique=False, nullable=False)
-    isCompleted = db.Column(db.Boolean, unique=False, nullable=False)
+    title = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    deadline = db.Column(db.DateTime, nullable=False)
+    isCompleted = db.Column(db.Boolean, default=False, nullable=False)
 
-    student_assignment = db.relationship("student_assignment", backref="assignment", lazy=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), nullable=False)
+    course = db.relationship('Course', back_populates='assignments')
+
+    student_assignments = db.relationship("student_assignment", back_populates="assignment", overlaps="student_assignments", lazy=True)
     #course = db.relationship("course", backref="assignment", lazy=True)
 
 
@@ -147,12 +149,14 @@ class Assignment(db.Model):
         return {
             "id": self.id,
             "title": self.title,
-            "deadline": self.deadline,
-            "isCompleted": self.isCompleted
+            "description": self.description,
+            "deadline": self.deadline.isoformat(),
+            "isCompleted": self.isCompleted,
+            "course_id": self.course_id
         }
 
     def __repr__(self):
-        return f"<Course {self.name}>"
+        return f"<Assignment {self.title} (Course ID: {self.course_id})>"
 
 class Topic(db.Model):
     __tablename__ = 'topics'
@@ -182,9 +186,8 @@ class student_assignment(db.Model):
     student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
     assignment_id = db.Column(db.Integer, db.ForeignKey("assignment.id"), unique=False, nullable=False)
     submitted_at = db.Column(db.DateTime, unique=False, nullable=False)
-    grade = db.Column(db.String(10), unique=False, nullable=False)
     
-    #assignment = db.relationship("Assignment", backref="student_assignment")
+    assignment = db.relationship("Assignment", backref="student_assignment")
 
 
     def serialize(self):
@@ -193,8 +196,9 @@ class student_assignment(db.Model):
             "student_id": self.student_id,
             "assignment_id": self.assignment_id,
             "submitted_at": self.submitted_at,
-            "grade": self.grade
         }
+    #def __repr__(self):
+        #return f"<Assignment {self.student_id} {self.assignment_id}>"
 
 
 
