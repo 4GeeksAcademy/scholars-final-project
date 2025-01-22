@@ -10,7 +10,7 @@ class Students(db.Model):
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
-    assignments = db.relationship("student_assignment", backref="student")
+    assignments = db.relationship("Assignment", secondary="student_assignment", back_populates="students")
     courses = db.relationship('Course', secondary='student_courses', back_populates='students')
     events = db.relationship('Events', back_populates='student', cascade='all, delete-orphan')
     note = db.relationship('Note', back_populates='student', cascade='all, delete-orphan')
@@ -141,7 +141,7 @@ class Assignment(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), nullable=False)
     course = db.relationship('Course', back_populates='assignments')
 
-    student_assignments = db.relationship("student_assignment", back_populates="assignment", overlaps="student_assignments", lazy=True)
+    students = db.relationship("Students", secondary="student_assignment", back_populates="assignments")
     #course = db.relationship("course", backref="assignment", lazy=True)
 
 
@@ -183,11 +183,13 @@ class Topic(db.Model):
 class student_assignment(db.Model):
     __tablename__='student_assignment'
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
-    assignment_id = db.Column(db.Integer, db.ForeignKey("assignment.id"), unique=False, nullable=False)
-    submitted_at = db.Column(db.DateTime, unique=False, nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
+    assignment_id = db.Column(db.Integer, db.ForeignKey("assignment.id", ondelete="CASCADE"), nullable=False)
+    submitted_at = db.Column(db.DateTime, nullable=False)
     
-    assignment = db.relationship("Assignment", backref="student_assignment")
+    student = db.relationship("Students", back_populates="assignments")
+    assignment = db.relationship("Assignment", back_populates="students")
+    #db.relationship("Assignment", secondary="student_assignment", back_populates="students", cascade="all, delete")
 
 
     def serialize(self):
