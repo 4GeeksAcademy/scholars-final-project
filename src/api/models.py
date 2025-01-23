@@ -10,7 +10,7 @@ class Students(db.Model):
     password = db.Column(db.String(256), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
-    assignments = db.relationship("Assignment", secondary="student_assignment", back_populates="students")
+    assignments = db.relationship("Assignment", back_populates="student", cascade='all, delete-orphan')
     courses = db.relationship('Course', secondary='student_courses', back_populates='students')
     events = db.relationship('Events', back_populates='student', cascade='all, delete-orphan')
     note = db.relationship('Note', back_populates='student', cascade='all, delete-orphan')
@@ -93,7 +93,7 @@ class Course(db.Model):
     teacher = db.relationship('Teachers', back_populates='courses', lazy=True)
     students = db.relationship('Students', secondary='student_courses', back_populates='courses', lazy=True)
     modules = db.relationship('Module', back_populates='course', lazy=True, cascade="all, delete")
-    assignments = db.relationship('Assignment', back_populates='course', lazy=True, cascade="all, delete")
+    #assignments = db.relationship('Assignment', back_populates='course', lazy=True, cascade="all, delete")
 
     def serialize(self):
         return {
@@ -101,7 +101,7 @@ class Course(db.Model):
             "name": self.name,
             "description": self.description,
             "teacher_id": self.teacher_id,
-            "assignments": [assignment.serialize() for assignment in self.assignments],
+            #"assignments": [assignment.serialize() for assignment in self.assignments],
             "students": [student.username for student in self.students],
             "modules": [courses_modules.serialize() for courses_modules in self.modules],
         }
@@ -137,11 +137,13 @@ class Assignment(db.Model):
     description = db.Column(db.Text, nullable=True)
     deadline = db.Column(db.DateTime, nullable=False)
     isCompleted = db.Column(db.Boolean, default=False, nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('students.id'),nullable=False)
+    student = db.relationship('Students', back_populates='assignment')
 
-    course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), nullable=False)
-    course = db.relationship('Course', back_populates='assignments')
+    #course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), nullable=False)
+    
 
-    students = db.relationship("Students", secondary="student_assignment", back_populates="assignments")
+    #student_assignments = db.relationship("student_assignment", back_populates="assignment", overlaps="student_assignments", lazy=True)
     #course = db.relationship("course", backref="assignment", lazy=True)
 
 
@@ -152,7 +154,8 @@ class Assignment(db.Model):
             "description": self.description,
             "deadline": self.deadline.isoformat(),
             "isCompleted": self.isCompleted,
-            "course_id": self.course_id
+            'student_id': self.student_id,
+            #"course_id": self.course_id
         }
 
     def __repr__(self):
@@ -180,25 +183,23 @@ class Topic(db.Model):
     def __repr__(self):
         return f"<Topic {self.name} (Module ID: {self.module_id})>"
 
-class student_assignment(db.Model):
-    __tablename__='student_assignment'
-    id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
-    assignment_id = db.Column(db.Integer, db.ForeignKey("assignment.id", ondelete="CASCADE"), nullable=False)
-    submitted_at = db.Column(db.DateTime, nullable=False)
+#class student_assignment(db.Model):
+    #__tablename__='student_assignment'
+    #id = db.Column(db.Integer, primary_key=True)
+    #student_id = db.Column(db.Integer, db.ForeignKey("students.id"), nullable=False)
+    #assignment_id = db.Column(db.Integer, db.ForeignKey("assignment.id"), unique=False, nullable=False)
+    #submitted_at = db.Column(db.DateTime, unique=False, nullable=False)
     
-    student = db.relationship("Students", back_populates="assignments")
-    assignment = db.relationship("Assignment", back_populates="students")
-    #db.relationship("Assignment", secondary="student_assignment", back_populates="students", cascade="all, delete")
+    #assignment = db.relationship("Assignment", backref="student_assignment")
 
 
-    def serialize(self):
-        return {
-            "id": self.id,
-            "student_id": self.student_id,
-            "assignment_id": self.assignment_id,
-            "submitted_at": self.submitted_at,
-        }
+    #def serialize(self):
+        #return {
+           # "id": self.id,
+            #"student_id": self.student_id,
+            #"assignment_id": self.assignment_id,
+            #"submitted_at": self.submitted_at,
+       # }
     #def __repr__(self):
         #return f"<Assignment {self.student_id} {self.assignment_id}>"
 
