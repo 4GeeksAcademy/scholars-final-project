@@ -453,6 +453,7 @@ def delete_note(note_id):
     return jsonify({"message":"Note deleted"}), 200
 
 @api.route("/assignments", methods=["GET"])
+@jwt_required()
 def get_all_assignments():
 
     all_assignments = Assignment.query.all()
@@ -466,6 +467,7 @@ def get_all_assignments():
 
 
 @api.route("/assignments/<int:assignment_id>", methods=["GET"])
+@jwt_required()
 def get_assignment(assignment_id):
     single_assignment = Assignment.query.get(assignment_id)
 
@@ -477,6 +479,7 @@ def get_assignment(assignment_id):
 
 
 @api.route("/assignments", methods=["POST"])
+@jwt_required()
 def create_assignment():
     try:
         # Parse the incoming JSON data from the request

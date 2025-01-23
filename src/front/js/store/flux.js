@@ -253,7 +253,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const response = await fetch('/notes',{
           method: 'GET',
           headers:{
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`, 
           }
         });
         const data = await response.json();
