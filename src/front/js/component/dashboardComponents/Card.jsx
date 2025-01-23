@@ -45,7 +45,12 @@ const Card = ({ course }) => {
           <p className="card-text">
             teacher: {course.teacher && course.teacher.username}
           </p>
-          {isUserSignedUp(course.id) ? (
+          <Link to={`/class-page/${course.id}`}>
+            <span className="btn btn-primary btn-lg" href="#" role="button">
+              Go to class
+            </span>
+          </Link>
+          {/* {isUserSignedUp(course.id) ? (
           <>
             <button type="button" className="btn btn-primary mt-1" onClick={handleDropCourseFromStudent}>
               Drop Course
@@ -56,7 +61,7 @@ const Card = ({ course }) => {
             <button type="button" className="btn btn-primary mt-1" onClick={handleAddCourseToStudent}>
               Sign up!
             </button>
-          </>)}
+          </>)} */}
           
         </div>
       </div>

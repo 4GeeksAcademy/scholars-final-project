@@ -18,13 +18,7 @@ const CardsCourses = () =>{
                 {store.courses ? store.courses.map((course, index) => {
                     return <Card key={index} course={ course }/>
                 }) : 'loading...'}
-            </div>
-            <h1 className='text-center'>My Courses</h1>
-            <div className='d-flex justify-content-center'>
-                {store.user ? store.user.courses.map((course, index) => {
-                    return <Card key={index} course={ course }/>
-                }) : 'loading...'}
-            </div>
+            </div> 
         </>
     )
 }
