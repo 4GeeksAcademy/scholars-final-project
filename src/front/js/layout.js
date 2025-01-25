@@ -15,6 +15,7 @@ import CoursesPage from "./pages/CoursesPage.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourses.jsx";
 import YoursCourses from "./component/teacherdashboardComponents/YoursCourses.jsx";
+import AddAssignments from "./component/teacherdashboardComponents/AddAssignments.jsx";
 import { CreateCoursePage } from "./pages/createCoursePage.js";
 import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
@@ -42,6 +43,7 @@ const Layout = () => {
                         <Route element={<TeacherDashboard/> } path="/teacherdashboard">
                             <Route element={<AddNewCourse/>} path="addnewcourse"/>
                             <Route element={<YoursCourses/>} path="yourscourses"/>
+                            <Route element={<AddAssignments/>} path="addassignments"/>
                         </Route>
                         <Route element={<DashBoard />} path="/dashboard" >
                             <Route index element={<CardsCourses />} />

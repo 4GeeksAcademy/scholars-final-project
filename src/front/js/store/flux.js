@@ -350,25 +350,43 @@ const getState = ({ getStore, getActions, setStore }) => {
         setStore({assignments:data})
       },
 
-      creatAssignment: async (assignmentTitle, assignmentDeadline) => {
-        const response = await fetch (process.env.BACKEND_URL + 'api/create_asssignment', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            assignment_title: assignmentTitle,
-            assignment_deadline: assignmentDeadline,
-          }),
-        });
-        if (response.ok) {
-          console.log('Assignment created');
-          const data = await response.json();
-          setStore({ user: {...getStore().user, assignments: [...getStore().user.assignments, { id: data.id, assignmentTitle: data.assignmentTitle}]}});
-        } 
-        else {
-          throw new Error('Failed to create assignment')
+      createAssignment: async (assignmentTitle, assignmentDeadline) => {
+        try {
+          const response = await fetch(process.env.BACKEND_URL + 'api/create_assignment', { 
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`, 
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              assignment_title: assignmentTitle,  
+              assignment_deadline: assignmentDeadline,
+            }),
+          });
+      
+          if (response.ok) {
+            console.log('Assignment created');
+            const data = await response.json();
+            
+            setStore({
+              user: {
+                ...getStore().user,
+                assignments: [
+                  ...getStore().user.assignments,
+                  {
+                    id: data.id,
+                    title: data.assignment_title, 
+                    deadline: data.assignment_deadline,
+                  }
+                ],
+              },
+            });
+      
+          } else {
+            throw new Error('Failed to create assignment');
+          }
+        } catch (error) {
+          console.error('Error creating assignment:', error);
         }
       },
 
