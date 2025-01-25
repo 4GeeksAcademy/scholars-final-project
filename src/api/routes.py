@@ -385,7 +385,6 @@ def update_resource(resource_id):
     if not data:
         abort(400, "Missing request data.")
     resource.url = data.get('url', resource.url)
-    resource.topic_id = data.get('topic_id', resource.topic_id)
     db.session.commit()
     return jsonify(resource.serialize()), 200
 
@@ -647,6 +646,36 @@ def update_topic(topic_id):
     db.session.commit()
 
     return jsonify({"message": "Topic updated successfully", "topic": topic.serialize()}), 200
+
+@api.route('/topic', methods=['POST'])
+@jwt_required()
+def create_topic():
+    """
+    Create the name of a topic by its ID.
+    """
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role != 'teacher':
+        return jsonify({'error': 'Only teacher can edit courses'}, 403)
+    data = request.json  # Get the JSON payload
+
+
+    new_name = data.get('name')
+    moduleId =data.get('moduleId')
+
+
+     # Validate input
+    if not new_name:
+        return jsonify({"error": "Name is required"}), 400
+    if not moduleId:
+        return jsonify({"error": "Module ID is required"}), 400
+     
+    # Create the topic
+    newTopic = Topic(name=new_name, module_id=moduleId )
+    db.session.add(newTopic)
+    db.session.commit() 
+
+    return jsonify({"message": "Topic created successfully", "topic": newTopic.serialize()}), 200
 
 @api.route('/topic/<int:topic_id>', methods=['DELETE'])
 @jwt_required()

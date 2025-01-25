@@ -510,6 +510,50 @@ const getState = ({ getStore, getActions, setStore }) => {
           alert("An error occurred while deleting the module.");
         }
       },
+      createTopic: async  (module_Id, topicName) => {
+        
+        const payload = {
+            moduleId: module_Id,
+            name: topicName
+        };
+        const token = sessionStorage.getItem("jwtToken"); // Retrieve the token
+        
+        try {
+            const response = await fetch(`${process.env.BACKEND_URL}/api/topic`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Include JWT token for authentication
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                // Handle HTTP errors
+                const errorData = await response.json();
+                throw new Error(`${response.status}: ${errorData.error || 'Unknown error'}`);
+            }
+    
+            const data = await response.json();
+            
+          const selectedCourse= {
+            ...getStore().selectedCourse,  
+            modules: getStore().selectedCourse.modules.map((module) => {
+              if (module.id === module_Id) {
+                  return {
+                      ...module, // Retain other properties of the module
+                      topics: [...module.topics, data.topic] // Update the topics
+                  };
+              }
+              return module; // Return other modules unchanged
+          })
+          }; 
+          setStore({selectedCourse});
+        } catch (error) {
+            console.error('Error at createTopic function:', error.message);
+            throw error; // Re-throw error for further handling
+        }
+    },    
       updateTopic : async (topicId, newName) => {
         try {
           const response = await fetch(process.env.BACKEND_URL + `api/topic/${topicId}`, {
@@ -583,7 +627,64 @@ const getState = ({ getStore, getActions, setStore }) => {
           alert("An error occurred while deleting the topic.");
         }
       },
-
+      createResource: async (url, topicId) => {
+        try {
+            const response = await fetch(process.env.BACKEND_URL + `api/resources`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: url,
+                    topic_id: topicId,
+                }),
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`${response.status}: ${errorData.message || 'Failed to create resource.'}`);
+            }
+    
+            const resource = await response.json();
+            console.log('Resource created successfully:', resource);
+            return resource;
+          } catch (error) {
+              console.error('Error creating resource:', error.message);
+              throw error;
+          }
+      },
+      updateResource: async (resourceId, newUrl) => {
+        try {
+            const response = await fetch(process.env.BACKEND_URL + `api/resources/${resourceId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: newUrl
+                }),
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`${response.status}: ${errorData.message || 'Failed to update resource.'}`);
+            }
+    
+            const updatedResource = await response.json();
+     
+            console.log('Resource updated successfully:', updatedResource);
+            return updatedResource;
+            } catch (error) {
+                console.error('Error updating resource:', error.message);
+                throw error;
+            }
+      },
+      setCustomStore: (newState) => {
+        setStore(newState);
+      },
+    
       
     }
   };
