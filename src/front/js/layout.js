@@ -14,9 +14,9 @@ import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import CoursesPage from "./pages/CoursesPage.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import AboutUs from "./pages/AboutUs.jsx";
-import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourses.jsx";
-import YoursCourses from "./component/teacherdashboardComponents/YoursCourses.jsx";
 import { CreateCoursePage } from "./pages/createCoursePage.js";
+import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourse.jsx";
+import YourCourses from "./component/teacherdashboardComponents/YourCourses.jsx";
 import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
@@ -37,12 +37,11 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
-                        <Route element={<CreateCoursePage />} path="/create-course" />
                         <Route element={<HomePage />} path="/" />
                         <Route element={<Demo />} path="/demo" />
-                        <Route element={<TeacherDashboard/> } path="/teacherdashboard">
-                            <Route element={<AddNewCourse/>} path="addnewcourse"/>
-                            <Route element={<YoursCourses/>} path="yourscourses"/>
+                        <Route element={<TeacherDashboard />} path="/teacherdashboard">
+                            <Route element={<AddNewCourse />} path="addnewcourse" />
+                            <Route element={<YourCourses />} path="yourcourses" />
                         </Route>
                         <Route element={<DashBoard />} path="/dashboard" >
                             <Route index element={<CardsCourses />} />

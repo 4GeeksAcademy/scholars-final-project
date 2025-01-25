@@ -23,7 +23,6 @@ const Calendar = () => {
     const handleEventClick = (e,clickInfo) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("click on", clickInfo.event)
         const calendarContainer = e.target.closest(".fc");
         const rect = calendarContainer.getBoundingClientRect();
         setContextMenu({
@@ -48,7 +47,6 @@ const Calendar = () => {
                 }
                 actions.handleCreateEvent(title, contextMenu.date);
                 setEvents([... events,newEvent]);
-                console.log(events);
             }
             setContextMenu({visible:false});
         }
@@ -56,16 +54,13 @@ const Calendar = () => {
 
     const handleEventDrop = (dropInfo) => {
         const {event} = dropInfo
-        console.log(event.id)
         const updateEvent = {
             id: event.id,
             title: event.title,
             start: event.start.toISOString().split('T')[0],
         };
         actions.handleEditEvent(event.id, event.title, event.start.toISOString().split('T')[0]);
-        console.log(updateEvent.start)
         setEvents((prevEvents) => prevEvents.map((currentEvent)=> currentEvent.id == event.id ? updateEvent : currentEvent));
-        console.log(events)
     }
 
     const handleEditEvent = () =>{
@@ -73,10 +68,8 @@ const Calendar = () => {
             const updateEvent = prompt("Change the event:", contextMenu.event.title)
             if(updateEvent){
                 actions.handleEditEvent(contextMenu.event.id, updateEvent, contextMenu.event.start.toISOString().split('T')[0]);
-                console.log("before",events);
                 console.log(updateEvent)
                 setEvents(events.map((event)=>event.id == contextMenu.event.id ? {...event,title:updateEvent}: event))
-                console.log("after",events);
             }
         }
         handleCloseContextMenu();
@@ -110,7 +103,6 @@ const Calendar = () => {
                     dateClick={(clickInfo) => handleEventClick(clickInfo.jsEvent,clickInfo)}
                     eventClick={(clickInfo) => handleEventClick(clickInfo.jsEvent,clickInfo)}
                 />
-                {console.log(store.user)}
                 {contextMenu.visible && (
                     <ul className="dropdown-menu show" 
                             style={{
@@ -126,7 +118,6 @@ const Calendar = () => {
                                 }}>
                         {contextMenu.event ? (
                             <>
-                                {console.log("show Contextmenu", contextMenu.event)}
                                 <li>
                                     <button className="dropdown-item" onClick={handleEditEvent}>Edit Event</button>
                                 </li>
