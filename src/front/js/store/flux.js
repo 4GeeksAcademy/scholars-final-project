@@ -334,6 +334,67 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
       },
       
+      getAllAssignnments: async () => {
+        const token = localStorage.getItem('jwtToken');
+
+        const response = await fetch('/assignments',{
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+        const data = await response.json();
+        if(data.error){
+          console.error('Error', data.error);
+        }
+        setStore({assignments:data})
+      },
+
+      creatAssignment: async (assignmentTitle, assignmentDeadline) => {
+        const response = await fetch (process.env.BACKEND_URL + 'api/create_asssignment', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            assignment_title: assignmentTitle,
+            assignment_deadline: assignmentDeadline,
+          }),
+        });
+        if (response.ok) {
+          console.log('Assignment created');
+          const data = await response.json();
+          setStore({ user: {...getStore().user, assignments: [...getStore().user.assignments, { id: data.id, assignmentTitle: data.assignmentTitle}]}});
+        } 
+        else {
+          throw new Error('Failed to create assignment')
+        }
+      },
+
+      teacherAddAssignment: async (assignmentId) => {
+        console.log('Adding Assignment to Student.');
+        console.log(assignmentId);
+        const response = await fetch(process.env.BACKEND_URL + 'api/add_assignment_to_student', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json'
+          },
+          body:JSON.stringify({
+            assignment_id: assignmentId,
+          })
+        });
+        if (response.ok) {
+          console.log("Assignment added to student")
+          getActions().handleFetchUserInfo();
+          setStore({ user: { ...getStore().user, assignments: [...getStore().user.assignments, {id: assignmentId}]}});
+        } else {
+          throw new Error('Failed to add assignment to student.');
+        }
+      },
+
+
       handleFetchAllCourses: async () => {
         const response = await fetch(process.env.BACKEND_URL + 'api/courses', {
           method: 'GET',

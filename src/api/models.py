@@ -183,9 +183,6 @@ class student_assignment(db.Model):
     assignment_id = db.Column(db.Integer, db.ForeignKey("assignment.id"), unique=False, nullable=False)
     submitted_at = db.Column(db.DateTime, unique=False, nullable=False)
     grade = db.Column(db.String(10), unique=False, nullable=False)
-    
-    #assignment = db.relationship("Assignment", backref="student_assignment")
-
 
     def serialize(self):
         return {
@@ -195,8 +192,6 @@ class student_assignment(db.Model):
             "submitted_at": self.submitted_at,
             "grade": self.grade
         }
-
-
 
 class Resource(db.Model):
     __tablename__ = 'resources'

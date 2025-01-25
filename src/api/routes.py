@@ -3,7 +3,7 @@ import time
 #import requests
 from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
 
-from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events, Note,Assignment
+from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events, Note,Assignment, student_assignment
 
 
 from api.utils import generate_sitemap, APIException
@@ -456,58 +456,94 @@ def delete_note(note_id):
 @jwt_required()
 def get_all_assignments():
 
-    all_assignments = Assignment.query.all()
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split ('|')
 
-    if not all_assignments:
-        return jsonify([]), 
+    if role == 'student':
+        assignments = Assignment.query.filter_by(student_id=user_id).all()
+    else: 
+        return jsonify({'Error: Need Teacher Access'}), 404    
+
+    # if not all_assignments:
+    #     return jsonify([]), 
     
     # Serialize assignments and return them in the response
-    all_assignments = list(map(lambda x: x.serialize(), all_assignments))
-    return jsonify(all_assignments), 200
+    # all_assignments = list(map(lambda x: x.serialize(), all_assignments))
+    # return jsonify(all_assignments), 200
 
 
-@api.route("/assignments/<int:assignment_id>", methods=["GET"])
-@jwt_required()
-def get_assignment(assignment_id):
-    single_assignment = Assignment.query.get(assignment_id)
+# @api.route("/assignments/<int:assignment_id>", methods=["GET"])
+# @jwt_required()
+# def get_assignment(assignment_id):
+#     single_assignment = Assignment.query.get(assignment_id)
 
-    if single_assignment is None:
-        raise APIException(f'Assignment ID {assignment_id} is not found!', status_code=404)
+#     if single_assignment is None:
+#         raise APIException(f'Assignment ID {assignment_id} is not found!', status_code=404)
     
-    single_assignment = single_assignment.serialize()
-    return jsonify(single_assignment), 200
+#     single_assignment = single_assignment.serialize()
+#     return jsonify(single_assignment), 200
 
 
 @api.route("/assignments", methods=["POST"])
 @jwt_required()
 def create_assignment():
-    try:
+        
+        current_user = get_jwt_identity()
+        user_id, role = current_user.split('|')
         # Parse the incoming JSON data from the request
-        data = request.get_json()
+        #data = request.get_json()
+        if role != 'teacher':
+            return jsonify({'Error': 'Only teachers can upload assignments.'}, 403)
+        
+        assignment_title = request.json.get('assignment_name')
+        assignment_deadline = request.json.get('assignment_deadline')
 
-        if not data or 'title' not in data or 'deadline' not in data:
-            raise APIException("Missing required fields: 'title' and 'deadline'", status_code=400)
-
-        # Create a new Assignment object from the data
-        new_assignment = Assignment(
-            title=data['title'],
-            deadline=data['deadline']  # Make sure 'due_date' is in the correct format (datetime)
-        )
-
+        if not assignment_title:
+            return jsonify({'Error': "Assignment Title is required"}, 400)
+        new_assignment = Assignment(title=assignment_title, deadline=assignment_deadline, teacher_id=user_id)
+        
         # Add the new assignment to the session and commit to the database
         db.session.add(new_assignment)
         db.session.commit()
 
         # Serialize the newly created assignment and return it in the response
-        serialized_assignment = new_assignment.serialize()
+        return jsonify(new_assignment.serialize()), 201
 
-        return jsonify(serialized_assignment),
+    # except APIException as e:
+    #     return jsonify({"message": str(e)}), e.status_code
 
-    except APIException as e:
-        return jsonify({"message": str(e)}), e.status_code
+    # except Exception as e:
+    #     return jsonify({"message": "An unexpected error occurred.", "error": str(e)}), 500
 
-    except Exception as e:
-        return jsonify({"message": "An unexpected error occurred.", "error": str(e)}), 500
+@api.route('add_assignment_to_student', methods=['POST'])
+@jwt_required()
+def add_assignment_to_student():
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+
+    if role != 'teacher':
+        return jsonify({"error": "Only teachers can add assignments to a student."}), 403
+
+    assignment_id = request.json.get('assignment_id')
+
+    if not assignment_id:
+        return jsonify({'error': 'Assignment ID required'}), 400
+
+    teacher = Teachers.query.get(user_id)  
+    if not teacher:
+        return jsonify({'error': 'Teacher not found'}), 404
+    
+    assignment = Assignment.query.get(assignment_id)
+    if not assignment:
+        return jsonify({'error': 'Assignment not found'}), 404
+    
+    existing_assignment = student_assignment.query.filter_by(student_id=user_id, assignment_id=assignment_id).first()
+    if existing_assignment:
+        return jsonify({'message': 'Assignment is already assigned to student'}), 200
+    
+    new_assignment = student_assignment(student_id=user_id, assignment_id=assignment_id)
+    db.session.add(new_assignment)
+    db.session.commit()
 
 @api.route('/create_course', methods=['POST'])
 @jwt_required()
