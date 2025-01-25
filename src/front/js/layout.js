@@ -21,6 +21,7 @@ import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { ClassPage } from "./pages/ClassPage";
+import { EditClassPage } from "./pages/EditClassPage.jsx";
 
 //create your first component
 const Layout = () => {
@@ -54,6 +55,7 @@ const Layout = () => {
                         <Route element={<AboutUs />} path="/about-us" />
                         <Route element={<MathCoursePage />} path="/mathcoursepage" />
                         <Route element={<ClassPage />} path="/class-page/:courseId" />
+                        <Route element={<EditClassPage />} path="/edit-class-page/:courseId" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
