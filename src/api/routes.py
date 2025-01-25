@@ -385,7 +385,6 @@ def update_resource(resource_id):
     if not data:
         abort(400, "Missing request data.")
     resource.url = data.get('url', resource.url)
-    resource.topic_id = data.get('topic_id', resource.topic_id)
     db.session.commit()
     return jsonify(resource.serialize()), 200
 
@@ -540,3 +539,182 @@ def drop_course():
     db.session.delete(student_course)
     db.session.commit()
     return jsonify({'message': 'Course dropped successfully'}), 200
+
+@api.route('/module/<int:module_id>', methods=['PUT'])
+@jwt_required()
+def update_module(module_id):
+    """
+    Update the name of a module by its ID.
+    """
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role != 'teacher':
+        return jsonify({'error': 'Only teacher can edit courses'}, 403)
+    data = request.json  # Get the JSON payload
+    new_name = data.get('name')
+
+    if not new_name:
+        return jsonify({"error": "Name is required"}), 400
+
+    # Find the module by ID
+    module = Module.query.get(module_id)
+    if not module:
+        return jsonify({"error": "Module not found"}), 404
+
+    # Update the module name
+    module.name = new_name
+    db.session.commit()
+
+    return jsonify({"message": "Module updated successfully", "module": module.serialize()}), 200
+
+@api.route('/module', methods=['POST'])
+@jwt_required()
+def create_module():
+    """
+    Create a new module and associate it with a course.
+    """
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role != 'teacher':
+        return jsonify({'error': 'Only teacher can edit courses'}, 403)
+    data = request.json  # Get JSON payload
+    course_id = data.get('course_id')
+    module_name = data.get('name')
+
+    if not course_id or not module_name:
+        return jsonify({"error": "course_id and name are required"}), 400
+
+    # Check if the course exists
+    course = Course.query.get(course_id)
+    if not course:
+        return jsonify({"error": "Course not found"}), 404
+
+    # Create a new module
+    new_module = Module(name=module_name, course_id=course_id)
+    db.session.add(new_module)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Module created successfully",
+        "module": new_module.serialize()
+    }), 201
+
+@api.route('/module/<int:module_id>', methods=['DELETE'])
+@jwt_required()
+def delete_module(module_id):
+    """
+    Delete a module by its ID.
+    """
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role != 'teacher':
+        return jsonify({'error': 'Only teacher can edit courses'}, 403)
+    # Check if the module exists
+    module = Module.query.get(module_id)
+    if not module:
+        return jsonify({"error": "Module not found"}), 404
+
+    # Delete the module
+    db.session.delete(module)
+    db.session.commit()
+
+    return jsonify({"message": "Module deleted successfully"}), 200
+
+@api.route('/topic/<int:topic_id>', methods=['PUT'])
+@jwt_required()
+def update_topic(topic_id):
+    """
+    Update the name of a topic by its ID.
+    """
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role != 'teacher':
+        return jsonify({'error': 'Only teacher can edit courses'}, 403)
+    data = request.json  # Get the JSON payload
+    new_name = data.get('name')
+
+    if not new_name:
+        return jsonify({"error": "Name is required"}), 400
+
+    # Find the topic by ID
+    topic = Topic.query.get(topic_id)
+    if not topic:
+        return jsonify({"error": "Topic not found"}), 404
+
+    # Update the topic name
+    topic.name = new_name
+    db.session.commit()
+
+    return jsonify({"message": "Topic updated successfully", "topic": topic.serialize()}), 200
+
+@api.route('/topic', methods=['POST'])
+@jwt_required()
+def create_topic():
+    """
+    Create the name of a topic by its ID.
+    """
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role != 'teacher':
+        return jsonify({'error': 'Only teacher can edit courses'}, 403)
+    data = request.json  # Get the JSON payload
+
+
+    new_name = data.get('name')
+    moduleId =data.get('moduleId')
+
+
+     # Validate input
+    if not new_name:
+        return jsonify({"error": "Name is required"}), 400
+    if not moduleId:
+        return jsonify({"error": "Module ID is required"}), 400
+     
+    # Create the topic
+    newTopic = Topic(name=new_name, module_id=moduleId )
+    db.session.add(newTopic)
+    db.session.commit() 
+
+    return jsonify({"message": "Topic created successfully", "topic": newTopic.serialize()}), 200
+
+@api.route('/topic/<int:topic_id>', methods=['DELETE'])
+@jwt_required()
+def delete_topic(topic_id):
+    """
+    Delete a topic by its ID.
+    """
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role != 'teacher':
+        return jsonify({'error': 'Only teacher can edit courses'}, 403)
+    # Query the topic by ID
+    topic = Topic.query.get(topic_id)
+    if not topic:
+        return jsonify({"error": "Topic not found"}), 404
+
+    # Delete the topic
+    db.session.delete(topic)
+    db.session.commit()
+
+    return jsonify({"message": "Topic deleted successfully"}), 200
+
+# @api.route('/module/<int:module_id>', methods=['DELETE'])
+# @jwt_required()
+# def delete_module(module_id):
+    """
+    Delete a topic by its ID.
+    """
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role != 'teacher':
+        return jsonify({'error': 'Only teacher can edit courses'}, 403)
+    # Query the topic by ID
+    module = Module.query.get(module_id)
+    if not module:
+        return jsonify({"error": "Module not found"}), 404
+
+    # Delete the topic
+    db.session.delete(module)
+    db.session.commit()
+
+    return jsonify({"message": "Module deleted successfully"}), 200

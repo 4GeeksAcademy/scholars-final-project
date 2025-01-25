@@ -13,12 +13,15 @@ import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import CoursesPage from "./pages/CoursesPage.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import { CreateCoursePage } from "./pages/createCoursePage.js";
 import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourse.jsx";
 import YourCourses from "./component/teacherdashboardComponents/YourCourses.jsx";
 import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { ClassPage } from "./pages/ClassPage";
+import { EditClassPage } from "./pages/EditClassPage.jsx";
 
 //create your first component
 const Layout = () => {
@@ -48,8 +51,10 @@ const Layout = () => {
                             <Route element={<Calendar />} path="calendar" />
                         </Route>
                         <Route element={<CoursesPage />} path="/courses-page" />
+                        <Route element={<AboutUs />} path="/about-us" />
                         <Route element={<MathCoursePage />} path="/mathcoursepage" />
                         <Route element={<ClassPage />} path="/class-page/:courseId" />
+                        <Route element={<EditClassPage />} path="/edit-class-page/:courseId" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />

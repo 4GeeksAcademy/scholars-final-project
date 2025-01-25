@@ -55,8 +55,7 @@ export const ClassPage = () => {
   );
 };
 
-const getEmbedLink = (url) => {
-  console.log("topic IDDIDDDDD", url)
+const getEmbedLink = (url) => { 
   const urlObj = new URL(url);
 
   if (urlObj.hostname === "youtu.be") {
