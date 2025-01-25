@@ -7,12 +7,13 @@ export const EditClassPage = () => {
   const { store, actions } = useContext(Context);
   const [resourceLink, setResourceLink] = useState("");
   const inputModule = useRef(null);
+  const inputResource = useRef(null);
   const params = useParams();
 
   useEffect(() => {
     actions.getCourseByID(params.courseId);
-  }, []);
-  const handleSubmit = (event) => { event.preventDefault(); alert(`You entered: `); };
+  }, []); 
+
   return (
     <div className="container-fluid p-0 " style={{ height: "90vh" }}>
       {console.log("selectedCourse: ", store?.selectedCourse)}
@@ -35,6 +36,25 @@ export const EditClassPage = () => {
           </div> 
         </div>
         <div class="col-6">
+          <div className="edit-resource text-center">
+            <input className="m-4" type="text" ref={inputResource} />
+            <button
+                className="btn btn-primary"
+                onClick={() => {
+                  
+                    const inpute = inputResource.current?.value.trim(); // Safely access value and trim it
+                    if (inpute) {
+                        setResourceLink(getEmbedLink(inpute)); 
+                        actions.createResource(getEmbedLink(inpute), store.selectedTopic.id);
+                        inputResource.current.value = ''; // Clear the input after submitting
+                    } else {
+                        console.error('Resource Input is empty'); // Optional error handling
+                    }
+                }}
+            >
+                Add Resource
+            </button>
+          </div>
           <div style={{ padding: "1em" }}>
             {resourceLink ? (
               <div style={{ textAlign: "center" }}>
@@ -60,7 +80,8 @@ export const EditClassPage = () => {
 };
 
 const getEmbedLink = (url) => { 
-  const urlObj = new URL(url);
+  try {
+    const urlObj = new URL(url);
 
   if (urlObj.hostname === "youtu.be") {
     const videoId = urlObj.pathname.slice(1); // Extract video ID from path
@@ -80,8 +101,12 @@ const getEmbedLink = (url) => {
       ? `https://www.youtube.com/embed/${videoId}?list=${playlist}`
       : `https://www.youtube.com/embed/${videoId}`;
   }
-
+  
   return url; // Return as-is for non-YouTube links
+  } catch (error) { 
+    alert(`URL is not valid! \n ${url}`);
+
+  }
 };
 
 const getResource = async (topicID) => {
@@ -111,7 +136,8 @@ const getResource = async (topicID) => {
 };
 
 const EditableAccordion = ({ modules = [], onTopicSelect, getResource }) => {
-  const {   actions } = useContext(Context);
+  const { store,  actions } = useContext(Context);
+  const inputTopic= useRef(null);
   const handleClick = async (id) => {
     try {
       const data = await getResource(id);
@@ -191,7 +217,9 @@ const EditableAccordion = ({ modules = [], onTopicSelect, getResource }) => {
                 key={i}
                 to="#"
                 className="text-decoration-none"
-                onClick={() => handleClick(topic.id)}
+                onClick={() => {handleClick(topic.id);
+                  actions.setCustomStore({selectedTopic : topic}); }
+                }
               >
                 <div className="accordion-body dropdown-item"
                 >
@@ -227,10 +255,17 @@ const EditableAccordion = ({ modules = [], onTopicSelect, getResource }) => {
                 </div>
               </div>
             ))}
-            <input type="text" />
+            <input type="text" ref={inputTopic} />
             <button
               className="btn btn-primary"
-              onClick={()=>actions.createModule(params.courseId, inputModule.current.value.toString())} 
+              onClick={()=>{ const inputValue = inputTopic.current?.value.trim(); // Safely access value and trim it
+                if (inputValue) {
+                    actions.createTopic(module.id, inputValue);
+                    inputTopic.current.value = ''; // Clear the input after submitting
+                } else {
+                    console.error('Input is empty'); // Optional error handling
+                }
+            }} 
             >
               Add Topic
             </button>
