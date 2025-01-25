@@ -464,25 +464,6 @@ def get_all_assignments():
     else: 
         return jsonify({'Error: Need Teacher Access'}), 404    
 
-    # if not all_assignments:
-    #     return jsonify([]), 
-    
-    # Serialize assignments and return them in the response
-    # all_assignments = list(map(lambda x: x.serialize(), all_assignments))
-    # return jsonify(all_assignments), 200
-
-
-# @api.route("/assignments/<int:assignment_id>", methods=["GET"])
-# @jwt_required()
-# def get_assignment(assignment_id):
-#     single_assignment = Assignment.query.get(assignment_id)
-
-#     if single_assignment is None:
-#         raise APIException(f'Assignment ID {assignment_id} is not found!', status_code=404)
-    
-#     single_assignment = single_assignment.serialize()
-#     return jsonify(single_assignment), 200
-
 
 @api.route("/assignments", methods=["POST"])
 @jwt_required()
@@ -502,11 +483,9 @@ def create_assignment():
             return jsonify({'Error': "Assignment Title is required"}, 400)
         new_assignment = Assignment(title=assignment_title, deadline=assignment_deadline, teacher_id=user_id)
         
-        # Add the new assignment to the session and commit to the database
         db.session.add(new_assignment)
         db.session.commit()
 
-        # Serialize the newly created assignment and return it in the response
         return jsonify(new_assignment.serialize()), 201
 
     # except APIException as e:
