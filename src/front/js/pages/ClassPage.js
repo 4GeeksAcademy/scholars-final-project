@@ -18,15 +18,15 @@ export const ClassPage = () => {
   return (
     <div className="container-fluid p-0" style={{ height: "90vh" }}>
       {console.log("selectedCourse: ", store?.selectedCourse)}
-      <div class="row h-100">
-        <div class="col-3 h-100">
+      <div className="row h-100">
+        <div className="col-3 h-100">
           <AccordionMenu
             modules={store?.selectedCourse?.modules || []}
             onTopicSelect={setResourceLink}
             getResource={getResource}
           />
         </div>
-        <div class="col-6">
+        <div className="col-6">
           <div style={{ padding: "1em" }}>
             {resourceLink ? (
               <div style={{ textAlign: "center" }}>

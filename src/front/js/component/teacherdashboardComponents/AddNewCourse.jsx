@@ -21,6 +21,11 @@ export const AddNewCourse = () => {
 
     return (
       <>
+        <div className="row justify-content-center">
+          <div className="col-12">
+              <h1 className="text-center mt-5">Create new Course</h1>
+          </div>
+        </div>
         <div>
           <form className='mt-5'>
             <div className="d-flex flex-column justify-content-center align-items-center form-group" style={{width: '100%'}}>

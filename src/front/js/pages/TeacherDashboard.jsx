@@ -13,12 +13,12 @@ const TeacherDashboard = () => {
     const isDefaultPage = location.pathname === "/teacherdashboard"
     return (
         <>
-        <div className="Dashboard-container d-flex">
+        <div className="Dashboard-container d-flex" style={{ width: "100%", justifyContent: "center" }}>
             <div className="text-center ms-3 mt-3 ps-3 pe-3">
                  <TeacherVerticalMenu />
             </div>
                 
-            <div className="ms-5 me-4" style={{position:"relative"}}>
+            <div className="d-flex flex-column align-items-center" style={{ width: "100%", position: "relative" }}>
                 {isDefaultPage && (<h1>Welcome {store.user && store.user.username}</h1>)}   
                 <Outlet />          
             </div>
