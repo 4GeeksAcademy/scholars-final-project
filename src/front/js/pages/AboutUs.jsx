@@ -19,7 +19,7 @@ const AboutUs = () => {
                 <div className="team-section mt-5">
                     <h2 className="text-center">Our Team</h2>
                     <p  className="text-center">
-                    We are a group of multidisciplinary developers who graduated from <strong>4Geeks Academy</strong>, where we acquired the knowledge and skills to create <strong>Scholars.IA</strong>. We deeply thank the academy for guiding us in our growth as professionals
+                    We are a group of multidisciplinary developers who graduated from <strong>4Geeks Academy</strong>, where we acquired the knowledge and skills to create <strong>Scholars.AI</strong>. We deeply thank the academy for guiding us in our growth as professionals
                     </p>
                     <div className="row justify-content-center mt-4">
                         {team.map((member,index)=> (
@@ -35,7 +35,7 @@ const AboutUs = () => {
                 <div className="vision-section text-center mt-5">
                     <h2>Our Vision</h2>
                     <p className="lead mt-3">
-                        We believe in the power of technology to transform learning. <strong>Scholars.IA</strong> is our commitment to a future where education is more accessible, personalized and effective
+                        We believe in the power of technology to transform learning. <strong>Scholars.AI</strong> is our commitment to a future where education is more accessible, personalized and effective
                     </p>
                 </div>
             </div>
