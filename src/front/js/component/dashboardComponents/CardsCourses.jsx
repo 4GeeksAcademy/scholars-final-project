@@ -3,22 +3,28 @@ import { Context } from "../../store/appContext.js";
 
 import Card from "./Card.jsx";
 
-const CardsCourses = () =>{
-    const {store, actions} = useContext(Context);
+const CardsCourses = () => {
+    const { store, actions } = useContext(Context);
 
     useEffect(() => {
         actions.handleFetchAllCourses();
         actions.handleFetchUserInfo();
-    },[]);
+    }, []);
 
-    return(
+    return (
         <>
-            <h1 className='text-center'>All Courses</h1>
-            <div className='d-flex justify-content-center'>
-                {store.courses ? store.courses.map((course, index) => {
-                    return <Card key={index} course={ course }/>
-                }) : 'loading...'}
-            </div> 
+            <div className='container'>
+                <h1 className='text-center'>All Courses</h1>
+                <div className='row justify-content-center'>
+                    {store.user ? store.user.courses.map((course, index) => {
+                        return (
+                            <div className='col-4 d-flex justify-content-center my-4' key={index}>
+                                <Card key={index} course={course} />
+                            </div>
+                        )
+                    }) : 'loading...'}
+                </div>
+            </div>
         </>
     )
 }
