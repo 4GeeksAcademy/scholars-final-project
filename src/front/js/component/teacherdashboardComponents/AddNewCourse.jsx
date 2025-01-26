@@ -1,17 +1,19 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../store/appContext";
+import { Context } from "../../store/appContext";
 import { Link } from "react-router-dom";
-import { SignupModal } from "../component/signupModal";
-import { LoginModal } from "../component/loginModal";
-import "../../styles/home.css";
+import { SignupModal } from "../signupModal";
+import { LoginModal } from "../loginModal";
+import "../../../styles/home.css";
 
-export const CreateCoursePage = () => {
+export const AddNewCourse = () => {
     const { store, actions } = useContext(Context);
     const [courseName, setCourseName] = useState('');
     const [courseDescription, setCourseDescription] = useState('');
 
     const handleCreateCourse = () => {
       actions.handleCreateCourse(courseName, courseDescription);
+      setCourseName('');
+      setCourseDescription('');
     }
 
     useEffect(() => {
@@ -19,6 +21,11 @@ export const CreateCoursePage = () => {
 
     return (
       <>
+        <div className="row justify-content-center">
+          <div className="col-12">
+              <h1 className="text-center mt-5">Create new Course</h1>
+          </div>
+        </div>
         <div>
           <form className='mt-5'>
             <div className="d-flex flex-column justify-content-center align-items-center form-group" style={{width: '100%'}}>
@@ -35,3 +42,5 @@ export const CreateCoursePage = () => {
       </>
     );
 };
+
+export default AddNewCourse;
