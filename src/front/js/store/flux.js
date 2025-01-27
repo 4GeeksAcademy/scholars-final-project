@@ -5,6 +5,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       notes:[],
       token: sessionStorage.getItem('jwtToken'),
       resource:null,
+      students: [],
       // selectedCourse:{
       //   id:null,
       //   modules:[{ id: null,
@@ -335,7 +336,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       
       getAllAssignnments: async () => {
-        const token = localStorage.getItem('jwtToken');
+        const token = sessionStorage.getItem('jwtToken');
 
         const response = await fetch('/assignments',{
           method: 'GET',
@@ -350,7 +351,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         setStore({assignments:data})
       },
 
-      createAssignment: async (assignmentTitle, assignmentDeadline) => {
+      createNewAssignment: async (assignmentTitle, assignmentDeadline, studentId) => {
         try {
           const response = await fetch(process.env.BACKEND_URL + 'api/create_assignment', { 
             method: 'POST',
@@ -361,13 +362,14 @@ const getState = ({ getStore, getActions, setStore }) => {
             body: JSON.stringify({
               assignment_title: assignmentTitle,  
               assignment_deadline: assignmentDeadline,
+              student_id: studentId,
             }),
           });
       
           if (response.ok) {
             console.log('Assignment created');
             const data = await response.json();
-            
+
             setStore({
               user: {
                 ...getStore().user,
@@ -375,8 +377,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                   ...getStore().user.assignments,
                   {
                     id: data.id,
-                    title: data.assignment_title, 
-                    deadline: data.assignment_deadline,
+                    title: data.assignmentTitle, 
+                    deadline: data.assignmentDeadline,
                   }
                 ],
               },
@@ -387,31 +389,45 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         } catch (error) {
           console.error('Error creating assignment:', error);
-        }
+        };
       },
 
-      teacherAddAssignment: async (assignmentId) => {
-        console.log('Adding Assignment to Student.');
-        console.log(assignmentId);
-        const response = await fetch(process.env.BACKEND_URL + 'api/add_assignment_to_student', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-            'Content-Type': 'application/json'
-          },
-          body:JSON.stringify({
-            assignment_id: assignmentId,
-          })
-        });
-        if (response.ok) {
-          console.log("Assignment added to student")
-          getActions().handleFetchUserInfo();
-          setStore({ user: { ...getStore().user, assignments: [...getStore().user.assignments, {id: assignmentId}]}});
-        } else {
-          throw new Error('Failed to add assignment to student.');
+      teacherAddAssignment: async (assignmentId, studentId) => {
+        console.log("Adding Assignment to Student.");
+        console.log("Assignment ID:", assignmentId);
+        console.log("Student ID:", studentId);
+    
+        try {
+            const response = await fetch(process.env.BACKEND_URL + 'api/add_assignment_to_student', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    assignment_id: assignmentId,
+                    student_id: studentId,
+                }),
+            });
+    
+            // Log the response to see what comes back from the API
+            const responseData = await response.json();
+            console.log("API Response Data:", responseData);
+    
+            if (response.ok) {
+                console.log("Assignment added to student successfully");
+                getActions().handleFetchUserInfo();
+                setStore({ user: { ...getStore().user, assignments: [...getStore().user.assignments, { id: assignmentId }] } });
+            } else {
+                // Detailed error log to understand why the response failed
+                console.error("Failed to add assignment to student:", responseData);
+                throw new Error(responseData?.message || "Failed to add assignment to student.");
+            }
+        } catch (error) {
+            // Enhanced error logging for catching any unexpected issues
+            console.error("Error during adding assignment to student:", error);
         }
-      },
-
+    },
 
       handleFetchAllCourses: async () => {
         const response = await fetch(process.env.BACKEND_URL + 'api/courses', {
