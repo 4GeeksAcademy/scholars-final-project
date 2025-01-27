@@ -170,7 +170,8 @@ class Topic(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.name 
+            "name": self.name,
+            "note": [topic_notes.serialize() for topic_notes in self.note]
         }
     def __repr__(self):
         return f"<Topic {self.name} (Module ID: {self.module_id})>"

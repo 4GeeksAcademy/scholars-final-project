@@ -19,6 +19,7 @@ const TeacherDashboard = () => {
             </div>
                 
             <div className="d-flex flex-column align-items-center" style={{ width: "100%", position: "relative" }}>
+                {console.log(store.user)}
                 {isDefaultPage && (<h1>Welcome {store.user && store.user.username}</h1>)}   
                 <Outlet />          
             </div>
