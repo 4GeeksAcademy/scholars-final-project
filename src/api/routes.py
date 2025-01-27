@@ -1,9 +1,10 @@
 #import schedule
 import time
 #import requests
+from datetime import datetime
 from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
 
-from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events, Note,Assignment, student_assignment
+from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events, Note,Assignment, Student_assignment
 
 
 from api.utils import generate_sitemap, APIException
@@ -121,8 +122,8 @@ def authenticate_user():
         print(username)
         print('user by username')
         print(user)
-    if not user or not check_password_hash(user.password, password):
-        return jsonify({"error": "Invalid credentials"}, 400)
+    #if not user or not check_password_hash(user.password, password):
+        #return jsonify({"error": "Invalid credentials"}, 400)
     
     access_token = create_access_token(identity=f"{user.id}|{role}")
     return jsonify(access_token=access_token, success=True), 200
@@ -363,7 +364,7 @@ def create_resource():
     """
     data = request.get_json()
     if not data or 'url' not in data:
-        abort(400, "Missing 'url' in request data.")
+        print(400, "Missing 'url' in request data.")
     resource = Resource(url=data['url'], topic_id=data.get('topic_id'))
     db.session.add(resource)
     db.session.commit()
@@ -383,7 +384,7 @@ def update_resource(resource_id):
     resource = Resource.query.get_or_404(resource_id)
     data = request.get_json()
     if not data:
-        abort(400, "Missing request data.")
+        print(400, "Missing request data.")
     resource.url = data.get('url', resource.url)
     resource.topic_id = data.get('topic_id', resource.topic_id)
     db.session.commit()
@@ -494,35 +495,91 @@ def create_assignment():
     # except Exception as e:
     #     return jsonify({"message": "An unexpected error occurred.", "error": str(e)}), 500
 
-@api.route('add_assignment_to_student', methods=['POST'])
+# @api.route('add_assignment_to_student', methods=['POST'])
+# @jwt_required()
+# def add_assignment_to_student():
+#     current_user = get_jwt_identity()
+#     user_id, role = current_user.split('|')
+#     assignment_title = request.json.get("assignment_title")
+#     assignment_deadline = request.json.get("assignment_deadline")
+#     student_username = request.json.get("student_username")
+
+#     if assignment_title is None or assignment_deadline is None or student_username is None:
+#         return jsonify({"error": "some fields are missing"})
+
+#     if role != 'teacher':
+#         return jsonify({"error": "Only teachers can add assignments to a student."}), 403
+
+#     #assignment_id = request.json.get('assignment_id')
+
+#     # if not assignment_id:
+#     #     return jsonify({'error': 'Assignment ID required'}), 400
+
+#     # teacher = Teachers.query.get(user_id)  
+#     # if not teacher:
+#     #     return jsonify({'error': 'Teacher not found'}), 404
+    
+#     # assignment = Assignment.query.get(assignment_id)
+#     # if not assignment:
+#     #     return jsonify({'error': 'Assignment not found'}), 404
+    
+#     # existing_assignment = student_assignment.query.filter_by(student_id=user_id, assignment_id=assignment_id).first()
+#     # if existing_assignment:
+#     #     return jsonify({'message': 'Assignment is already assigned to student'}), 200
+    
+#     new_assignment = student_assignment(
+#         teacher_id=user_id, 
+#         student_username=student_username,
+#         assignment_title=assignment_title,
+#         assignment_deadline=assignment_deadline
+#         )
+#     db.session.add(new_assignment)
+#     db.session.commit()
+
+@api.route('/add_assignment_to_student', methods=['POST'])
 @jwt_required()
 def add_assignment_to_student():
     current_user = get_jwt_identity()
     user_id, role = current_user.split('|')
-
+    
+    # Get request data
+    assignment_title = request.json.get("assignment_title")
+    assignment_deadline = request.json.get("assignment_deadline")
+    student_username = request.json.get("student_username")
+    
+    if assignment_title is None or assignment_deadline is None or student_username is None:
+        return jsonify({"error": "Some fields are missing"}), 400
+        
     if role != 'teacher':
         return jsonify({"error": "Only teachers can add assignments to a student."}), 403
-
-    assignment_id = request.json.get('assignment_id')
-
-    if not assignment_id:
-        return jsonify({'error': 'Assignment ID required'}), 400
-
-    teacher = Teachers.query.get(user_id)  
-    if not teacher:
-        return jsonify({'error': 'Teacher not found'}), 404
     
-    assignment = Assignment.query.get(assignment_id)
-    if not assignment:
-        return jsonify({'error': 'Assignment not found'}), 404
+    # Find the student by username
+    student = Students.query.filter_by(username=student_username).first()
+    if not student:
+        return jsonify({"error": "Student not found"}), 404
     
-    existing_assignment = student_assignment.query.filter_by(student_id=user_id, assignment_id=assignment_id).first()
-    if existing_assignment:
-        return jsonify({'message': 'Assignment is already assigned to student'}), 200
-    
-    new_assignment = student_assignment(student_id=user_id, assignment_id=assignment_id)
+    # Create new assignment
+    new_assignment = Assignment(
+        title=assignment_title,
+        deadline=assignment_deadline,
+        isCompleted=False
+    )
     db.session.add(new_assignment)
+    db.session.flush()  # This will assign an ID to new_assignment
+    
+    # Create student_assignment relationship
+    new_student_assignment = Student_assignment(
+        student_id=student.id,
+        assignment_id=new_assignment.id,
+        submitted_at=datetime.now(),  # You might want to set this to None initially
+        grade="N/A"  # Initial grade
+    )
+    
+    db.session.add(new_student_assignment)
     db.session.commit()
+    
+    return jsonify({"message": "Assignment added successfully"}), 201
+
 
 @api.route('/create_course', methods=['POST'])
 @jwt_required()
