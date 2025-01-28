@@ -9,19 +9,11 @@ const AddAssignments = () => {
     const [assignmentTitle, setAssignmentTitle] = useState('');
     const [assignmentDeadline, setAssignmentDeadline] = useState('');
     const [studentUsername, setStudentUsername] = useState('');
-    const [studentId, setStudentId] = useState(null);
 
     // Function to handle form submission
     const createAssignment = async (e) => {
         e.preventDefault();
 
-        // Check if a student is selected
-        if (!studentId) {
-            console.error("No student found for this username.");
-            return;
-        }
-
-        // Ensure the date is valid (YYYY-MM-DD format)
         const isValidDate = (date) => {
             const regex = /^\d{4}-\d{2}-\d{2}$/;
             return regex.test(date);
@@ -32,10 +24,8 @@ const AddAssignments = () => {
             return;
         }
 
-        // Call the action to create the assignment, passing studentId and other details
         try {
-            await actions.teacherAddAssignment(assignmentTitle, assignmentDeadline, studentId);
-            console.log("Assignment created successfully");
+            await actions.createNewAssignment(assignmentTitle, assignmentDeadline, studentUsername);
         } catch (error) {
             console.error("Failed to create assignment:", error);
         }
@@ -44,16 +34,10 @@ const AddAssignments = () => {
     // Function to handle student username change and lookup
     const handleStudentUsernameChange = (e) => {
         const username = e.target.value;
+        console.log("userame: ", username);
+        console.log("deadline: ", assignmentDeadline);
+        console.log("title: ", assignmentTitle);
         setStudentUsername(username);
-
-        // Lookup the student by username
-        // const student = store.students.find(student => student.username.toLowerCase() === username.toLowerCase());
-
-        // if (student) {
-             setStudentId(student.id); // Set studentId if found
-        // } else {
-        //     setStudentId(null); // Reset studentId if not found
-        // }
     };
 
     // Ensure the return statement is inside the AddAssignments component function
@@ -98,16 +82,12 @@ const AddAssignments = () => {
                         onChange={handleStudentUsernameChange} 
                         value={studentUsername}
                     />
-
-                    {!studentId && studentUsername && (
-                        <div className="text-danger mt-2">Student not found</div>
-                    )}
                 </div>
 
                 <button 
                     type="submit" 
                     className="btn btn-primary" 
-                    disabled={!studentId || !assignmentTitle || !assignmentDeadline}
+                    disabled={!studentUsername || !assignmentTitle || !assignmentDeadline}
                 >
                     Create Assignment
                 </button>

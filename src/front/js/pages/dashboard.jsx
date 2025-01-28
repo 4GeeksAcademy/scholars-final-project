@@ -8,7 +8,7 @@ const DashBoard = () =>{
     const { store, actions } = useContext(Context);
 
     useEffect(() => {
-        if (!store.user || store.user.role == 'teacher') {
+        if (!sessionStorage.jwtToken) {
             window.location.href = "/";
         }
     }, []);
