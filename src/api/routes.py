@@ -277,6 +277,7 @@ def get_student_courses(student_id):
 def get_course_with_modules_and_topics(course_id):
     # Find the course by its ID
     course = Course.query.get(course_id)
+    
     if not course:
         return jsonify({"error": "Course not found"}), 404
 
@@ -289,7 +290,14 @@ def get_course_with_modules_and_topics(course_id):
                 "id": module.id,
                 "name": module.name,
                 "topics": [
-                    {"id": topic.id, "name": topic.name}
+                    {
+                        "id": topic.id,
+                        "name": topic.name,
+                        "notes": (
+                            note.serialize() if (note := Note.query.filter_by(topic_id=topic.id).first()) else None
+                        )
+
+                    }
                     for topic in module.topics
                 ]
             }
@@ -386,7 +394,6 @@ def update_resource(resource_id):
     if not data:
         print(400, "Missing request data.")
     resource.url = data.get('url', resource.url)
-    resource.topic_id = data.get('topic_id', resource.topic_id)
     db.session.commit()
     return jsonify(resource.serialize()), 200
 
@@ -399,12 +406,21 @@ def delete_resource(resource_id):
     return jsonify({"message": "Resource deleted."}), 200
 
 @api.route('/topic/<int:topic_id>/notes', methods=['POST'])
+@jwt_required()
 def add_note_from_topic(topic_id):
     data = request.json
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    
+    # Check if a note already exists for this topic and user
+    existing_note = Note.query.filter_by(topic_id=topic_id, student_id=user_id).first()
+    if existing_note:
+        return jsonify({"error": "Note already exists for this topic and user"}), 409
+
     new_note = Note(
         content = data['content'],
         topic_id = topic_id,
-        student_id = data['student_id']
+        student_id = user_id
     )
     db.session.add(new_note)
     db.session.commit()
@@ -723,6 +739,37 @@ def update_topic(topic_id):
 
     return jsonify({"message": "Topic updated successfully", "topic": topic.serialize()}), 200
 
+@api.route('/topic', methods=['POST'])
+@jwt_required()
+def create_topic():
+    """
+    Create the name of a topic by its ID.
+    """
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split('|')
+    if role != 'teacher':
+        return jsonify({'error': 'Only teacher can edit courses'}, 403)
+    data = request.json  # Get the JSON payload
+
+
+    new_name = data.get('name')
+    moduleId =data.get('moduleId')
+
+
+     # Validate input
+    if not new_name:
+        return jsonify({"error": "Name is required"}), 400
+    if not moduleId:
+        return jsonify({"error": "Module ID is required"}), 400
+     
+    # Create the topic
+    newTopic = Topic(name=new_name, module_id=moduleId )
+    db.session.add(newTopic)
+    db.session.commit() 
+
+  
+    return jsonify({"message": "Topic created successfully", "topic": newTopic.serialize()}), 200
+
 @api.route('/topic/<int:topic_id>', methods=['DELETE'])
 @jwt_required()
 def delete_topic(topic_id):
@@ -744,23 +791,19 @@ def delete_topic(topic_id):
 
     return jsonify({"message": "Topic deleted successfully"}), 200
 
-# @api.route('/module/<int:module_id>', methods=['DELETE'])
-# @jwt_required()
-# def delete_module(module_id):
-    """
-    Delete a topic by its ID.
-    """
+@api.route('/notes/<int:note_id>', methods=['GET'])
+@jwt_required()
+def get_note_by_id(note_id):
     current_user = get_jwt_identity()
     user_id, role = current_user.split('|')
-    if role != 'teacher':
-        return jsonify({'error': 'Only teacher can edit courses'}, 403)
-    # Query the topic by ID
-    module = Module.query.get(module_id)
-    if not module:
-        return jsonify({"error": "Module not found"}), 404
+    
+    if role != 'student':
+        return jsonify({'error': 'Access denied: Teachers cannot access notes.'}), 403
 
-    # Delete the topic
-    db.session.delete(module)
-    db.session.commit()
+    note = Note.query.get(note_id)
+    if not note:
+        return jsonify({'error': f'Note with ID {note_id} not found.'}), 404
 
-    return jsonify({"message": "Module deleted successfully"}), 200
+    return jsonify(note.serialize()), 200
+
+        

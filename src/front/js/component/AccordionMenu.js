@@ -1,13 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { Context } from "../store/appContext";
 
-const AccordionMenu = ({ modules = [], onTopicSelect, getResource }) => {
-  const handleClick = async (id) => {
+const AccordionMenu = ({ modules = [], onTopicSelect, getResource, setNoteId, setContent }) => {
+  const {   actions } = useContext(Context);
+  const handleClick = async (id, notes) => {
     try {
       const data = await getResource(id);
       
+      if(notes === null){
+        actions.addNoteToTopic(id,"");
+
+      }
+      else{
+        setNoteId(notes.id); 
+        setContent(notes.content);
+      }
+
       if (Array.isArray(data) && data.length > 0) {
-        onTopicSelect( data[0]); // Access the first value in the array
+        onTopicSelect( data[0]); 
       } else {
         onTopicSelect( data);
       } 
@@ -54,7 +65,7 @@ const AccordionMenu = ({ modules = [], onTopicSelect, getResource }) => {
                 key={i}
                 to="#"
                 className="text-decoration-none"
-                onClick={() => handleClick(topic.id)}
+                onClick={() => handleClick(topic.id, topic.notes)}
               >
                 <div className="accordion-body dropdown-item cursor-pointer">
                   {topic.name}

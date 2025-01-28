@@ -9,6 +9,8 @@ import Notebook from "../component/Notebook.jsx";
 export const ClassPage = () => {
   const { store, actions } = useContext(Context);
   const [resourceLink, setResourceLink] = useState("");
+  const [noteId, setNoteId] = useState();
+  const [content, setContent] = useState("");
   const params = useParams();
 
   useEffect(() => {
@@ -18,14 +20,17 @@ export const ClassPage = () => {
   return (
     <div className="container-fluid p-0" style={{ height: "90vh" }}>
       {console.log("selectedCourse: ", store?.selectedCourse)}
-      <div class="row h-100">
-        <div class="col-3 h-100">
+      <div className="row h-100">
+        <div className="col-3 h-100">
           <AccordionMenu
             modules={store?.selectedCourse?.modules || []}
             onTopicSelect={setResourceLink}
             getResource={getResource}
+            setNoteId={setNoteId}
+            setContent={setContent}
           />
         </div>
+        
         <div class="col-6">
           <div style={{ padding: "1em" }}>
             {resourceLink ? (
@@ -45,7 +50,7 @@ export const ClassPage = () => {
               </div>
             )}
           </div>
-          <Notebook />
+          <Notebook noteID = {noteId} getcontent={content} />
         </div>
         <div class="col-3">
           <PopupChat />

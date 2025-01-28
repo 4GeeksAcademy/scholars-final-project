@@ -16,12 +16,10 @@ export const Navbar = () => {
 	}, []);
 
 	const handleSignupModal = () => {
-		console.log("handleSignupModal");
 		setIsSignupModalOpen(!isSignupModalOpen);
 	};
 
 	const handleLoginModal = () => {
-		console.log("handleLoginModal");
 		setIsLoginModalOpen(!isLoginModalOpen);
 	};
 
@@ -84,7 +82,6 @@ export const Navbar = () => {
 					)}
 				</div>
 			</div>
-			{console.log(store.user)}
 			{isLoginModalOpen && <LoginModal closeModal={handleLoginModal} />}
 			{isSignupModalOpen && <SignupModal closeModal={handleSignupModal} />}
 		</nav>

@@ -108,7 +108,6 @@ const getState = ({ getStore, getActions, setStore }) => {
               window.location.reload();
             } else {
               alert(data[0].error);
-              console.log(data[0].error);
               throw new Error(data[0].error);
             }
           })
@@ -120,10 +119,8 @@ const getState = ({ getStore, getActions, setStore }) => {
       handleFetchUserInfo: async () => {
         const token = sessionStorage.getItem('jwtToken');
         if (!token) {
-          console.log('No token found');
           return;
         }
-        console.log('Token found:', token);
         const response = await fetch(process.env.BACKEND_URL + 'api/protected', {
           method: 'GET',
           headers: {
@@ -131,10 +128,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             'Content-Type': 'application/json',
           }
         });
-        console.log(response);
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
           setStore({ user: data.user });
           sessionStorage.setItem('userInfo', JSON.stringify(data.user));
         } else {
@@ -197,9 +192,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         });
         if (response.ok) {
           console.log('Event deleted');
-          console.log(getStore());
           setStore({ events: getStore().user.events.filter(event => event.id !== id) });
-          console.log(getStore());
         } else {
           throw new Error('Failed to delete event');
         }
@@ -220,7 +213,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         if (response.ok) {
           console.log('Course created');
           const data = await response.json();
-          setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: data.id, courseName: data.courseName }]}});
+          setStore({ user: { ...getStore().user, courses: [...getStore().user.courses, { id: data.id, name: data.name }]}});
+          getActions().handleFetchUserInfo();
         } else {
           throw new Error('Failed to create course');
         }
@@ -446,8 +440,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
       handleAddCourseToStudent: async (courseId) => {
-        console.log('Adding course to student');
-        console.log(courseId);
         const response = await fetch(process.env.BACKEND_URL + 'api/add_course_to_student', {
           method: 'POST',
           headers: {
@@ -467,8 +459,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
       handleDropCourseFromStudent: async (courseId) => {
-        console.log('Dropping course from student');
-        console.log(courseId);
         const response = await fetch(process.env.BACKEND_URL + 'api/drop_course_from_student', {
           method: 'POST',
           headers: {
@@ -502,7 +492,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
       
           const courseData = await response.json();
-          console.log('Fetched course data:', courseData);
       
           // Update the store with the fetched course data
           const store = getStore();
@@ -556,21 +545,9 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.error("Error:", error);
             return;
           }
-          setStore({
-            selectedCourse: {
-              ...getStore().selectedCourse, // Retain current selectedCourse data
-              id: courseID, // Update the ID if necessary
-              modules: [
-                ...(getStore().selectedCourse.modules || []), // Retain existing modules
-                { name: newName }, // Add the new module
-              ],
-            },
-          });
-          console.log("asas", getStore()) ;
-          // setStore({
-          //   selectedCourse: {id:courseID, modules:[{name:newName}]}, // Update the selected course in the store
-          // });
-
+          const data = await response.json();
+          console.log("Module created:", data);
+          getActions().getCourseByID(courseID);
         } catch (error) {
           console.error("Error creating module:", error);
         }
@@ -616,6 +593,50 @@ const getState = ({ getStore, getActions, setStore }) => {
           alert("An error occurred while deleting the module.");
         }
       },
+      createTopic: async  (module_Id, topicName) => {
+        
+        const payload = {
+            moduleId: module_Id,
+            name: topicName
+        };
+        const token = sessionStorage.getItem("jwtToken"); // Retrieve the token
+        
+        try {
+            const response = await fetch(`${process.env.BACKEND_URL}/api/topic`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Include JWT token for authentication
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                // Handle HTTP errors
+                const errorData = await response.json();
+                throw new Error(`${response.status}: ${errorData.error || 'Unknown error'}`);
+            }
+    
+            const data = await response.json();
+            
+          const selectedCourse= {
+            ...getStore().selectedCourse,  
+            modules: getStore().selectedCourse.modules.map((module) => {
+              if (module.id === module_Id) {
+                  return {
+                      ...module, // Retain other properties of the module
+                      topics: [...module.topics, data.topic] // Update the topics
+                  };
+              }
+              return module; // Return other modules unchanged
+          })
+          }; 
+          setStore({selectedCourse});
+        } catch (error) {
+            console.error('Error at createTopic function:', error.message);
+            throw error; // Re-throw error for further handling
+        }
+    },    
       updateTopic : async (topicId, newName) => {
         try {
           const response = await fetch(process.env.BACKEND_URL + `api/topic/${topicId}`, {
@@ -689,7 +710,225 @@ const getState = ({ getStore, getActions, setStore }) => {
           alert("An error occurred while deleting the topic.");
         }
       },
-
+      createResource: async (url, topicId) => {
+        try {
+            const response = await fetch(process.env.BACKEND_URL + `api/resources`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: url,
+                    topic_id: topicId,
+                }),
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`${response.status}: ${errorData.message || 'Failed to create resource.'}`);
+            }
+    
+            const resource = await response.json();
+            console.log('Resource created successfully:', resource);
+            return resource;
+          } catch (error) {
+              console.error('Error creating resource:', error.message);
+              throw error;
+          }
+      },
+      updateResource: async (resourceId, newUrl) => {
+        try {
+            const response = await fetch(process.env.BACKEND_URL + `api/resources/${resourceId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: newUrl
+                }),
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`${response.status}: ${errorData.message || 'Failed to update resource.'}`);
+            }
+    
+            const updatedResource = await response.json();
+     
+            console.log('Resource updated successfully:', updatedResource);
+            return updatedResource;
+            } catch (error) {
+                console.error('Error updating resource:', error.message);
+                throw error;
+            }
+      },
+      addNoteToTopic: async (topicId, content1) => {
+        const token = sessionStorage.getItem("jwtToken"); // Retrieve JWT token
+        try {
+            const response = await fetch(`${process.env.BACKEND_URL}/api/topic/${topicId}/notes`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`, // Add token for authentication
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ content: content1 }), // Send content in the request body
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (response.status === 409) {
+                    console.error("Conflict: Note already exists for this topic.");
+                    return { success: false, message: errorData.error };
+                }
+                throw new Error(`${response.status}: ${errorData.error || "Failed to add note"}`);
+            }
+    
+            const newNote = await response.json();
+    
+            // Update the store with the new note
+            const store = getStore();
+            const updatedModules = store.selectedCourse.modules.map((module) => {
+                if (module.topics.some((topic) => topic.id === topicId)) {
+                    return {
+                        ...module,
+                        topics: module.topics.map((topic) => {
+                            if (topic.id === topicId) {
+                                return {
+                                    ...topic,
+                                    notes: [...(topic.notes || []), newNote], // Add the new note
+                                };
+                            }
+                            return topic;
+                        }),
+                    };
+                }
+                return module;
+            });
+    
+            setStore({
+                selectedCourse: {
+                    ...store.selectedCourse,
+                    modules: updatedModules,
+                },
+            });
+    
+            console.log("Note added successfully:", newNote);
+            return { success: true, note: newNote };
+        } catch (error) {
+            console.error("Error adding note:", error.message);
+            return { success: false, message: error.message };
+        }
+      },
+      updateNoteToTopic: async (noteID, content1) => {
+        // Validate input values using AND operator
+        if (!noteID && (content1 === null || content1 === undefined)) {
+          console.error("Invalid input: noteID and content1 are null/undefined.");
+          return { success: false, message: "Invalid input: noteID and content are required." };
+        }
+        const token = sessionStorage.getItem("jwtToken"); // Retrieve JWT token
+        try {
+            const response = await fetch(`${process.env.BACKEND_URL}/api/notes/${noteID}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${token}`, // Add token for authentication
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ content: content1 }), // Send content in the request body
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                 
+                throw new Error(`${response.status}: ${errorData.error || "Failed to add note"}`);
+            }
+      
+            // Update the store with the new note
+            const store = getStore();
+            const updatedModules = store.selectedCourse.modules.map((module) => ({
+              ...module,
+              topics: module.topics.map((topic) => {
+                  if (topic.notes && topic.notes.id === noteID) {
+                      return {
+                          ...topic,
+                          notes: { ...topic.notes, content: content1 }, // Update the note content
+                      };
+                  }
+                  return topic;
+              }),
+            }));
+    
+            setStore({
+                selectedCourse: {
+                    ...store.selectedCourse,
+                    modules: updatedModules,
+                },
+            });
+    
+            console.log("Note added successfully:", content1); 
+        } catch (error) {
+            console.error("Error adding note:", error.message);
+            return { success: false, message: error.message };
+        }
+      },
+      setCustomStore: (newState) => {
+        setStore(newState);
+      },
+      getNoteById: async (noteId) => {
+        // Decode the token to get the user's role (simplified example; use a library like jwt-decode in production)
+        const token = sessionStorage.getItem("jwtToken"); // Retrieve JWT token
+        //const { role } = JSON.parse(token);
+    
+        // Check if the role is not 'student'
+        // if (role !== 'student') {
+        //     console.error("Access denied: Teachers cannot access notes.");
+        //     return { success: false, error: "Access denied: Teachers cannot access notes." };
+        // }
+    
+        try {
+            // Fetch the note from the API
+            const response = await fetch(`${process.env.BACKEND_URL}/api/notes/${noteId}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+    
+            if (response.status === 404) {
+                return { success: false, error: `Note with ID ${noteId} not found.` };
+            } else if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+    
+            const note = await response.json();
+            // Update the store with the new note
+            const store = getStore();
+            const updatedModules = store.selectedCourse.modules.map((module) => ({
+              ...module,
+              topics: module.topics.map((topic) => {
+                  if (topic.notes && topic.notes.id === noteID) {
+                      return {
+                          ...topic,
+                          notes: { ...topic.notes, note }, // Update the note content
+                      };
+                  }
+                  return topic;
+              }),
+            }));
+    
+            setStore({
+                selectedCourse: {
+                    ...store.selectedCourse,
+                    modules: updatedModules,
+                },
+            });
+        } catch (error) {
+            console.error("Error fetching the note:", error.message);
+            return { success: false, error: error.message };
+        }
+        }
+    
       
     }
   };

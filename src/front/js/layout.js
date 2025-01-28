@@ -13,9 +13,9 @@ import Grades from "./component/dashboardComponents/Grades.jsx";
 import Notebook from "./component/dashboardComponents/Notebooks.jsx";
 import CoursesPage from "./pages/CoursesPage.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
-import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourses.jsx";
-import YoursCourses from "./component/teacherdashboardComponents/YoursCourses.jsx";
-import AddAssignments from "./component/teacherdashboardComponents/AddAssignments.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourse.jsx";
+import YourCourses from "./component/teacherdashboardComponents/YourCourses.jsx";
 import { CreateCoursePage } from "./pages/createCoursePage.js";
 import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
@@ -37,12 +37,11 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
-                        <Route element={<CreateCoursePage />} path="/create-course" />
                         <Route element={<HomePage />} path="/" />
                         <Route element={<Demo />} path="/demo" />
-                        <Route element={<TeacherDashboard/> } path="/teacherdashboard">
-                            <Route element={<AddNewCourse/>} path="addnewcourse"/>
-                            <Route element={<YoursCourses/>} path="yourscourses"/>
+                        <Route element={<TeacherDashboard />} path="/teacherdashboard">
+                            <Route element={<AddNewCourse />} path="addnewcourse" />
+                            <Route element={<YourCourses />} path="yourcourses" />
                             <Route element={<AddAssignments/>} path="addassignments"/>
                         </Route>
                         <Route element={<DashBoard />} path="/dashboard" >
@@ -53,6 +52,8 @@ const Layout = () => {
                             <Route element={<Calendar />} path="calendar" />
                         </Route>
                         <Route element={<CoursesPage />} path="/courses-page" />
+                        <Route element={<AboutUs />} path="/about-us" />
+                        <Route element={<MathCoursePage />} path="/mathcoursepage" />
                         <Route element={<ClassPage />} path="/class-page/:courseId" />
                         <Route element={<EditClassPage />} path="/edit-class-page/:courseId" />
                         <Route element={<h1>Not found!</h1>} />
