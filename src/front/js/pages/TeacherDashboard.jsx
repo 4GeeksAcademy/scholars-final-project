@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import TeacherVerticalMenu from "../pages/TeacherVerticalMenu.jsx";
 import { Outlet } from "react-router-dom";
@@ -11,6 +11,13 @@ const TeacherDashboard = () => {
     const {store, actions} = useContext(Context);
     const location = useLocation();
     const isDefaultPage = location.pathname === "/teacherdashboard"
+
+    useEffect(() => {
+        if (!sessionStorage.jwtToken) {
+            window.location.href = "/";
+        }
+    }, []);
+
     return (
         <>
         <div className="Dashboard-container d-flex" style={{ width: "100%", justifyContent: "center" }}>

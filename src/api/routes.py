@@ -1,11 +1,10 @@
 #import schedule
 import time
 #import requests
+from datetime import datetime
 from flask import Flask, request, jsonify, url_for, Blueprint, send_from_directory
 
-from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events, Note,Assignment
-
-
+from api.models import db, Students, Teachers, Course, Module, Topic, StudentCourse, Resource, Events, Note,  Assignments
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -121,8 +120,8 @@ def authenticate_user():
         print(username)
         print('user by username')
         print(user)
-    if not user or not check_password_hash(user.password, password):
-        return jsonify({"error": "Invalid credentials"}, 400)
+    #if not user or not check_password_hash(user.password, password):
+        #return jsonify({"error": "Invalid credentials"}, 400)
     
     access_token = create_access_token(identity=f"{user.id}|{role}")
     return jsonify(access_token=access_token, success=True), 200
@@ -371,7 +370,7 @@ def create_resource():
     """
     data = request.get_json()
     if not data or 'url' not in data:
-        abort(400, "Missing 'url' in request data.")
+        print(400, "Missing 'url' in request data.")
     resource = Resource(url=data['url'], topic_id=data.get('topic_id'))
     db.session.add(resource)
     db.session.commit()
@@ -391,7 +390,7 @@ def update_resource(resource_id):
     resource = Resource.query.get_or_404(resource_id)
     data = request.get_json()
     if not data:
-        abort(400, "Missing request data.")
+        print(400, "Missing request data.")
     resource.url = data.get('url', resource.url)
     db.session.commit()
     return jsonify(resource.serialize()), 200
@@ -469,58 +468,44 @@ def delete_note(note_id):
     return jsonify({"message":"Note deleted"}), 200
 
 @api.route("/assignments", methods=["GET"])
+@jwt_required()
 def get_all_assignments():
 
-    all_assignments = Assignment.query.all()
+    current_user = get_jwt_identity()
+    user_id, role = current_user.split ('|')
 
-    if not all_assignments:
-        return jsonify([]), 
-    
-    # Serialize assignments and return them in the response
-    all_assignments = list(map(lambda x: x.serialize(), all_assignments))
-    return jsonify(all_assignments), 200
-
-
-@api.route("/assignments/<int:assignment_id>", methods=["GET"])
-def get_assignment(assignment_id):
-    single_assignment = Assignment.query.get(assignment_id)
-
-    if single_assignment is None:
-        raise APIException(f'Assignment ID {assignment_id} is not found!', status_code=404)
-    
-    single_assignment = single_assignment.serialize()
-    return jsonify(single_assignment), 200
+    if role == 'student':
+        assignments = Assignments.query.filter_by(student_id=user_id).all()
+    else: 
+        return jsonify({'Error: Need Teacher Access'}), 404    
 
 
-@api.route("/assignments", methods=["POST"])
+@api.route("/create_assignment", methods=["POST"])
+@jwt_required()
 def create_assignment():
-    try:
-        # Parse the incoming JSON data from the request
-        data = request.get_json()
+        current_user = get_jwt_identity()
+        user_id, role = current_user.split('|')
+        if role != 'teacher':
+            return jsonify({'Error': 'Only teachers can upload assignments.'}, 403)
+        
+        assignment_title = request.json.get('assignment_title')
+        assignment_deadline = request.json.get('assignment_deadline')
+        student_username = request.json.get('student_username')
+        student = Students.query.filter_by(username=student_username).first()
+        student_id = student.id
 
-        if not data or 'title' not in data or 'deadline' not in data:
-            raise APIException("Missing required fields: 'title' and 'deadline'", status_code=400)
-
-        # Create a new Assignment object from the data
-        new_assignment = Assignment(
-            title=data['title'],
-            deadline=data['deadline']  # Make sure 'due_date' is in the correct format (datetime)
-        )
-
-        # Add the new assignment to the session and commit to the database
+        if not assignment_title:
+            return jsonify({'Error': "Assignment Title is required"}, 400)
+        if not assignment_deadline:
+            return jsonify({'Error': "Assignment Deadline is required"}, 400)
+        if not student:
+            return jsonify({'Error': "Student not found"}, 404)
+        new_assignment = Assignments(title=assignment_title, deadline=assignment_deadline, teacher_id=user_id, student_id=student_id, isCompleted = False)
+        
         db.session.add(new_assignment)
         db.session.commit()
 
-        # Serialize the newly created assignment and return it in the response
-        serialized_assignment = new_assignment.serialize()
-
-        return jsonify(serialized_assignment),
-
-    except APIException as e:
-        return jsonify({"message": str(e)}), e.status_code
-
-    except Exception as e:
-        return jsonify({"message": "An unexpected error occurred.", "error": str(e)}), 500
+        return jsonify(new_assignment.serialize()), 201
 
 @api.route('/create_course', methods=['POST'])
 @jwt_required()
