@@ -450,21 +450,9 @@ const getState = ({ getStore, getActions, setStore }) => {
             console.error("Error:", error);
             return;
           }
-          setStore({
-            selectedCourse: {
-              ...getStore().selectedCourse, // Retain current selectedCourse data
-              id: courseID, // Update the ID if necessary
-              modules: [
-                ...(getStore().selectedCourse.modules || []), // Retain existing modules
-                { name: newName }, // Add the new module
-              ],
-            },
-          });
-          console.log("asas", getStore()) ;
-          // setStore({
-          //   selectedCourse: {id:courseID, modules:[{name:newName}]}, // Update the selected course in the store
-          // });
-
+          const data = await response.json();
+          console.log("Module created:", data);
+          getActions().getCourseByID(courseID);
         } catch (error) {
           console.error("Error creating module:", error);
         }

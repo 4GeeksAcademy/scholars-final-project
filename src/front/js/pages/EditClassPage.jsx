@@ -29,7 +29,7 @@ export const EditClassPage = () => {
             <input type="text" ref={inputModule} />
             <button
               className="btn btn-primary"
-              onClick={()=>actions.createModule(params.courseId, inputModule.current.value.toString())} 
+              onClick={()=>{actions.createModule(params.courseId, inputModule.current.value.toString()); actions.getCourseByID(params.courseId); inputModule.current.value = '';}} 
             >
               Add Module
             </button>     
@@ -272,8 +272,6 @@ const EditableAccordion = ({ modules = [], onTopicSelect, getResource }) => {
           </div>
         </div>
       ))}
-
-      
     </div>
   );
 };
