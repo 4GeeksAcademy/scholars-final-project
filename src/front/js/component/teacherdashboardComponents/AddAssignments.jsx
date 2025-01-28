@@ -34,7 +34,7 @@ const AddAssignments = () => {
 
         // Call the action to create the assignment, passing studentId and other details
         try {
-            await actions.addNewAssignment(assignmentTitle, assignmentDeadline, studentId);
+            await actions.teacherAddAssignment(assignmentTitle, assignmentDeadline, studentId);
             console.log("Assignment created successfully");
         } catch (error) {
             console.error("Failed to create assignment:", error);
@@ -47,13 +47,13 @@ const AddAssignments = () => {
         setStudentUsername(username);
 
         // Lookup the student by username
-        const student = store.students.find(student => student.username.toLowerCase() === username.toLowerCase());
+        // const student = store.students.find(student => student.username.toLowerCase() === username.toLowerCase());
 
-        if (student) {
-            setStudentId(student.id); // Set studentId if found
-        } else {
-            setStudentId(null); // Reset studentId if not found
-        }
+        // if (student) {
+             setStudentId(student.id); // Set studentId if found
+        // } else {
+        //     setStudentId(null); // Reset studentId if not found
+        // }
     };
 
     // Ensure the return statement is inside the AddAssignments component function
