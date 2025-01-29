@@ -14,7 +14,6 @@ const CardsCourses = () => {
     return (
         <>
             <div className='container'>
-                <h1 className='text-center'>All Courses</h1>
                 <div className='row justify-content-center'>
                     {store.user ? store.user.courses.map((course, index) => {
                         return (
