@@ -5,11 +5,10 @@ import AccordionMenu from "../component/AccordionMenu.js";
 import PopupChat from "../component/PopupChat.jsx";
 import Notebook from "../component/Notebook.jsx";
 
-
 export const ClassPage = () => {
   const { store, actions } = useContext(Context);
   const [resourceLink, setResourceLink] = useState("");
-  const [noteId, setNoteId] = useState();
+  const [noteId, setNoteId] = useState("");
   const [content, setContent] = useState("");
   const params = useParams();
 
@@ -19,7 +18,13 @@ export const ClassPage = () => {
 
   return (
     <div className="container-fluid p-0" style={{ height: "90vh" }}>
-      {console.log("selectedCourse: ", store?.selectedCourse)}
+      <div className="row">
+        <div className="col-12">
+          <div className="d-flex justify-content-center">
+            <h1>{store?.selectedCourse?.name}</h1>
+          </div>
+        </div>
+      </div>
       <div className="row h-100">
         <div className="col-3 h-100">
           <AccordionMenu
@@ -31,7 +36,7 @@ export const ClassPage = () => {
           />
         </div>
         
-        <div class="col-6">
+        <div className="col-6">
           <div style={{ padding: "1em" }}>
             {resourceLink ? (
               <div style={{ textAlign: "center" }}>
@@ -50,9 +55,9 @@ export const ClassPage = () => {
               </div>
             )}
           </div>
-          <Notebook noteID = {noteId} getcontent={content} />
+          {noteId && <Notebook noteID = {noteId} getcontent={content} />}
         </div>
-        <div class="col-3">
+        <div className="col-3">
           <PopupChat />
         </div>
       </div>

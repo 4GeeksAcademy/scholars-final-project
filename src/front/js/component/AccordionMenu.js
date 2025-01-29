@@ -10,7 +10,6 @@ const AccordionMenu = ({ modules = [], onTopicSelect, getResource, setNoteId, se
       
       if(notes === null){
         actions.addNoteToTopic(id,"");
-
       }
       else{
         setNoteId(notes.id); 

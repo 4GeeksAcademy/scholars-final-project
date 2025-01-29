@@ -1,25 +1,30 @@
-import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import ScrollToTop from "./component/scrollToTop";
-import { BackendURL } from "./component/backendURL";
-import HomePage from "./pages/HomePage.jsx";
-import { Demo } from "./pages/demo";
-import DashBoard from "./pages/dashboard.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import AddAssignments from "./component/teacherdashboardComponents/AddAssignments.jsx"
+import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourse.jsx";
 import Assignments from "./component/dashboardComponents/Assignments.jsx";
+import { BackendURL } from "./component/backendURL";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Calendar from "./component/dashboardComponents/Calendar.jsx";
 import CardsCourses from "./component/dashboardComponents/CardsCourses.jsx";
-import Notebook from "./component/dashboardComponents/Notebooks.jsx";
+import { ClassPage } from "./pages/ClassPage";
 import CoursesPage from "./pages/CoursesPage.jsx";
-import TeacherDashboard from "./pages/TeacherDashboard.jsx";
-import AboutUs from "./pages/AboutUs.jsx";
-import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourse.jsx";
-import AddAssignments from  "./component/teacherdashboardComponents/AddAssignments.jsx"
-import YourCourses from "./component/teacherdashboardComponents/YourCourses.jsx";
+import DashBoard from "./pages/dashboard.jsx";
+import { Demo } from "./pages/demo";
+import { EditClassPage } from "./pages/EditClassPage.jsx";
+import { Footer } from "./component/footer";
+import HomePage from "./pages/HomePage.jsx";
 import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
-import { Footer } from "./component/footer";
-import { ClassPage } from "./pages/ClassPage";
-import { EditClassPage } from "./pages/EditClassPage.jsx";
+import Notebook from "./component/dashboardComponents/Notebooks.jsx";
+import React from "react";
+import ScrollToTop from "./component/scrollToTop";
+import TeacherDashboard from "./pages/TeacherDashboard.jsx";
+import YourCourses from "./component/teacherdashboardComponents/YourCourses.jsx";
+
+
+
+
+
 
 
 //create your first component

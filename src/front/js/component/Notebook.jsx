@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Context } from "../store/appContext.js";
+
 const Notebook = ({noteID, getcontent}) => {
+  
   const [content, setContent] = useState(getcontent);
   useEffect(()=>{setContent(getcontent)},[getcontent]);
   const { store, actions } = useContext(Context);
