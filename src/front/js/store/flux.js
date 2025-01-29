@@ -260,11 +260,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
             body: JSON.stringify({content:content, topicId:topicId, studentID:studentID})
           });
-
           if(response.ok) {
-            const newNote = await response.json();
-            const store = getStore();
-            setStore({notes: [... store.notes, newNote]});
+            console.log("note added")
           }
           else{
             console.error("Error when adding note")
