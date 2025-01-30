@@ -5,6 +5,7 @@ import AccordionMenu from "../component/AccordionMenu.js";
 import PopupChat from "../component/PopupChat.jsx";
 import Notebook from "../component/Notebook.jsx";
 
+
 export const ClassPage = () => {
   const { store, actions } = useContext(Context);
   const [resourceLink, setResourceLink] = useState("");
