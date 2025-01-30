@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { Context } from "../store/appContext.js";
 
-const Notebook = () => {
-  const [content, setContent] = useState("");
-
+const Notebook = ({noteID, getcontent}) => {
+  
+  const [content, setContent] = useState(getcontent);
+  useEffect(()=>{setContent(getcontent)},[getcontent]);
+  const { store, actions } = useContext(Context);
   return (
     <div className="d-flex flex-column align-items-center p-3">
       <div
@@ -28,9 +31,11 @@ const Notebook = () => {
             color: "#000",
           }}
           placeholder="Write your notes here..."
-          value={content}
+          value={content} 
           onChange={(e) => setContent(e.target.value)}
+          onBlur={()=>actions.updateNoteToTopic(noteID,content)}
         />
+        {console.log("note ID: ",noteID)}
       </div>
     </div>
   );

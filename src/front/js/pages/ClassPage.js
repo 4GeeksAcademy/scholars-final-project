@@ -9,48 +9,35 @@ import Notebook from "../component/Notebook.jsx";
 export const ClassPage = () => {
   const { store, actions } = useContext(Context);
   const [resourceLink, setResourceLink] = useState("");
+  const [noteId, setNoteId] = useState("");
+  const [content, setContent] = useState("");
   const params = useParams();
 
   useEffect(() => {
-    actions.getAllCourses();
+    actions.getCourseByID(params.courseId);
   }, []);
-
-  const getEmbedLink = (url) => {
-    const urlObj = new URL(url);
-
-    if (urlObj.hostname === "youtu.be") {
-      const videoId = urlObj.pathname.slice(1); // Extract video ID from path
-      const playlist = urlObj.searchParams.get("list");
-      return playlist
-        ? `https://www.youtube.com/embed/${videoId}?list=${playlist}`
-        : `https://www.youtube.com/embed/${videoId}`;
-    }
-
-    if (
-      urlObj.hostname === "www.youtube.com" ||
-      urlObj.hostname === "youtube.com"
-    ) {
-      const videoId = urlObj.searchParams.get("v");
-      const playlist = urlObj.searchParams.get("list");
-      return playlist
-        ? `https://www.youtube.com/embed/${videoId}?list=${playlist}`
-        : `https://www.youtube.com/embed/${videoId}`;
-    }
-
-    return url; // Return as-is for non-YouTube links
-  };
 
   return (
     <div className="container-fluid p-0" style={{ height: "90vh" }}>
-      {console.log("findCourse: ", findCourse(store.AllCourses, params.courseId))}
-      <div class="row h-100">
-        <div class="col-3 h-100">
+      <div className="row">
+        <div className="col-12">
+          <div className="d-flex justify-content-center">
+            <h1>{store?.selectedCourse?.name}</h1>
+          </div>
+        </div>
+      </div>
+      <div className="row h-100">
+        <div className="col-3 h-100">
           <AccordionMenu
-            modules={findCourse(store.AllCourses, params.courseId)?.modules}
+            modules={store?.selectedCourse?.modules || []}
             onTopicSelect={setResourceLink}
+            getResource={getResource}
+            setNoteId={setNoteId}
+            setContent={setContent}
           />
         </div>
-        <div class="col-6">
+        
+        <div className="col-6">
           <div style={{ padding: "1em" }}>
             {resourceLink ? (
               <div style={{ textAlign: "center" }}>
@@ -69,9 +56,9 @@ export const ClassPage = () => {
               </div>
             )}
           </div>
-          <Notebook />
+          {noteId && <Notebook noteID = {noteId} getcontent={content} />}
         </div>
-        <div class="col-3">
+        <div className="col-3">
           <PopupChat />
         </div>
       </div>
@@ -79,15 +66,53 @@ export const ClassPage = () => {
   );
 };
 
-const findCourse = (AllCourse, ID) => {
-  for (const course of AllCourse) {
-    console.log("course id", course.id);
-    console.log("id:", parseInt(ID, 10));
-    if (course.id == parseInt(ID, 10)) {
-      console.log("course id", course.id);
-      return course;
-    }
+const getEmbedLink = (url) => { 
+  const urlObj = new URL(url);
+
+  if (urlObj.hostname === "youtu.be") {
+    const videoId = urlObj.pathname.slice(1); // Extract video ID from path
+    const playlist = urlObj.searchParams.get("list");
+    return playlist
+      ? `https://www.youtube.com/embed/${videoId}?list=${playlist}`
+      : `https://www.youtube.com/embed/${videoId}`;
   }
-  return null;
+
+  if (
+    urlObj.hostname === "www.youtube.com" ||
+    urlObj.hostname === "youtube.com"
+  ) {
+    const videoId = urlObj.searchParams.get("v");
+    const playlist = urlObj.searchParams.get("list");
+    return playlist
+      ? `https://www.youtube.com/embed/${videoId}?list=${playlist}`
+      : `https://www.youtube.com/embed/${videoId}`;
+  }
+
+  return url; // Return as-is for non-YouTube links
 };
 
+const getResource = async (topicID) => {
+  try {
+    const token = sessionStorage.getItem('jwtToken');
+    if (!token) {
+      throw new Error("User is not authenticated. Please log in.");
+    }
+    const resp = await fetch(`${process.env.BACKEND_URL}/api/resources/by_topic/${topicID}`, {
+      method: "GET",
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+    if (!resp.ok) {
+      throw new Error(`Failed to fetch resource: ${resp.statusText}`);
+    }
+    const resourceData = await resp.json(); // Parse JSON response 
+    // Extract URLs if resourceData is an array
+    const urls = resourceData.map(resource => resource.url); // Convert to comma-separated string 
+    return urls;
+  } catch (error) {
+    console.log("Error fetching resource from backend:", error);
+    return null;
+  }
+};

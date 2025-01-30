@@ -1,23 +1,31 @@
-import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import ScrollToTop from "./component/scrollToTop";
-import { BackendURL } from "./component/backendURL";
-import HomePage from "./pages/HomePage.jsx";
-import { Demo } from "./pages/demo";
-import DashBoard from "./pages/dashboard.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import AddAssignments from "./component/teacherdashboardComponents/AddAssignments.jsx"
+import AddNewCourse from "./component/teacherdashboardComponents/AddNewCourse.jsx";
 import Assignments from "./component/dashboardComponents/Assignments.jsx";
+import { BackendURL } from "./component/backendURL";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Calendar from "./component/dashboardComponents/Calendar.jsx";
 import CardsCourses from "./component/dashboardComponents/CardsCourses.jsx";
-import MathCoursePage from "./component/dashboardComponents/MathCoursePage.jsx";
-import Grades from "./component/dashboardComponents/Grades.jsx";
-import Notebook from "./component/dashboardComponents/Notebooks.jsx";
+import { ClassPage } from "./pages/ClassPage";
 import CoursesPage from "./pages/CoursesPage.jsx";
-import { TestTeacherDashboard } from "./pages/testTeacherDashboard";
-import TeacherDashboard from "./pages/TeacherDashboard.jsx"
+import DashBoard from "./pages/dashboard.jsx";
+import { Demo } from "./pages/demo";
+import { EditClassPage } from "./pages/EditClassPage.jsx";
+import { Footer } from "./component/footer";
+import HomePage from "./pages/HomePage.jsx";
 import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
-import { Footer } from "./component/footer";
-import { ClassPage } from "./pages/ClassPage";
+import Notebook from "./component/dashboardComponents/Notebooks.jsx";
+import React from "react";
+import ScrollToTop from "./component/scrollToTop";
+import TeacherDashboard from "./pages/TeacherDashboard.jsx";
+import YourCourses from "./component/teacherdashboardComponents/YourCourses.jsx";
+
+
+
+
+
+
 
 //create your first component
 const Layout = () => {
@@ -33,20 +41,23 @@ const Layout = () => {
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
-                        <Route element={<TestTeacherDashboard />} path="/testTeacherDashboard" />
                         <Route element={<HomePage />} path="/" />
                         <Route element={<Demo />} path="/demo" />
+                        <Route element={<TeacherDashboard />} path="/teacherdashboard">
+                            <Route element={<AddNewCourse />} path="addnewcourse" />
+                            <Route element={<YourCourses />} path="yourcourses" />
+                            <Route element={<AddAssignments/>} path="addassignments"/>
+                        </Route>
                         <Route element={<DashBoard />} path="/dashboard" >
                             <Route index element={<CardsCourses />} />
                             <Route element={<Assignments />} path="assignments" />
-                            <Route element={<Grades />} path="grades" />
                             <Route element={<Notebook />} path="notebooks" />
                             <Route element={<Calendar />} path="calendar" />
                         </Route>
-                        <Route element={<ClassPage />} path="/class-page/:courseId" />
                         <Route element={<CoursesPage />} path="/courses-page" />
-                        <Route element={<MathCoursePage />} path="/mathcoursepage" />
-                        <Route element={<TeacherDashboard />} path="/teacherdashboard" />
+                        <Route element={<AboutUs />} path="/about-us" />
+                        <Route element={<ClassPage />} path="/class-page/:courseId" />
+                        <Route element={<EditClassPage />} path="/edit-class-page/:courseId" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />
