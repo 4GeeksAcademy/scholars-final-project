@@ -376,25 +376,6 @@ def create_resource():
     db.session.commit()
     return jsonify(resource.serialize()), 201
 
-# PUT (update) an existing resource
-@api.route('/resources/<int:resource_id>', methods=['PUT'])
-def update_resource(resource_id):
-    """
-    Request body is below
-    {
-        "id": resource id,
-        "topic_id": topic id,
-        "url": "URL that you are gonna put"
-    }
-    """
-    resource = Resource.query.get_or_404(resource_id)
-    data = request.get_json()
-    if not data:
-        print(400, "Missing request data.")
-    resource.url = data.get('url', resource.url)
-    db.session.commit()
-    return jsonify(resource.serialize()), 200
-
 # DELETE a resource
 @api.route('/resources/<int:resource_id>', methods=['DELETE'])
 def delete_resource(resource_id):
@@ -716,4 +697,34 @@ def get_note_by_id(note_id):
 
     return jsonify(note.serialize()), 200
 
+ 
+@api.route('/resource/<int:topic_ID>', methods=['PUT'])
+@jwt_required()
+def update_resource(topic_ID):
+    try:
+        current_user = get_jwt_identity()
+        user_id, role = current_user.split('|')
         
+        if role != 'teacher':
+            return jsonify({'error': 'Access denied: student cannot access.'}), 403
+        # Fetch the JSON payload
+        data = request.json
+
+        # Check if 'url' is provided in the request
+        if 'url' not in data:
+            return jsonify({"error": "Missing 'url' in request body"}), 400
+
+        # Find the resource by topic_id
+        resource = Resource.query.filter_by(topic_id=topic_ID).first()
+        
+        if not resource:
+            return jsonify({"error": "Resource not found for the given topic ID"}), 404
+
+        # Update the resource's URL
+        resource.url = data['url']
+        db.session.commit()
+
+        return jsonify({"message": "Resource updated successfully", "resource": resource.serialize()}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

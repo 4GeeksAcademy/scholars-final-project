@@ -694,32 +694,28 @@ const getState = ({ getStore, getActions, setStore }) => {
               throw error;
           }
       },
-      updateResource: async (resourceId, newUrl) => {
+      updateResource: async (newUrl, topicId) => {
         try {
-            const response = await fetch(process.env.BACKEND_URL + `api/resources/${resourceId}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    url: newUrl
-                }),
-            });
-    
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`${response.status}: ${errorData.message || 'Failed to update resource.'}`);
-            }
-    
-            const updatedResource = await response.json();
-     
-            console.log('Resource updated successfully:', updatedResource);
-            return updatedResource;
-            } catch (error) {
-                console.error('Error updating resource:', error.message);
-                throw error;
-            }
+          const response = await fetch(`${process.env.BACKEND_URL}/api/resource/${topicId}`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: newUrl }), // Sending the new URL in the request body
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`${response.status}: ${errorData.error || 'Failed to update resource.'}`);
+          }
+      
+          const updatedResource = await response.json();
+          console.log('Resource updated successfully:', updatedResource); 
+        } catch (error) {
+          console.error('Error updating resource:', error.message);
+          throw error;
+        }
       },
       addNoteToTopic: async (topicId, content1) => {
         const token = sessionStorage.getItem("jwtToken"); // Retrieve JWT token
